@@ -1,0 +1,136 @@
+'use strict';
+
+/*
+ * Webhookを試す
+ * ついでに外部リンク用PDFも残す
+ */
+
+// *** SendGrid constant ***
+const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
+const key = process.env.SHOWCASE_KEY;
+
+const msg = {                           // メール設定オブジェクトを作成
+  to:   'y-takasago@go-partner.jp',     // 宛先メールアドレス
+  from: 'jisyuku_web@j-fsa.jp',         // 送信元メールアドレス（SendGridで認証済みのドメイン/アドレス）
+  subject: '【テスト】Node.jsからのテストメール', // 件名
+  text: 'これはSendGrid APIを使用してNode.jsから送信されたテストメールです。', // テキスト本文
+};
+
+// *** kintone constant ***
+const subDomain = 'https://jueaogoxsa02.cybozu.com';        // サブドメイン
+const apiToken = process.env.KINTONE_API_KEY;               // APIトークン
+const appId = 7;                                            // アプリID
+const express = require('express');
+const cors = require('cors');
+const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
+const app = express();
+
+const crypto = require('crypto');
+const algorithm = 'aes-256-ctr';
+
+app.use(express.urlencoded({ extended: true }));    // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
+app.use(express.json());
+app.use(express.static('public'));      // PDFファイルへの外部リンクアクセス用
+
+var client;
+
+// **** PIC Webhook受信エンドポイント
+app.post('/webhook/', async (req, res) => {
+    console.log('here!');
+    const webhookData = req.body;
+    try {
+        console.log('--- Webhookを受信しました ---');
+
+        // 1. IV（初期化ベクトル）を16進数（hex）として確実にBufferに変換
+        const ivStr = webhookData.iv || '02089f4b27dc6fd18dbb8d2cb55d251e';
+        const iv = Buffer.from(ivStr, 'hex');
+
+        // 2. 暗号化された「姓」と「生年月日」を取得
+        // ※ ログに出力されていたデータ構造に合わせて確実に抽出します
+        let seiEncrypted = '';
+        let birthDayEncrypted = '';
+
+        if (webhookData.bindKeys && webhookData.bindKeys[0]) {
+            seiEncrypted = webhookData.bindKeys[0].value;
+            birthDayEncrypted = webhookData.bindKeys[1].value;
+        } else {
+            // 万が一undefinedの場合の、今回のテストデータ用セーフティ
+            seiEncrypted = 'nt/aMsq8V55KNfrXwVm+m9DEd578NCrFUGzT';
+            birthDayEncrypted = 'TGRQ6GUnhzHO5g==';
+        }
+
+        console.log('対象暗号(姓): ' + seiEncrypted);
+        console.log('対象暗号(生年月日): ' + birthDayEncrypted);
+
+        // 3. 【最重要修正】マニュアル準拠のキー切り出し方式に戻します
+        // 環境変数 SHOWCASE_KEY の先頭32文字を正確にBuffer化します
+        const keyBuffer = Buffer.from(key.substring(0, 32), 'utf8');
+
+        // 4. アルゴリズム（AES-256-CTR）
+        const algorithm = 'aes-256-ctr';
+
+        // ----------------------------------------
+        // 5. 姓（sei）の復号
+        // ----------------------------------------
+        const decipherSei = crypto.createDecipheriv(algorithm, keyBuffer, iv);
+        // 送られてきたBase64形式を、utf8（日本語文字列）にデコード
+        let decryptedSei = decipherSei.update(seiEncrypted, 'base64', 'utf8');
+        decryptedSei += decipherSei.final('utf8');
+        
+        console.log('★復号成功（姓）:', decryptedSei);
+
+        // ----------------------------------------
+        // 6. 生年月日の復号
+        // ----------------------------------------
+        const decipherBirth = crypto.createDecipheriv(algorithm, keyBuffer, iv);
+        let decryptedBirth = decipherBirth.update(birthDayEncrypted, 'base64', 'utf8');
+        decryptedBirth += decipherBirth.final('utf8');
+        
+        console.log('★復号成功（生年月日）:', decryptedBirth);
+        // ----------------------------------------
+
+        // その他データのログ出力
+        //console.log('result is: ' + (webhookData.result || 'データなし'));
+        console.log('result is: ' + (webhookData.result));
+        console.log('operation is: ' + (webhookData.operation));
+        console.log('authType is: ' + (webhookData.authType));
+        console.log(webhookData);
+
+        res.status(200).send('Webhook received successfully');
+    } catch (error) {
+        console.error('Webhook処理エラー:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+async function sendEMail() {
+  try {
+    await sgMail.send(msg);
+    console.log('メールが正常に送信されました。');
+  } catch (error) {
+    console.error('メール送信中にエラーが発生しました：');
+    if (error.response) {
+      console.error(error.response.body);
+    }
+  }
+}
+
+// **** Zapier-kintone Webhook受信エンドポイント
+app.post('/kintone-webhook/', async (req, res) => {
+    console.log('kintone-webhook here!');
+    const webhookData = req.body;
+    try {
+        console.log('--- Webhookを受信しました ---');
+        console.log(webhookData);
+        res.status(200).send('Webhook received successfully');
+    } catch (error) {
+        console.error('Webhook処理エラー:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
