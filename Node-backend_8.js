@@ -10,13 +10,6 @@ const sgMail = require('@sendgrid/mail');                   // SendGrid 公式�
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
 const key = process.env.SHOWCASE_KEY;
 
-const msg = {                           // メール設定オブジェクトを作成
-  to:   'y-takasago@go-partner.jp',     // 宛先メールアドレス
-  from: 'jisyuku_web@j-fsa.jp',         // 送信元メールアドレス（SendGridで認証済みのドメイン/アドレス）
-  subject: '【テスト】Node.jsからのテストメール', // 件名
-  text: 'これはSendGrid APIを使用してNode.jsから送信されたテストメールです。', // テキスト本文
-};
-
 // *** kintone constant ***
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // サブドメイン
 const apiToken = process.env.KINTONE_API_KEY;               // APIトークン
@@ -118,19 +111,49 @@ async function sendEMail() {
 
 // **** Zapier-kintone Webhook受信エンドポイント
 app.post('/kintone-webhook/', async (req, res) => {
+    const WebSoudan_honbun = 
+        "(このメールは送信専用メールからお送りさせていただいております。ご返信いただいてもお答えできませんのでご注意ください。)" + 
+        "" + 
+        "日本貸金業協会貸金業相談・紛争解決センターです。ご相談を受付けました。" + 
+        "受付日から３営業日以内に担当者からご連絡(050-3494-7988から発信)を差し上げますのでお待ちください。" + 
+        "なお、このメールにお心当たりがない場合は、お手数ですが貸金業相談・紛争解決センターまでご連絡ください。" + 
+        "" + 
+        "" + 
+        "※上記受付日とは、協会の通信機器がメールを受信した日とします。" + 
+        "※営業日とは、土曜日、日曜日、祝休日、年末年始休業日を除いた日をいいます。　" + 
+        "" + 
+        "" + 
+        "" + 
+        "【例】" + 
+        "受付日が月曜日の場合は、３営業日目の木曜日までにご連絡します。" + 
+        "※受付日が金曜日だった場合は、土曜日、日曜日を除き、翌週の水曜日が３営業日目となります。" + 
+        "" + 
+        "" + 
+        "" + 
+        "【ご連絡先】" + 
+        "日本貸金業協会" + 
+        "貸金業相談・紛争解決センター" + 
+        "〒108-0074東京都港区高輪3-19-15 二葉高輪ビル2階" + 
+        "TEL 03-5739-3861/050-3494-7988 FAX 03-5739-3024";
+    const msg = {                           // メール設定オブジェクトを作成
+        to:   'y-takasago_J01@go-partner.jp',     // 宛先メールアドレス
+        from: 'noreplywebjfsa@j-fsa.jp',         // 送信元メールアドレス（SendGridで認証済みのドメイン/アドレス）
+        subject: '【テスト】ご相談受付けの件', // 件名
+        text: WebSoudan_honbun, // テキスト本文
+    };
+
     console.log('kintone-webhook here!');
     const webhookData = req.body;
     try {
         console.log('--- Webhookを受信しました ---');
         console.log(webhookData);
         res.status(200).send('Webhook received successfully');
+        sendEMail();
     } catch (error) {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
     }
 });
-
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
