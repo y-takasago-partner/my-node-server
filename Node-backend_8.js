@@ -151,9 +151,7 @@ app.post('/kintone-webhook/', async (req, res) => {
     const msg2 = {
       //to  :  soudan@j-fsa.jp ,               // 宛先メールアドレス
         to  :  y-takasago_j03@go-partner.jp ,  // テスト用宛先メールアドレス
-        from: {
-          email: 'soudan@j-fsa.jp',            //From（SendGridで認証済みドメインのメールアドレス）
-        },
+        from: 'soudan@j-fsa.jp',               //From（SendGridで認証済みドメインのメールアドレス）
         subject: '【テスト】相談受付の件',     // 件名
         text: url2 + '\n',                     // 本文
     };
