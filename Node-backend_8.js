@@ -8,16 +8,23 @@
 // *** SendGrid constant ***
 const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
-const key = process.env.SHOWCASE_KEY;
+
+// *** ProTeck ID Checker ***
+const scKey = process.env.SHOWCASE_KEY;
 
 // *** kintone constant ***
-const subDomain = 'https://jueaogoxsa02.cybozu.com';        // サブドメイン
-const apiToken = process.env.KINTONE_API_KEY;               // APIトークン
-const appId = 7;                                            // アプリID
-const express = require('express');
-const cors = require('cors');
-const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
+//const subDomain = 'https://jueaogoxsa02.cybozu.com';        // サブドメイン
+//const apiToken = process.env.KINTONE_API_KEY;               // APIトークン
+//const appId = 7;                                            // アプリID
+//const cors = require('cors');
+//const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
+
+// *** Web相談
+const webSoudanAppId = 28;
+const webSoudanUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
+
 const app = express();
+const express = require('express');
 
 const crypto = require('crypto');
 const algorithm = 'aes-256-ctr';
@@ -25,8 +32,6 @@ const algorithm = 'aes-256-ctr';
 app.use(express.urlencoded({ extended: true }));    // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
 app.use(express.json());
 app.use(express.static('public'));      // PDFファイルへの外部リンクアクセス用
-
-var client;
 
 // **** PIC Webhook受信エンドポイント
 app.post('/webhook/', async (req, res) => {
@@ -58,7 +63,7 @@ app.post('/webhook/', async (req, res) => {
 
         // 3. 【最重要修正】マニュアル準拠のキー切り出し方式に戻します
         // 環境変数 SHOWCASE_KEY の先頭32文字を正確にBuffer化します
-        const keyBuffer = Buffer.from(key.substring(0, 32), 'utf8');
+        const keyBuffer = Buffer.from(scKey.substring(0, 32), 'utf8');
 
         // 4. アルゴリズム（AES-256-CTR）
         const algorithm = 'aes-256-ctr';
@@ -141,9 +146,20 @@ app.post('/kintone-webhook/', async (req, res) => {
         subject: '【テスト】ご相談受付けの件', // 件名
         text: WebSoudan_honbun,                // 本文
     };
+    const url2 = webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit' + ;
+    const msg2 = {
+      //to  :  soudan@j-fsa.jp ,               // 宛先メールアドレス
+        to  :  y-takasago_j03@go-partner.jp ,  // テスト用宛先メールアドレス
+        from: {
+          email: 'soudan@j-fsa.jp',            //From（SendGridで認証済みドメインのメールアドレス）
+        },
+        subject: '【テスト】相談受付の件',     // 件名
+        text: url2 + '\n',                     // 本文
+    };
     try {
         res.status(200).send('Webhook received successfully');
         sendEMail(msg);
+        sendEMail(msg2);
     } catch (error) {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
