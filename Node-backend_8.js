@@ -111,6 +111,12 @@ async function sendEMail(msg) {
 
 // **** Zapier-kintone Webhook受信エンドポイント
 app.post('/kintone-webhook/', async (req, res) => {
+    //console.log('--- Webhookを受信しました ---');
+    const webhookData = req.body;
+    //console.log(webhookData);
+    //console.log(webhookData.レコード番号);
+    //console.log(webhookData.氏名);
+    //console.log(webhookData.メールアドレス);
     const WebSoudan_honbun = 
         "(このメールは送信専用メールからお送りさせていただいております。ご返信いただいてもお答えできませんのでご注意ください。)\n\n" + 
         "日本貸金業協会貸金業相談・紛争解決センターです。ご相談を受付けました。\n" + 
@@ -126,21 +132,16 @@ app.post('/kintone-webhook/', async (req, res) => {
         "貸金業相談・紛争解決センター\n" + 
         "〒108-0074東京都港区高輪3-19-15 二葉高輪ビル2階\n" + 
         "TEL 03-5739-3861/050-3494-7988 FAX 03-5739-3024\n";
-    const msg = {                           // メール設定オブジェクトを作成
-        to:   'y-takasago_J01@go-partner.jp',     // 宛先メールアドレス
-        from: 'noreplywebjfsa@j-fsa.jp',         // 送信元メールアドレス（SendGridで認証済みのドメイン/アドレス）
+    const msg = {
+        to  :  webhookData.メールアドレス,     // 宛先メールアドレス
+        from: {
+          name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
+          email: 'noreplywebjfsa@j-fsa.jp',    //From（SendGridで認証済みドメインのメールアドレス）
+        },
         subject: '【テスト】ご相談受付けの件', // 件名
-        text: WebSoudan_honbun, // テキスト本文
+        text: WebSoudan_honbun,                // 本文
     };
-
-    console.log('kintone-webhook here!');
-    const webhookData = req.body;
     try {
-        console.log('--- Webhookを受信しました ---');
-        console.log(webhookData);
-        console.log(webhookData.レコード番号);
-        console.log(webhookData.氏名);
-        console.log(webhookData.メールアドレス);
         res.status(200).send('Webhook received successfully');
         sendEMail(msg);
     } catch (error) {
