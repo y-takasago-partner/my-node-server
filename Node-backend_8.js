@@ -23,8 +23,8 @@ const scKey = process.env.SHOWCASE_KEY;
 const webSoudanAppId = '28';
 const webSoudanUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
-const app = express();
 const express = require('express');
+const app = express();
 
 const crypto = require('crypto');
 const algorithm = 'aes-256-ctr';
