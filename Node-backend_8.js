@@ -105,7 +105,7 @@ app.post('/webhook/', async (req, res) => {
 async function sendEMail(msg) {
   try {
     await sgMail.send(msg);
-    console.log('メールが正常に送信されました。');
+    console.log('メールが正常に送信されました（' + msg.subject + ', ' + msg.to + '）');
   } catch (error) {
     console.error('メール送信中にエラーが発生しました：');
     if (error.response) {
