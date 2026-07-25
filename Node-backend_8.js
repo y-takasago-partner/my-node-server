@@ -97,7 +97,7 @@ app.post('/webhook/', async (req, res) => {
     }
 });
 
-async function sendEMail() {
+async function sendEMail(msg) {
   try {
     await sgMail.send(msg);
     console.log('メールが正常に送信されました。');
@@ -148,7 +148,7 @@ app.post('/kintone-webhook/', async (req, res) => {
         console.log('--- Webhookを受信しました ---');
         console.log(webhookData);
         res.status(200).send('Webhook received successfully');
-        sendEMail();
+        sendEMail(msg);
     } catch (error) {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
