@@ -21,7 +21,8 @@ const scKey = process.env.SHOWCASE_KEY;
 
 // *** Web相談
 const webSoudanAppId = '28';
-const webSoudanUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
+//const webSoudanUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
+const webSoudanUrl = 'jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
 const express = require('express');
 const app = express();
@@ -146,8 +147,7 @@ app.post('/kintone-webhook/', async (req, res) => {
         subject: '【テスト】ご相談受付けの件', // 件名
         text: WebSoudan_honbun,                // 本文
     };
-    //const url2 = webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit';
-    const url2 = webSoudanUrl + webSoudanAppId + '/show#record=&mode=edit';
+    const url2 = webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit';
     const msg2 = {
       //to  :  'soudan@j-fsa.jp'               // 宛先メールアドレス
         to  :  'y-takasago_j03@go-partner.jp', // テスト用宛先メールアドレス
