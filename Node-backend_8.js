@@ -146,8 +146,8 @@ app.post('/kintone-webhook/', async (req, res) => {
         subject: '【テスト】ご相談受付けの件', // 件名
         text: WebSoudan_honbun,                // 本文
     };
-//    const url2 = webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit';
-    const url2 = '';
+    const url2 = webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit';
+//  const url2 = '';
     const msg2 = {
       //to  :  soudan@j-fsa.jp ,               // 宛先メールアドレス
         to  :  y-takasago_j03@go-partner.jp ,  // テスト用宛先メールアドレス
