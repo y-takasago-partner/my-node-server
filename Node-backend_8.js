@@ -13,11 +13,11 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキ
 const scKey = process.env.SHOWCASE_KEY;
 
 // *** kintone constant ***
-//const subDomain = 'https://jueaogoxsa02.cybozu.com';        // サブドメイン
-//const apiToken = process.env.KINTONE_API_KEY;               // APIトークン
-//const appId = 7;                                            // アプリID
-//const cors = require('cors');
-//const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
+const subDomain = 'https://jueaogoxsa02.cybozu.com';        // サブドメイン
+const apiToken = process.env.KINTONE_API_KEY;               // APIトークン
+const appId = 7;                                            // アプリID
+const cors = require('cors');
+const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
 // *** Web相談
 const webSoudanAppId = '28';
