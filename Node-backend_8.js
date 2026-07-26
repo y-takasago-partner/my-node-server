@@ -63,6 +63,8 @@ app.post('/webhook/', async (req, res) => {
         //    birthDayEncrypted = 'TGRQ6GUnhzHO5g==';
         }
 
+        console.log(webhookData);
+
         console.log('更新キー: ' + keyEncrypted);
         console.log('申告種別: ' + shubetsuEncrypted);
         console.log('対象暗号(姓): ' + seiEncrypted);
@@ -71,29 +73,29 @@ app.post('/webhook/', async (req, res) => {
 
         // 3. 【最重要修正】マニュアル準拠のキー切り出し方式に戻します
         // 環境変数 SHOWCASE_KEY の先頭32文字を正確にBuffer化します
-        const keyBuffer = Buffer.from(scKey.substring(0, 32), 'utf8');
-
-        // 4. アルゴリズム（AES-256-CTR）
-        const algorithm = 'aes-256-ctr';
-
-        // 5. 姓（sei）の復号
-        const decipher = crypto.createDecipheriv(algorithm, keyBuffer, iv);
-        // 送られてきたBase64形式を、utf8（日本語文字列）にデコード
-        let decryptedSei = decipher.update(seiEncrypted, 'base64', 'utf8');
-        decryptedSei += decipher.final('utf8');
-        
-        console.log('★復号成功（姓）:', decryptedSei);
-
-        // ----------------------------------------
-        // 6. 生年月日の復号
-        // ----------------------------------------
-        //const decipherBirth = crypto.createDecipheriv(algorithm, keyBuffer, iv);
-        //let decryptedBirth = decipher.update(birthDayEncrypted, 'base64', 'utf8');
-        //decryptedBirth += decipher.final('utf8');
-        
-        //console.log('★復号成功（生年月日）:', decryptedBirth);
-        // ----------------------------------------
-
+//        const keyBuffer = Buffer.from(scKey.substring(0, 32), 'utf8');
+//
+//        // 4. アルゴリズム（AES-256-CTR）
+//        const algorithm = 'aes-256-ctr';
+//
+//        // 5. 姓（sei）の復号
+//        const decipher = crypto.createDecipheriv(algorithm, keyBuffer, iv);
+//        // 送られてきたBase64形式を、utf8（日本語文字列）にデコード
+//        let decryptedSei = decipher.update(seiEncrypted, 'base64', 'utf8');
+//        decryptedSei += decipher.final('utf8');
+//        
+//        console.log('★復号成功（姓）:', decryptedSei);
+//
+//        // ----------------------------------------
+//        // 6. 生年月日の復号
+//        // ----------------------------------------
+//        //const decipherBirth = crypto.createDecipheriv(algorithm, keyBuffer, iv);
+//        //let decryptedBirth = decipher.update(birthDayEncrypted, 'base64', 'utf8');
+//        //decryptedBirth += decipher.final('utf8');
+//        
+//        //console.log('★復号成功（生年月日）:', decryptedBirth);
+//        // ----------------------------------------
+//
         // その他データのログ出力
         //console.log('result is: ' + (webhookData.result || 'データなし'));
         console.log('result is: ' + (webhookData.result));
