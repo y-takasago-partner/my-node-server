@@ -127,11 +127,11 @@ app.post('/webhook/', async (req, res) => {
             record: {
                 'cidNo': {              // kintone側のフィールドコード
                     value: webhookData.cidNo
-                }
-            }
+                },
                 '認証結果': {           // 認証結果
                     value: webhookData.result
                 }
+            }
         });
         console.log('更新しました');
 
