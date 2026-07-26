@@ -33,6 +33,8 @@ app.use(express.urlencoded({ extended: true }));    // PIC組織設定のコン�
 app.use(express.json());
 app.use(express.static('public'));      // PDFファイルへの外部リンクアクセス用
 
+var client;
+
 // **** PIC Webhook受信エンドポイント
 app.post('/webhook/', async (req, res) => {
     console.log('--- Webhookを受信しました ---');
