@@ -56,7 +56,7 @@ app.post('/webhook/', async (req, res) => {
             shubetsuEncrypted = webhookData.bindKeys[1].value;
             seiEncrypted = webhookData.bindKeys[2].value;
             meiEncrypted = webhookData.bindKeys[3].value;
-            birthDayEncrypted = webhookData.bindKeys[1].value;
+            //birthDayEncrypted = webhookData.bindKeys[4].value;
         //} else {
         //    // 万が一undefinedの場合の、今回のテストデータ用セーフティ
         //    seiEncrypted = 'nt/aMsq8V55KNfrXwVm+m9DEd578NCrFUGzT';
@@ -67,7 +67,7 @@ app.post('/webhook/', async (req, res) => {
         console.log('申告種別: ' + shubetsuEncrypted);
         console.log('対象暗号(姓): ' + seiEncrypted);
         console.log('対象暗号(名): ' + meiEncrypted);
-        console.log('対象暗号(生年月日): ' + birthDayEncrypted);
+        //console.log('対象暗号(生年月日): ' + birthDayEncrypted);
 
         // 3. 【最重要修正】マニュアル準拠のキー切り出し方式に戻します
         // 環境変数 SHOWCASE_KEY の先頭32文字を正確にBuffer化します
@@ -88,10 +88,10 @@ app.post('/webhook/', async (req, res) => {
         // 6. 生年月日の復号
         // ----------------------------------------
         //const decipherBirth = crypto.createDecipheriv(algorithm, keyBuffer, iv);
-        let decryptedBirth = decipher.update(birthDayEncrypted, 'base64', 'utf8');
-        decryptedBirth += decipher.final('utf8');
+        //let decryptedBirth = decipher.update(birthDayEncrypted, 'base64', 'utf8');
+        //decryptedBirth += decipher.final('utf8');
         
-        console.log('★復号成功（生年月日）:', decryptedBirth);
+        //console.log('★復号成功（生年月日）:', decryptedBirth);
         // ----------------------------------------
 
         // その他データのログ出力
