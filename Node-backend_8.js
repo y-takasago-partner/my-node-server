@@ -18,6 +18,7 @@ const apiToken = process.env.KINTONE_API_KEY;               // APIトークン
 const appId = 26;                                           // アプリID
 const cors = require('cors');
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
+const WebShinkoku = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
 // *** Web相談
 const webSoudanAppId = '28';
@@ -53,14 +54,14 @@ app.post('/webhook/', async (req, res) => {
         let shubetsuEncrypted = '';
         let seiEncrypted = '';
         let meiEncrypted = '';
-        let birthDayEncrypted = '';
+        let mailAddress = '';
 
         if (webhookData.bindKeys && webhookData.bindKeys[0]) {
             keyEncrypted = webhookData.bindKeys[0].value;
             shubetsuEncrypted = webhookData.bindKeys[1].value;
             seiEncrypted = webhookData.bindKeys[2].value;
             meiEncrypted = webhookData.bindKeys[3].value;
-            //birthDayEncrypted = webhookData.bindKeys[4].value;
+            mailAddress = webhookData.bindKeys[4].value;
         //} else {
         //    // 万が一undefinedの場合の、今回のテストデータ用セーフティ
         //    seiEncrypted = 'nt/aMsq8V55KNfrXwVm+m9DEd578NCrFUGzT';
@@ -73,7 +74,7 @@ app.post('/webhook/', async (req, res) => {
         console.log('申告種別: ' + shubetsuEncrypted);
         console.log('対象暗号(姓): ' + seiEncrypted);
         console.log('対象暗号(名): ' + meiEncrypted);
-        //console.log('対象暗号(生年月日): ' + birthDayEncrypted);
+        console.log('メールアドレス: ' + mailAddress);
 
         // 3. 【最重要修正】マニュアル準拠のキー切り出し方式に戻します
         // 環境変数 SHOWCASE_KEY の先頭32文字を正確にBuffer化します
@@ -117,9 +118,6 @@ app.post('/webhook/', async (req, res) => {
                 apiToken: apiToken
             }
         });
-
-        // kintoneの既存レコードを更新（updateRecord）
-
         const updtResult = await client.record.updateRecord({
             app: appId,                 // アプリID
             updateKey: {
@@ -131,8 +129,52 @@ app.post('/webhook/', async (req, res) => {
                     value: webhookData.cidNo
                 }
             }
+                '認証結果': {           // 認証結果
+                    value: webhookData.result
+                }
         });
         console.log('更新しました');
+
+        /******** メール送信 ********/
+        const WebShinkoku_honbun = 
+            seiEncrypted + " " + meiEncrypted + "様\n\n\n" + 
+            "貸付自粛の" + shubetsuEncrypted + "申告を受け付けました。\n" + 
+            "なお、申告の結果(受理・不受理)については、メールにて連絡いたします。\n\n" + 
+            "(協会からの連絡)\n" + 
+            "申告内容について確認する点がある場合、相談センター「 050-3494-7990 」より連絡いたします。\n" + 
+            "お仕事中などで電話を受けられない場合は、折り返しの電話連絡をお願いします。\n\n" + 
+            "(不受理について)\n" + 
+            "以下の場合は、不受理となりますので、ご注意ください。\n" + 
+            "・申告事項に不備がある場合\n" + 
+            "・本人確認の画像が不鮮明な場合\n\n" + 
+            "不受理となり再度申告を希望される場合は、不受理理由を確認のうえ内容を補正いただき、\n" + 
+            "改めて申告をお願いします。\n\n" + 
+            "※このメールアドレスは送信専用です。\n" + 
+            "このメールアドレスに返信されても対応いたしかねますので、あらかじめご了承ください。\n\n\n\n" + 
+            "【問合せ先】\n" + 
+            "日本貸金業協会\n" + 
+            "貸金業相談・紛争解決センター\n" + 
+            "〒108-0074東京都港区高輪3丁目19番15号 \n" + 
+            "TEL 03-5739-3861/050-3494-7988\n" ;
+        const msg = {
+            to  :  mailAddress,                   // 宛先メールアドレス
+            from: {
+              name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
+              email: 'jisyuku_web@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
+            },
+            subject: '【テスト】「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
+            text: WebShinkoku_honbun,                // 本文
+        };
+        const url2 = 'URLをクリックしてください\n' + WebShinkoku + appId + '/show#record=' + keyEncrypted + '&mode=edit';
+        const msg2 = {
+          //to  :  'jisyuku_web@j-fsa.jp'          // 宛先メールアドレス
+            to  :  'y-takasago_j03@go-partner.jp', // テスト用宛先メールアドレス
+            from:  'jisyuku_web@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
+            subject: '【テスト】' + shubetsuEncrypted + '申告がありました',     // 件名
+            text: url2 + '\n',                     // 本文
+        };
+        sendEMail(msg);
+        sendEMail(msg2);
 
     } catch (error) {
         console.error('Webhook処理エラー:', error);
