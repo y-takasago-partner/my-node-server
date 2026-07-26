@@ -35,10 +35,9 @@ app.use(express.static('public'));      // PDFファイルへの外部リンク�
 
 // **** PIC Webhook受信エンドポイント
 app.post('/webhook/', async (req, res) => {
-    console.log('here!');
+    console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
     try {
-        console.log('--- Webhookを受信しました ---');
 
         // 1. IV（初期化ベクトル）を16進数（hex）として確実にBufferに変換
         const ivStr = webhookData.iv || '02089f4b27dc6fd18dbb8d2cb55d251e';
@@ -46,19 +45,28 @@ app.post('/webhook/', async (req, res) => {
 
         // 2. 暗号化された「姓」と「生年月日」を取得
         // ※ ログに出力されていたデータ構造に合わせて確実に抽出します
+        let keyEncrypted = '';
+        let shubetsuEncrypted = '';
         let seiEncrypted = '';
+        let meiEncrypted = '';
         let birthDayEncrypted = '';
 
         if (webhookData.bindKeys && webhookData.bindKeys[0]) {
-            seiEncrypted = webhookData.bindKeys[0].value;
+            keyEncrypted = webhookData.bindKeys[0].value;
+            shubetsuEncrypted = webhookData.bindKeys[1].value;
+            seiEncrypted = webhookData.bindKeys[2].value;
+            meiEncrypted = webhookData.bindKeys[3].value;
             birthDayEncrypted = webhookData.bindKeys[1].value;
-        } else {
-            // 万が一undefinedの場合の、今回のテストデータ用セーフティ
-            seiEncrypted = 'nt/aMsq8V55KNfrXwVm+m9DEd578NCrFUGzT';
-            birthDayEncrypted = 'TGRQ6GUnhzHO5g==';
+        //} else {
+        //    // 万が一undefinedの場合の、今回のテストデータ用セーフティ
+        //    seiEncrypted = 'nt/aMsq8V55KNfrXwVm+m9DEd578NCrFUGzT';
+        //    birthDayEncrypted = 'TGRQ6GUnhzHO5g==';
         }
 
+        console.log('更新キー: ' + keyEncrypted);
+        console.log('申告種別: ' + shubetsuEncrypted);
         console.log('対象暗号(姓): ' + seiEncrypted);
+        console.log('対象暗号(名): ' + meiEncrypted);
         console.log('対象暗号(生年月日): ' + birthDayEncrypted);
 
         // 3. 【最重要修正】マニュアル準拠のキー切り出し方式に戻します
@@ -68,22 +76,20 @@ app.post('/webhook/', async (req, res) => {
         // 4. アルゴリズム（AES-256-CTR）
         const algorithm = 'aes-256-ctr';
 
-        // ----------------------------------------
         // 5. 姓（sei）の復号
-        // ----------------------------------------
-        const decipherSei = crypto.createDecipheriv(algorithm, keyBuffer, iv);
+        const decipher = crypto.createDecipheriv(algorithm, keyBuffer, iv);
         // 送られてきたBase64形式を、utf8（日本語文字列）にデコード
-        let decryptedSei = decipherSei.update(seiEncrypted, 'base64', 'utf8');
-        decryptedSei += decipherSei.final('utf8');
+        let decryptedSei = decipher.update(seiEncrypted, 'base64', 'utf8');
+        decryptedSei += decipher.final('utf8');
         
         console.log('★復号成功（姓）:', decryptedSei);
 
         // ----------------------------------------
         // 6. 生年月日の復号
         // ----------------------------------------
-        const decipherBirth = crypto.createDecipheriv(algorithm, keyBuffer, iv);
-        let decryptedBirth = decipherBirth.update(birthDayEncrypted, 'base64', 'utf8');
-        decryptedBirth += decipherBirth.final('utf8');
+        //const decipherBirth = crypto.createDecipheriv(algorithm, keyBuffer, iv);
+        let decryptedBirth = decipher.update(birthDayEncrypted, 'base64', 'utf8');
+        decryptedBirth += decipher.final('utf8');
         
         console.log('★復号成功（生年月日）:', decryptedBirth);
         // ----------------------------------------
