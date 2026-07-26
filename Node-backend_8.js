@@ -15,7 +15,7 @@ const scKey = process.env.SHOWCASE_KEY;
 // *** kintone constant ***
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // サブドメイン
 const apiToken = process.env.KINTONE_API_KEY;               // APIトークン
-const appId = 7;                                            // アプリID
+const appId = 26;                                           // アプリID
 const cors = require('cors');
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
@@ -38,6 +38,8 @@ app.post('/webhook/', async (req, res) => {
     console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
     try {
+
+        /******** 認証データ受取 ********/
 
         // 1. IV（初期化ベクトル）を16進数（hex）として確実にBufferに変換
         const ivStr = webhookData.iv || '02089f4b27dc6fd18dbb8d2cb55d251e';
@@ -104,6 +106,32 @@ app.post('/webhook/', async (req, res) => {
         console.log(webhookData);
 
         res.status(200).send('Webhook received successfully');
+
+        /******** kintoneデータ更新 ********/
+        // kintone クライアントの作成
+        client = new KintoneRestAPIClient({
+            baseUrl: subDomain,
+            auth: {
+                apiToken: apiToken
+            }
+        });
+
+        // kintoneの既存レコードを更新（updateRecord）
+
+        const updtResult = await client.record.updateRecord({
+            app: appId,                 // アプリID
+            updateKey: {
+               field: '更新キー',       // Field code with "Prohibit duplicate values" checked
+               value: keyEncrypted      // The unique value to search for
+            },
+            record: {
+                'cidNo': {              // kintone側のフィールドコード
+                    value: webhookData.cidNo
+                }
+            }
+        });
+        console.log('更新しました');
+
     } catch (error) {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
