@@ -30,9 +30,12 @@ const app = express();
 const crypto = require('crypto');
 const algorithm = 'aes-256-ctr';
 
-app.use(express.urlencoded({ extended: true }));    // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
+const path = require('path');
+
+app.use(express.urlencoded({ extended: true }));            // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
 app.use(express.json());
-app.use(express.static('public'));      // PDFファイルへの外部リンクアクセス用
+app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
+app.use(express.static(path.join(__dirname, 'public')));    // public フォルダ内の HTML, CSS, 画像などをアクセス可能にする
 
 var client;
 
@@ -243,6 +246,8 @@ app.post('/kintone-webhook/', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
