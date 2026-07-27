@@ -35,7 +35,7 @@ const path = require('path');
 app.use(express.urlencoded({ extended: true }));            // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
 app.use(express.json());
 app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
-app.use(express.static(path.join(__dirname, 'public')));    // public フォルダ内の HTML, CSS, 画像などをアクセス可能にする
+//app.use(express.static(path.join(__dirname, 'public')));    // public フォルダ内の HTML, CSS, 画像などをアクセス可能にする
 
 var client;
 
