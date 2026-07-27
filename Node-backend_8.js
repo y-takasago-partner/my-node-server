@@ -247,7 +247,10 @@ app.post('/kintone-webhook/', async (req, res) => {
     }
 });
 
-
+app.get('/thanks', (req, res) => {
+    // 同じ階層にある「thanks.html」を見つけてブラウザに送る
+    res.sendFile(path.join(__dirname, 'thanks.html'));
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
