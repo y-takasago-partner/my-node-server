@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <SCRIPT type="text/javascript" language="JavaScript">
-alert(document.referrer);
+if(document.referrer !== 'https://form.omotenashi-suite.com/') {
+    alert("不正アクセスです");
+    window.close();
+}
 </script>
 </head>
 <body>
