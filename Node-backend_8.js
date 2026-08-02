@@ -133,6 +133,7 @@ app.post('/webhook/', async (req, res) => {
         });
 
         /******** kintoneレコード番号取得 ********/
+        const keyFieldCode = '更新キー';
         const response = await client.record.getRecords({
           app: appId,
           // 該当のキーに一致するレコードを検索するクエリ
