@@ -5,11 +5,11 @@
  * ついでに外部リンク用PDFも残す
  */
 
-// *** Web貸付自粛 宛先職員メールアドレス ***
+// *** ★Web貸付自粛 宛先職員メールアドレス ***
 //const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // 本番用
 const addrToJishukuStaff = 'y-takasago_j03@go-partner.jp';  // 開発用
 
-// *** Web相談 宛先職員メールアドレス ***
+// *** ★Web相談 宛先職員メールアドレス ***
 //const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 本番用
 const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発用
 
@@ -24,16 +24,17 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキ
 // *** ProTeck ID Checker ***
 const scKey = process.env.SHOWCASE_KEY;
 
-// *** kintone constant ***
+// *** ★kintone constant ***
+// *** 貸付自粛Web申告
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // サブドメイン
-const apiToken = process.env.KINTONE_API_KEY;               // APIトークン
-const appId = 26;                                           // アプリID
+const appId = 33;                                           // 貸付自粛Web申告 アプリID
+const apiToken = process.env.KINTONE_API_KEY;               // 貸付自粛Web申告 APIトークン
 const cors = require('cors');
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const WebShinkoku = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
 // *** Web相談
-const webSoudanAppId = '28';
+const webSoudanAppId = '32';                                // Web相談 アプリID / APIトークンは不要（Zapierが保持）
 const webSoudanUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
 const express = require('express');
