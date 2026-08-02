@@ -5,6 +5,18 @@
  * ついでに外部リンク用PDFも残す
  */
 
+// *** Web貸付自粛 宛先職員メールアドレス ***
+//const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // 本番用
+const addrToJishukuStaff = 'y-takasago_j03@go-partner.jp';  // 開発用
+
+// *** Web相談 宛先職員メールアドレス ***
+//const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 本番用
+const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発用
+
+// *** 本番運用時は空白にすること ***
+//const sbjPreFix = '';
+const sbjPreFix = '【テスト】';
+
 // *** SendGrid constant ***
 const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
@@ -65,10 +77,7 @@ app.post('/webhook/', async (req, res) => {
             seiEncrypted = webhookData.bindKeys[2].value;
             meiEncrypted = webhookData.bindKeys[3].value;
             mailAddress = webhookData.bindKeys[4].value;
-        //} else {
-        //    // 万が一undefinedの場合の、今回のテストデータ用セーフティ
-        //    seiEncrypted = 'nt/aMsq8V55KNfrXwVm+m9DEd578NCrFUGzT';
-        //    birthDayEncrypted = 'TGRQ6GUnhzHO5g==';
+        } else {
         }
 
         console.log(webhookData);
@@ -165,15 +174,14 @@ app.post('/webhook/', async (req, res) => {
               name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
               email: 'jisyuku_web@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
             },
-            subject: '【テスト】「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
+            subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
             text: WebShinkoku_honbun,                // 本文
         };
         const url2 = 'URLをクリックしてください\n' + WebShinkoku + appId + '/show#record=' + keyEncrypted + '&mode=edit';
         const msg2 = {
-          //to  :  'jisyuku_web@j-fsa.jp'          // 宛先メールアドレス
-            to  :  'y-takasago_j03@go-partner.jp', // テスト用宛先メールアドレス
+            to  :  addrToJishukuStaff,             // 宛先メールアドレス
             from:  'jisyuku_web@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
-            subject: '【テスト】' + shubetsuEncrypted + '申告がありました',     // 件名
+            subject: sbjPreFix + '' + shubetsuEncrypted + '申告がありました',     // 件名
             text: url2 + '\n',                     // 本文
         };
         sendEMail(msg);
@@ -221,21 +229,20 @@ app.post('/kintone-webhook/', async (req, res) => {
         "〒108-0074東京都港区高輪3-19-15 二葉高輪ビル2階\n" + 
         "TEL 03-5739-3861/050-3494-7988 FAX 03-5739-3024\n";
     const msg = {
-        to  :  webhookData.メールアドレス,     // 宛先メールアドレス
+        to  :  webhookData.メールアドレス,       // 宛先メールアドレス
         from: {
           name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
-          email: 'noreplywebjfsa@j-fsa.jp',    //From（SendGridで認証済みドメインのメールアドレス）
+          email: 'noreplywebjfsa@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
         },
-        subject: '【テスト】ご相談受付けの件', // 件名
-        text: WebSoudan_honbun,                // 本文
+        subject: sbjPreFix + 'ご相談受付けの件', // 件名
+        text: WebSoudan_honbun,                  // 本文
     };
     const url2 = 'URLをクリックしてください\n' + webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit';
     const msg2 = {
-      //to  :  'soudan@j-fsa.jp'               // 宛先メールアドレス
-        to  :  'y-takasago_j03@go-partner.jp', // テスト用宛先メールアドレス
-        from:  'soudan@j-fsa.jp',              //From（SendGridで認証済みドメインのメールアドレス）
-        subject: '【テスト】相談受付の件',     // 件名
-        text: url2 + '\n',                     // 本文
+        to  :  addrToSoudanStaff,                // 宛先メールアドレス
+        from:  'soudan@j-fsa.jp',                //From（SendGridで認証済みドメインのメールアドレス）
+        subject: sbjPreFix + '相談受付の件',     // 件名
+        text: url2 + '\n',                       // 本文
     };
     try {
         res.status(200).send('Webhook received successfully');

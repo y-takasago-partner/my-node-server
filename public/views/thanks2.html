@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+
+<p id="target"></p>
+
+<SCRIPT type="text/javascript" language="JavaScript">
+if(document.referrer.slice(0, 34) !== 'https://form.omotenashi-suite.com/') {
+//    alert("不正アクセスです");
+//    window.open('', '_self').window.close();
+} else {
+    //画面を表示する
+    const text = "お疲れさまでした！";
+    document.getElementById("target").textContent = text;
+}
+</script>
+
+</body>
