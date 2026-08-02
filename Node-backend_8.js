@@ -33,7 +33,7 @@ const cors = require('cors');
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const WebShinkoku = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
-// *** Web相談
+// *** ★Web相談
 const webSoudanAppId = '32';                                // Web相談 アプリID / APIトークンは不要（Zapierが保持）
 const webSoudanUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
@@ -123,7 +123,7 @@ app.post('/webhook/', async (req, res) => {
 
         res.status(200).send('Webhook received successfully');
 
-        /******** kintoneデータ更新 ********/
+        /******** kintoneデータにアクセス ********/
         // kintone クライアントの作成
         client = new KintoneRestAPIClient({
             baseUrl: subDomain,
@@ -131,6 +131,24 @@ app.post('/webhook/', async (req, res) => {
                 apiToken: apiToken
             }
         });
+
+        /******** kintoneレコード番号取得 ********/
+        const response = await client.record.getRecords({
+          app: appId,
+          // 該当のキーに一致するレコードを検索するクエリ
+          query: `${keyFieldCode} = "${keyEncrypted}"`,
+          // 必要なフィールド（レコード番号）だけを指定して高速化
+          fields: ['$id'] 
+        });
+        // レコードが見つかった場合の処理
+        if (response.records.length > 0) {
+          const recordId = response.records[0].$id.value;
+          console.log(`レコード番号を取得しました: ${recordId}`);
+        } else {
+          console.log('一致するレコードが見つかりませんでした。');
+        }
+
+        /******** kintoneデータ更新 ********/
         const updtResult = await client.record.updateRecord({
             app: appId,                 // アプリID
             updateKey: {
@@ -178,7 +196,7 @@ app.post('/webhook/', async (req, res) => {
             subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
             text: WebShinkoku_honbun,                // 本文
         };
-        const url2 = 'URLをクリックしてください\n' + WebShinkoku + appId + '/show#record=' + keyEncrypted + '&mode=edit';
+        const url2 = 'URLをクリックしてください\n' + WebShinkoku + appId + '/show#record=' + recordId + '&mode=edit';
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
             from:  'jisyuku_web@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
