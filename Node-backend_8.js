@@ -197,7 +197,8 @@ app.post('/webhook/', async (req, res) => {
             subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
             text: WebShinkoku_honbun,                // 本文
         };
-        const url2 = 'URLをクリックしてください\n' + WebShinkoku + appId + '/show#record=' + response.records[0].$id.value + '&mode=edit';
+      //const url2 = 'URLをクリックしてください\n' + WebShinkoku + appId + '/show#record=' + response.records[0].$id.value + '&mode=edit';
+        const url2 = 'URLをクリックしてください\n' + WebShinkoku + appId + '/show#record=' + response.records[0].$id.value;
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
             from:  'jisyuku_web@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
@@ -257,7 +258,8 @@ app.post('/kintone-webhook/', async (req, res) => {
         subject: sbjPreFix + 'ご相談受付けの件', // 件名
         text: WebSoudan_honbun,                  // 本文
     };
-    const url2 = 'URLをクリックしてください\n' + webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit';
+  //const url2 = 'URLをクリックしてください\n' + webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit';
+    const url2 = 'URLをクリックしてください\n' + webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号;
     const msg2 = {
         to  :  addrToSoudanStaff,                // 宛先メールアドレス
         from:  'soudan@j-fsa.jp',                //From（SendGridで認証済みドメインのメールアドレス）
