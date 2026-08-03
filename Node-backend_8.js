@@ -6,12 +6,12 @@
  */
 
 // *** ★Web貸付自粛 宛先職員メールアドレス ***
-//const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // 本番用
-const addrToJishukuStaff = 'y-takasago_j03@go-partner.jp';  // 開発用
+const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // 本番用
+//const addrToJishukuStaff = 'y-takasago_j03@go-partner.jp';  // 開発用
 
 // *** ★Web相談 宛先職員メールアドレス ***
-//const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 本番用
-const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発用
+const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 本番用
+//const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発用
 
 // *** 本番運用時は空白にすること ***
 //const sbjPreFix = '';
