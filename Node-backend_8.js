@@ -147,6 +147,8 @@ app.post('/webhook/', async (req, res) => {
           console.log(`レコード番号を取得しました: ${recordId}`);
         } else {
           console.log('一致するレコードが見つかりませんでした。');
+          console.log('終了します。');
+          return;
         }
 
         /******** kintoneデータ更新 ********/
