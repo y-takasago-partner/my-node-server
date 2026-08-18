@@ -15,13 +15,16 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //cron.schedule('0 19 * * *', async () => {
-cron.schedule('46 19 * * *', async () => {
+cron.schedule('50 19 * * *', async () => {
     console.log('定期タスクを開始します...');
     try {
         console.log('定期タスクが完了しました。');
     } catch (error) {
         console.error('定期タスク中にエラーが発生しました:', error);
     }
+}, {
+    scheduled: true,
+    timezone: "Asia/Tokyo"
 });
 
 // dummy
@@ -34,9 +37,6 @@ app.post('/webhook/', async (req, res) => {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
     }
-}, {
-    scheduled: true,
-    timezone: "Asia/Tokyo"
 });
 
 const PORT = process.env.PORT || 3000;
