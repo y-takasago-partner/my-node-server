@@ -292,12 +292,9 @@ app.post('/kintone-webhook/', async (req, res) => {
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
-// 例：毎日 19:00 に自動実行する場合の記述 (分 時 日 月 曜日、* は毎日毎月曜日問わずだそう)
-// krewDataのスケジュールが実行され、データコピーが確実に終わっている時間を指定してください。
 //cron.schedule('0 19 * * *', async () => {
-cron.schedule('18 19 * * *', async () => {
-    console.log('定期メール送信タスクを開始します...');
-
+cron.schedule('55 19 * * *', async () => {
+    console.log('定期タスクを開始します...');
     try {
 //        // 1. kintoneから「まだメールを送信していないレコード」を取得する
 //        // クエリ条件: mail_status に「送信済」が含まれない
@@ -344,12 +341,13 @@ cron.schedule('18 19 * * *', async () => {
 //            });
 //            console.log(`kintoneのステータスを送信済に更新しました。`);
 //        }
-
-        console.log('すべてのメール送信タスクが完了しました。');
-
+        console.log('定期タスクが完了しました。');
     } catch (error) {
         console.error('定期タスク中にエラーが発生しました:', error);
     }
+}, {
+    scheduled: true,
+    timezone: "Asia/Tokyo"
 });
 
 
