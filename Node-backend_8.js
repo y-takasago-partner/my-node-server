@@ -279,8 +279,8 @@ app.post('/kintone-webhook/', async (req, res) => {
 });
 
 // **** kintone Webhook受信エンドポイント
-app.post('/kintone-SoudanUketsuke-webhook/', async (req, res) => {
-    console.log('--- kintone-SoudanUketsuke-webhookを受信しました ---');
+app.post('/kintone-jishuku-webhook/', async (req, res) => {
+    console.log('--- kintone-jishuku-webhookを受信しました ---');
     const body = req.body;
     //console.log(webhookData);
     //console.log(webhookData.レコード番号);
