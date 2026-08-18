@@ -45,6 +45,17 @@ const algorithm = 'aes-256-ctr';
 
 const path = require('path');
 
+//定期実行
+const cron = require('node-cron');
+// client
+//const kintoneClient = new KintoneRestApiClient({
+//    baseUrl: process.env.KINTONE_BASE_URL, // 例: https://cybozu.com
+//    auth: { apiToken: process.env.KINTONE_API_TOKEN } // アプリBのAPIトークン
+//});
+//
+////const JishukuSendAppID = process.env.KINTONE_APP_ID; // コピー先アプリBのアプリID
+const JishukuSendAppID = 36; // コピー先アプリBのアプリID
+
 app.use(express.urlencoded({ extended: true }));            // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
 app.use(express.json());
 app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
@@ -278,76 +289,68 @@ app.post('/kintone-webhook/', async (req, res) => {
     }
 });
 
-// **** kintone Webhook受信エンドポイント
-app.post('/kintone-jishuku-webhook/', async (req, res) => {
-    console.log('--- kintone-jishuku-webhookを受信しました ---');
-    const body = req.body;
-    //console.log(webhookData);
-    //console.log(webhookData.レコード番号);
-    //console.log(webhookData.氏名);
-    //console.log(webhookData.メールアドレス);
+// ==========================================
+// 定期実行（Cronタスク）の処理
+// ==========================================
+// 例：毎日 19:00 に自動実行する場合の記述 (分 時 日 月 曜日、* は毎日毎月曜日問わずだそう)
+// krewDataのスケジュールが実行され、データコピーが確実に終わっている時間を指定してください。
+cron.schedule('0 19 * * *', async () => {
+    console.log('定期メール送信タスクを開始します...');
 
-    // kintoneの通知タイプが「レコード追加」であるかチェック
-    if (body.type !== 'ADD_RECORD') {
-        console.log(`スキップ: ${body.type} のイベントは処理しません。`);
-        return res.status(200).send('Record added event only.');
-    }
-    // kintoneのレコードデータを取得
-    const record = body.record;
-    const toEmail = record['電子メールアドレス'] ? record['電子メールアドレス'].value : null;
-    if (!toEmail) {
-        console.error('エラー: レコードにメールアドレスが含まれていません。');
-        return res.status(400).send('Email field is missing.');
-    }
-
-console.log('電子メールアドレス is ' + record['電子メールアドレス'].value);
-console.log('レコード番号 is ' + record['レコード番号'].value);
-
-return res.status(200).send('Webhook received successfully');
-
-
-
-
-    const WebSoudan_honbun = 
-        "(このメールは送信専用メールからお送りさせていただいております。ご返信いただいてもお答えできませんのでご注意ください。)\n\n" + 
-        "日本貸金業協会貸金業相談・紛争解決センターです。ご相談を受付けました。\n" + 
-        "受付日から３営業日以内に担当者からご連絡(050-3494-7988から発信)を差し上げますのでお待ちください。\n" + 
-        "なお、このメールにお心当たりがない場合は、お手数ですが貸金業相談・紛争解決センターまでご連絡ください。\n\n\n" + 
-        "※上記受付日とは、協会の通信機器がメールを受信した日とします。\n" + 
-        "※営業日とは、土曜日、日曜日、祝休日、年末年始休業日を除いた日をいいます。\n\n\n\n" + 
-        "【例】\n" + 
-        "受付日が月曜日の場合は、３営業日目の木曜日までにご連絡します。\n" + 
-        "※受付日が金曜日だった場合は、土曜日、日曜日を除き、翌週の水曜日が３営業日目となります。\n\n\n\n" + 
-        "【ご連絡先】\n" + 
-        "日本貸金業協会\n" + 
-        "貸金業相談・紛争解決センター\n" + 
-        "〒108-0074東京都港区高輪3-19-15 二葉高輪ビル2階\n" + 
-        "TEL 03-5739-3861/050-3494-7988 FAX 03-5739-3024\n";
-    const msg = {
-        to  :  record['電子メールアドレス'].value,          // 宛先メールアドレス
-        from: {
-          name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
-          email: 'noreplywebjfsa@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
-        },
-        subject: sbjPreFix + 'ご相談受付けの件', // 件名
-        text: WebSoudan_honbun,                  // 本文
-    };
-    const url2 = 'URLをクリックしてください\n' + webSoudanUrl + webSoudanAppId + '/show#record=' + record['レコード番号'].value;
-    const msg2 = {
-        to  :  addrToSoudanStaff,                // 宛先メールアドレス
-        from:  'soudan@j-fsa.jp',                //From（SendGridで認証済みドメインのメールアドレス）
-        subject: sbjPreFix + '相談受付の件',     // 件名
-        text: url2 + '\n',                       // 本文
-    };
     try {
-        res.status(200).send('Webhook received successfully');
-        sendEMail(msg);
-        sendEMail(msg2);
+//        // 1. kintoneから「まだメールを送信していないレコード」を取得する
+//        // クエリ条件: mail_status に「送信済」が含まれない
+//        const response = await kintoneClient.record.getRecords({
+//            app: JishukuSendAppID,
+//            query: 'mail_status not in ("送信済") limit 100'
+//        });
+//
+//        const records = response.records;
+//        console.log(`未送信のレコードが ${records.length} 件見つかりました。`);
+//
+//        if (records.length === 0) return;
+//
+//        // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
+//        for (const record of records) {
+//            const recordId = record.$id.value;
+//            const customerName = record['顧客名'] ? record['顧客名'].value : 'お客様';
+//            const toEmail = record['メールアドレス'] ? record['メールアドレス'].value : null;
+//            const detail = record['問い合わせ内容'] ? record['問い合わせ内容'].value : '内容なし';
+//
+//            if (!toEmail) {
+//                console.log(`レコードID: ${recordId} はメールアドレスがないためスキップします。`);
+//                continue;
+//            }
+//
+//            // SendGridでメール送信
+//            const msg = {
+//                to: toEmail,
+//                from: process.env.FROM_EMAIL,
+//                subject: '【定期送信】お手続きのご案内',
+//                text: `${customerName} 様\n\nお世話になっております。以下内容をご確認ください。\n\n---\n${detail}\n---`,
+//            };
+//
+//            await sgMail.send(msg);
+//            console.log(`メール送信成功: ${toEmail} 宛 (レコードID: ${recordId})`);
+//
+//            // 3. 送信が成功したら、kintoneの該当レコードを「送信済」に更新する
+//            await kintoneClient.record.updateRecord({
+//                app: JishukuSendAppID,
+//                id: recordId,
+//                record: {
+//                    mail_status: { value: ['送信済'] }
+//                }
+//            });
+//            console.log(`kintoneのステータスを送信済に更新しました。`);
+//        }
+
+        console.log('すべてのメール送信タスクが完了しました。');
+
     } catch (error) {
-        console.error('Webhook処理エラー:', error);
-        res.status(500).send('Internal Server Error');
+        console.error('定期タスク中にエラーが発生しました:', error);
     }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
