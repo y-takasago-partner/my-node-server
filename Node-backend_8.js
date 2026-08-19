@@ -312,23 +312,44 @@ app.post('/kintone-webhook/', async (req, res) => {
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //cron.schedule('0 19 * * *', async () => {
-cron.schedule('39 10 * * *', async () => {
+cron.schedule('58 10 * * *', async () => {
     console.log('定期タスクを開始します...');
     try {
-console.log('①');
         // 1. kintoneから「まだメールを送信していないレコード」を取得する
         // クエリ条件: mail_status に「送信済」が含まれない
         const response = await kintoneClient.record.getRecords({
             app: JishukuSendAppID,
             query: 'email not in ("") limit 100'
         });
-console.log('②');
         const records = response.records;
         console.log(`未送信のレコードが ${records.length} 件見つかりました。`);
         if (records.length === 0) return;
-//        // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
-//        for (const record of records) {
-//            const recordId = record.$id.value;
+        // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
+        for (const record of records) {
+            const recordId = record.$id.value;
+            const mailAddress = record['email'].value;
+            const shimei = record['Shimei_Sei'].value + '　' + record['Shimei_Mei'].value;
+console.log('recordId is ' + recordId);
+console.log('mailAddress is ' + mailAddress);
+console.log('shimei is ' + shimei);
+            const honbun = 
+                shimei + "様\n\n\n" + 
+                "【問合せ先】\n" + 
+                "日本貸金業協会\n" + 
+                "貸金業相談・紛争解決センター\n" + 
+                "〒108-0074東京都港区高輪3丁目19番15号 \n" + 
+                "TEL 03-5739-3861/050-3494-7988\n" ;
+            const msg = {
+                to  :  mailAddress,                   // 宛先メールアドレス
+                from: {
+                  name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
+                  email: 'jisyuku_web@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
+                },
+                subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
+                text: WebShinkoku_honbun,                // 本文
+            };
+            sendEMail(msg);
+
 //            const customerName = record['顧客名'] ? record['顧客名'].value : 'お客様';
 //            const toEmail = record['メールアドレス'] ? record['メールアドレス'].value : null;
 //            const detail = record['問い合わせ内容'] ? record['問い合わせ内容'].value : '内容なし';
