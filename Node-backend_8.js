@@ -59,7 +59,7 @@ const cron = require('node-cron');
 const apiToken_send = process.env.KINTONE_API_KEY_SEND;               // kintone 貸付自粛Web申告 APIトークン
 
 const kintoneClient = new KintoneRestAPIClient({
-    baseUrl: KINTONE_BASE_URL,
+    baseUrl: subDomain,
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
 });
 console.log('APIキー：' + apiToken_send);
@@ -312,7 +312,7 @@ app.post('/kintone-webhook/', async (req, res) => {
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //cron.schedule('0 19 * * *', async () => {
-cron.schedule('24 10 * * *', async () => {
+cron.schedule('39 10 * * *', async () => {
     console.log('定期タスクを開始します...');
     try {
 console.log('①');
