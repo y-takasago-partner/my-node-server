@@ -1,53 +1,62 @@
 'use strict';
 
 /*
- * Webhookを試す
- * ついでに外部リンク用PDFも残す
+ * 概要
+ * １．PIC Webhook（貸付自粛Web申告認証完了時）
+ * ２．Zapier Webhook（15分ごとにWeb相談）
+ * ３．日次送信処理（毎日19時に）
+ * ９．その他（サブフォルダに①貸付自粛Web申告の承諾事項PDF、②貸付自粛Web申告のThanksページとWeb相談のThanksページ）
  */
 
-// *** ★Web貸付自粛 宛先職員メールアドレス ***
-const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // 本番用
-//const addrToJishukuStaff = 'y-takasago_j03@go-partner.jp';  // 開発用
+// *********************************************************
+// ☆ 共通
+// *********************************************************
 
-// *** ★Web相談 宛先職員メールアドレス ***
-const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 本番用
-//const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発用
+// ★送信メールの件名に付けるプレフィックス
+//const sbjPreFix = '';                                       // 運用
+const sbjPreFix = '【テスト】';                             // テスト時
 
-// *** 本番運用時は空白にすること ***
-//const sbjPreFix = '';
-const sbjPreFix = '【テスト】';
-
-// *** SendGrid constant ***
 const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
+const scKey = process.env.SHOWCASE_KEY;                     // ProTeck ID Checker キー
+const subDomain = 'https://jueaogoxsa02.cybozu.com';        // kintone サブドメイン
 
-// *** ProTeck ID Checker ***
-const scKey = process.env.SHOWCASE_KEY;
 
-// *** ★kintone constant ***
-// *** 貸付自粛Web申告
-const subDomain = 'https://jueaogoxsa02.cybozu.com';        // サブドメイン
-const appId = 33;                                           // 貸付自粛Web申告 アプリID
-const apiToken = process.env.KINTONE_API_KEY;               // 貸付自粛Web申告 APIトークン
-const cors = require('cors');
+// *********************************************************
+// ☆ PIC Webhook 用（認証完了時）
+// *********************************************************
+
+// ★宛先職員メールアドレス
+const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // 運用
+//const addrToJishukuStaff = 'y-takasago_j03@go-partner.jp';  // 開発時
+
+const appId = 33;                                           // kintone 貸付自粛Web申告 アプリID
+const apiToken = process.env.KINTONE_API_KEY;               // kintone 貸付自粛Web申告 APIトークン
+//const cors = require('cors');
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
-const WebShinkoku = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
+const WebShinkokuUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
-// *** ★Web相談
-const webSoudanAppId = '32';                                // Web相談 アプリID / APIトークンは不要（Zapierが保持）
+const crypto = require('crypto');                           // 不要か
+const algorithm = 'aes-256-ctr';                            // 不要か
+
+
+// *********************************************************
+// ☆ Zapier Webhook 用（新規Web相談登録時）
+// *********************************************************
+
+// ★宛先職員メールアドレス ***
+const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 運用
+//const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発時
+
+const webSoudanAppId = '32';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
 const webSoudanUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
-const express = require('express');
-const app = express();
 
-const crypto = require('crypto');
-const algorithm = 'aes-256-ctr';
+// *********************************************************
+// ☆ Render 定期実行用
+// *********************************************************
 
-const path = require('path');
-
-//定期実行
 const cron = require('node-cron');
-// client
 //const kintoneClient = new KintoneRestApiClient({
 //    baseUrl: process.env.KINTONE_BASE_URL, // 例: https://cybozu.com
 //    auth: { apiToken: process.env.KINTONE_API_TOKEN } // アプリBのAPIトークン
@@ -56,14 +65,33 @@ const cron = require('node-cron');
 ////const JishukuSendAppID = process.env.KINTONE_APP_ID; // コピー先アプリBのアプリID
 const JishukuSendAppID = 36; // コピー先アプリBのアプリID
 
+
+// *********************************************************
+
+const express = require('express');
+const app = express();
+
 app.use(express.urlencoded({ extended: true }));            // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
 app.use(express.json());
 app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
-//app.use(express.static(path.join(__dirname, 'public')));    // public フォルダ内の HTML, CSS, 画像などをアクセス可能にする
 
 var client;
 
-// **** PIC Webhook受信エンドポイント
+// **** function メール送信 **********************
+async function sendEMail(msg) {
+  try {
+    await sgMail.send(msg);
+    console.log('メールが正常に送信されました（' + msg.subject + ', ' + msg.to + '）');
+  } catch (error) {
+    console.error('メール送信中にエラーが発生しました：');
+    if (error.response) {
+      console.error(error.response.body);
+    }
+  }
+}
+
+
+// **** PIC Webhook受信エンドポイント **********************
 app.post('/webhook/', async (req, res) => {
     console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
@@ -210,8 +238,8 @@ app.post('/webhook/', async (req, res) => {
             subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
             text: WebShinkoku_honbun,                // 本文
         };
-      //const url2 = 'URLをクリックしてください\n' + WebShinkoku + appId + '/show#record=' + response.records[0].$id.value + '&mode=edit';
-        const url2 = 'URLをクリックしてください\n' + WebShinkoku + appId + '/show#record=' + response.records[0].$id.value;
+      //const url2 = 'URLをクリックしてください\n' + WebShinkokuUrl + appId + '/show#record=' + response.records[0].$id.value + '&mode=edit';
+        const url2 = 'URLをクリックしてください\n' + WebShinkokuUrl + appId + '/show#record=' + response.records[0].$id.value;
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
             from:  'jisyuku_web@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
@@ -227,19 +255,8 @@ app.post('/webhook/', async (req, res) => {
     }
 });
 
-async function sendEMail(msg) {
-  try {
-    await sgMail.send(msg);
-    console.log('メールが正常に送信されました（' + msg.subject + ', ' + msg.to + '）');
-  } catch (error) {
-    console.error('メール送信中にエラーが発生しました：');
-    if (error.response) {
-      console.error(error.response.body);
-    }
-  }
-}
+// **** Zapier-kintone Webhook受信エンドポイント ***********
 
-// **** Zapier-kintone Webhook受信エンドポイント
 app.post('/kintone-webhook/', async (req, res) => {
     //console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
