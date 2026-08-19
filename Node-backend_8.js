@@ -63,7 +63,6 @@ const kintoneClient = new KintoneRestApiClient({
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
 });
 //
-const apiToken = process.env.KINTONE_API_KEY;               // kintone 貸付自粛Web申告 APIトークン
 ////const JishukuSendAppID = process.env.KINTONE_APP_ID; // コピー先アプリBのアプリID
 const JishukuSendAppID = 36; // コピー先アプリBのアプリID
 
@@ -312,7 +311,7 @@ app.post('/kintone-webhook/', async (req, res) => {
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //cron.schedule('0 19 * * *', async () => {
-cron.schedule('01 10 * * *', async () => {
+cron.schedule('05 10 * * *', async () => {
     console.log('定期タスクを開始します...');
     try {
         // 1. kintoneから「まだメールを送信していないレコード」を取得する
