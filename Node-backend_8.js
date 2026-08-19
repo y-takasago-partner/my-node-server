@@ -310,7 +310,7 @@ app.post('/kintone-webhook/', async (req, res) => {
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //cron.schedule('0 19 * * *', async () => {
-cron.schedule('56 19 * * *', async () => {
+cron.schedule('04 9 * * *', async () => {
     console.log('定期タスクを開始します...');
     try {
 //        // 1. kintoneから「まだメールを送信していないレコード」を取得する
