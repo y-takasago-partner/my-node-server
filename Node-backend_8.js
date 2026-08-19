@@ -21,6 +21,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキ
 const scKey = process.env.SHOWCASE_KEY;                     // ProTeck ID Checker キー
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // kintone サブドメイン
 
+const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 
 // *********************************************************
 // ☆ PIC Webhook 用（認証完了時）
@@ -34,7 +35,6 @@ const appId = 33;                                           // kintone 貸付自
 const apiToken = process.env.KINTONE_API_KEY;               // kintone 貸付自粛Web申告 APIトークン
 //const cors = require('cors');
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
-const WebShinkokuUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
 const crypto = require('crypto');                           // 不要か
 const algorithm = 'aes-256-ctr';                            // 不要か
@@ -49,7 +49,6 @@ const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 運用
 //const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発時
 
 const webSoudanAppId = '32';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
-const webSoudanUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 
 
 // *********************************************************
@@ -57,11 +56,14 @@ const webSoudanUrl = 'https://jueaogoxsa02.cybozu.com/k/';   // URLの先頭
 // *********************************************************
 
 const cron = require('node-cron');
-//const kintoneClient = new KintoneRestApiClient({
-//    baseUrl: process.env.KINTONE_BASE_URL, // 例: https://cybozu.com
-//    auth: { apiToken: process.env.KINTONE_API_TOKEN } // アプリBのAPIトークン
-//});
+const apiToken_send = process.env.KINTONE_API_KEY_SEND;               // kintone 貸付自粛Web申告 APIトークン
+
+const kintoneClient = new KintoneRestApiClient({
+    baseUrl: process.env.KINTONE_BASE_URL,
+    auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
+});
 //
+const apiToken = process.env.KINTONE_API_KEY;               // kintone 貸付自粛Web申告 APIトークン
 ////const JishukuSendAppID = process.env.KINTONE_APP_ID; // コピー先アプリBのアプリID
 const JishukuSendAppID = 36; // コピー先アプリBのアプリID
 
@@ -238,8 +240,8 @@ app.post('/webhook/', async (req, res) => {
             subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
             text: WebShinkoku_honbun,                // 本文
         };
-      //const url2 = 'URLをクリックしてください\n' + WebShinkokuUrl + appId + '/show#record=' + response.records[0].$id.value + '&mode=edit';
-        const url2 = 'URLをクリックしてください\n' + WebShinkokuUrl + appId + '/show#record=' + response.records[0].$id.value;
+      //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value + '&mode=edit';
+        const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
             from:  'jisyuku_web@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
@@ -288,8 +290,8 @@ app.post('/kintone-webhook/', async (req, res) => {
         subject: sbjPreFix + 'ご相談受付けの件', // 件名
         text: WebSoudan_honbun,                  // 本文
     };
-  //const url2 = 'URLをクリックしてください\n' + webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit';
-    const url2 = 'URLをクリックしてください\n' + webSoudanUrl + webSoudanAppId + '/show#record=' + webhookData.レコード番号;
+  //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit';
+    const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + webSoudanAppId + '/show#record=' + webhookData.レコード番号;
     const msg2 = {
         to  :  addrToSoudanStaff,                // 宛先メールアドレス
         from:  'soudan@j-fsa.jp',                //From（SendGridで認証済みドメインのメールアドレス）
@@ -310,21 +312,18 @@ app.post('/kintone-webhook/', async (req, res) => {
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //cron.schedule('0 19 * * *', async () => {
-cron.schedule('04 9 * * *', async () => {
+cron.schedule('01 10 * * *', async () => {
     console.log('定期タスクを開始します...');
     try {
-//        // 1. kintoneから「まだメールを送信していないレコード」を取得する
-//        // クエリ条件: mail_status に「送信済」が含まれない
-//        const response = await kintoneClient.record.getRecords({
-//            app: JishukuSendAppID,
-//            query: 'mail_status not in ("送信済") limit 100'
-//        });
-//
-//        const records = response.records;
-//        console.log(`未送信のレコードが ${records.length} 件見つかりました。`);
-//
-//        if (records.length === 0) return;
-//
+        // 1. kintoneから「まだメールを送信していないレコード」を取得する
+        // クエリ条件: mail_status に「送信済」が含まれない
+        const response = await kintoneClient.record.getRecords({
+            app: JishukuSendAppID,
+            query: 'email not in ("") limit 100'
+        });
+        const records = response.records;
+        console.log(`未送信のレコードが ${records.length} 件見つかりました。`);
+        if (records.length === 0) return;
 //        // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
 //        for (const record of records) {
 //            const recordId = record.$id.value;
