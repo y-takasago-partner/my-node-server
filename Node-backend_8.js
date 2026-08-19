@@ -312,7 +312,7 @@ app.post('/kintone-webhook/', async (req, res) => {
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //cron.schedule('0 19 * * *', async () => {
-cron.schedule('58 10 * * *', async () => {
+cron.schedule('00 11 * * *', async () => {
     console.log('定期タスクを開始します...');
     try {
         // 1. kintoneから「まだメールを送信していないレコード」を取得する
@@ -379,7 +379,7 @@ console.log('shimei is ' + shimei);
 //                }
 //            });
 //            console.log(`kintoneのステータスを送信済に更新しました。`);
-//        }
+        }
         console.log('定期タスクが完了しました。');
     } catch (error) {
         console.error('定期タスク中にエラーが発生しました:', error);
