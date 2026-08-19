@@ -58,7 +58,7 @@ const webSoudanAppId = '32';                                // kintone Web相談
 const cron = require('node-cron');
 const apiToken_send = process.env.KINTONE_API_KEY_SEND;               // kintone 貸付自粛Web申告 APIトークン
 
-const kintoneClient = new KintoneRestApiClient({
+const kintoneClient = new KintoneRestAPIClient({
     baseUrl: process.env.KINTONE_BASE_URL,
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
 });
@@ -311,7 +311,7 @@ app.post('/kintone-webhook/', async (req, res) => {
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //cron.schedule('0 19 * * *', async () => {
-cron.schedule('05 10 * * *', async () => {
+cron.schedule('13 10 * * *', async () => {
     console.log('定期タスクを開始します...');
     try {
         // 1. kintoneから「まだメールを送信していないレコード」を取得する
