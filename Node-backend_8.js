@@ -312,7 +312,7 @@ app.post('/kintone-webhook/', async (req, res) => {
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //cron.schedule('0 19 * * *', async () => {
-cron.schedule('00 11 * * *', async () => {
+cron.schedule('03 11 * * *', async () => {
     console.log('定期タスクを開始します...');
     try {
         // 1. kintoneから「まだメールを送信していないレコード」を取得する
@@ -340,13 +340,13 @@ console.log('shimei is ' + shimei);
                 "〒108-0074東京都港区高輪3丁目19番15号 \n" + 
                 "TEL 03-5739-3861/050-3494-7988\n" ;
             const msg = {
-                to  :  mailAddress,                   // 宛先メールアドレス
+                to  :  mailAddress,                         // 宛先メールアドレス
                 from: {
                   name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
-                  email: 'jisyuku_web@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
+                  email: 'jisyuku_web@j-fsa.jp',            //From（SendGridで認証済みドメインのメールアドレス）
                 },
                 subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
-                text: WebShinkoku_honbun,                // 本文
+                text: honbun,                               // 本文
             };
             sendEMail(msg);
 
