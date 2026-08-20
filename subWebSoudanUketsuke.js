@@ -86,8 +86,8 @@ const webSoudanUketsuke = async (req, res) => {
     };
     try {
         res.status(200).send('Webhook received successfully');
-        sendEMail(msg);
-        sendEMail(msg2);
+//        sendEMail(msg);
+//        sendEMail(msg2);
     } catch (error) {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
