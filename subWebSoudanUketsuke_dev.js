@@ -45,7 +45,7 @@ async function sendEMail(msg) {
 
 // **** Zapier-kintone Webhook受信エンドポイント ***********
 
-const webSoudanUketsuke = async (req, res) => {
+const webSoudanUketsuke_dev = async (req, res) => {
     //console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
     //console.log(webhookData);
