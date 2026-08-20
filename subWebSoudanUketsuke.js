@@ -97,5 +97,5 @@ export const webSoudanUketsuke = async (req, res) => {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
     }
-});
+};
 
