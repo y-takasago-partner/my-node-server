@@ -1,12 +1,7 @@
 'use strict';
 
-/*
- * 概要
- * １．PIC Webhook（貸付自粛Web申告認証完了時）
- * ２．Zapier Webhook（15分ごとにWeb相談）
- * ３．日次送信処理（毎日19時に）
- * ９．その他（サブフォルダに①貸付自粛Web申告の承諾事項PDF、②貸付自粛Web申告のThanksページとWeb相談のThanksページ）
- */
+const { sendEMail } = require('./subUtils.js');
+
 
 // *********************************************************
 // ☆ 共通
@@ -35,6 +30,7 @@ const webSoudanAppId = '28';                                // kintone Web相談
 // *********************************************************
 
 // **** function メール送信 **********************
+/*
 async function sendEMail(msg) {
   try {
     await sgMail.send(msg);
@@ -46,7 +42,7 @@ async function sendEMail(msg) {
     }
   }
 }
-
+*/
 
 // **** Zapier-kintone Webhook受信エンドポイント ***********
 
