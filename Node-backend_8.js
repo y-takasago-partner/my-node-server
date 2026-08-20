@@ -36,7 +36,8 @@ async function sendEMail(msg) {
 }
 
 
-app.post('/kintone-webhook-dev', async (req, res) => {
+app.post('/kintone-webhook/', async (req, res) => {
+//app.post('/kintone-webhook-dev', async (req, res) => {
     console.log('--- kintone-webhook-dev を受信しました ---');
     const webhookData = req.body;
     const WebSoudan_honbun = 
