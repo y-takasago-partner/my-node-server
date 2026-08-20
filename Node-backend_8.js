@@ -8,8 +8,6 @@
  * ９．その他（サブフォルダに①貸付自粛Web申告の承諾事項PDF、②貸付自粛Web申告のThanksページとWeb相談のThanksページ）
  */
 
-import { webSoudanUketsuke } from './subWebSoudanUketsuke.js';
-
 
 // *********************************************************
 // ☆ 共通
@@ -79,6 +77,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));            // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
 app.use(express.json());
 app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
+
+import { webSoudanUketsuke } from './subWebSoudanUketsuke.js';
 
 var client;
 
