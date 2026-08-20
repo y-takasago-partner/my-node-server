@@ -50,7 +50,7 @@ async function sendEMail(msg) {
 
 // **** Zapier-kintone Webhook受信エンドポイント ***********
 
-export const webSoudanUketsuke = async (req, res) => {
+const webSoudanUketsuke = async (req, res) => {
     //console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
     //console.log(webhookData);
@@ -98,4 +98,6 @@ export const webSoudanUketsuke = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+
+module.exports = { webSoudanUketsuke };
 

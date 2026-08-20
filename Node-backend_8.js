@@ -78,7 +78,8 @@ app.use(express.urlencoded({ extended: true }));            // PIC組織設定�
 app.use(express.json());
 app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
 
-import { webSoudanUketsuke } from './subWebSoudanUketsuke.js';
+const { webSoudanUketsuke } = require('./controllers.js'); // requireで読み込む
+
 
 var client;
 
