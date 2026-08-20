@@ -8,6 +8,8 @@
  * ９．その他（サブフォルダに①貸付自粛Web申告の承諾事項PDF、②貸付自粛Web申告のThanksページとWeb相談のThanksページ）
  */
 
+const { webSoudanUketsuke }     = require('./subWebSoudanUketsuke.js');         // 他ファイル読込
+const { webSoudanUketsuke_dev } = require('./subWebSoudanUketsuke_dev.js');     // 他ファイル読込
 
 // *********************************************************
 // ☆ 共通
@@ -77,9 +79,6 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));            // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
 app.use(express.json());
 app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
-
-const { webSoudanUketsuke } = require('./subWebSoudanUketsuke.js'); // requireで読み込む
-
 
 var client;
 
@@ -262,7 +261,8 @@ app.post('/webhook/', async (req, res) => {
 });
 
 // **** Zapier-kintone Webhook受信エンドポイント ***********
-app.post('/kintone-webhook/', webSoudanUketsuke); 
+app.post('/kintone-webhook/', webSoudanUketsuke);           // 運用エンドポイント
+app.post('/kintone-webhook-dev/', webSoudanUketsuke_dev);   // 開発エンドポイント
 /*
 app.post('/kintone-webhook/', async (req, res) => {
     //console.log('--- Webhookを受信しました ---');
