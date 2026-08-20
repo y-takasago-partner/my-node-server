@@ -226,7 +226,7 @@ console.error(error.response.body);
 }
 
 // **** Zapier-kintone Webhook受信エンドポイント
-app.post('/kintone-webhook/', async (req, res) => {
+app.post('/kintone-webhook', async (req, res) => {
 console.log('--- Webhookを受信しました ---');
 const webhookData = req.body;
 //console.log(webhookData);
