@@ -8,6 +8,9 @@
  * ９．その他（サブフォルダに①貸付自粛Web申告の承諾事項PDF、②貸付自粛Web申告のThanksページとWeb相談のThanksページ）
  */
 
+import { webSoudanUketsuke } from './subWebSoudanUketsuke.js';
+
+
 // *********************************************************
 // ☆ 共通
 // *********************************************************
@@ -258,7 +261,8 @@ app.post('/webhook/', async (req, res) => {
 });
 
 // **** Zapier-kintone Webhook受信エンドポイント ***********
-
+app.post('/kintone-webhook/', webSoudanUketsuke); 
+/*
 app.post('/kintone-webhook/', async (req, res) => {
     //console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
@@ -307,6 +311,7 @@ app.post('/kintone-webhook/', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+*/
 
 // ==========================================
 // 定期実行（Cronタスク）の処理
