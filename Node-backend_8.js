@@ -9,7 +9,7 @@
  */
 
 const { webSoudanUketsuke }       = require('./subWebSoudanUketsuke.js');         // 他ファイル読込
-const { webSoudanUketsuke_dev } = require('./subWebSoudanUketsuke_dev.js');     // 他ファイル読込
+//const { webSoudanUketsuke_dev } = require('./subWebSoudanUketsuke_dev.js');     // 他ファイル読込
 
 // *********************************************************
 // ☆ 共通
@@ -48,10 +48,10 @@ const algorithm = 'aes-256-ctr';                            // 不要か
 // *********************************************************
 
 // ★宛先職員メールアドレス ***
-const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 運用
-//const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発時
+//const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 運用
+const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発時
 
-const webSoudanAppId = '32';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
+const webSoudanAppId = '28';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
 
 
 // *********************************************************
@@ -262,11 +262,10 @@ app.post('/webhook/', async (req, res) => {
 
 // **** Zapier-kintone Webhook受信エンドポイント ***********
 app.post('/kintone-webhook/', webSoudanUketsuke);           // 運用エンドポイント
-app.post('/kintone-webhook-dev/', webSoudanUketsuke_dev);   // 開発エンドポイント
+//app.post('/kintone-webhook-dev/', webSoudanUketsuke_dev);   // 開発エンドポイント
 
-/*
-app.post('/kintone-webhook/', async (req, res) => {
-    //console.log('--- Webhookを受信しました ---');
+app.post('/kintone-webhook-dev/', async (req, res) => {
+    console.log('--- kintone-webhook-dev を受信しました ---');
     const webhookData = req.body;
     //console.log(webhookData);
     //console.log(webhookData.レコード番号);
@@ -313,7 +312,7 @@ app.post('/kintone-webhook/', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-*/
+
 
 // ==========================================
 // 定期実行（Cronタスク）の処理
