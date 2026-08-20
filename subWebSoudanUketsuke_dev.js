@@ -94,5 +94,5 @@ const webSoudanUketsuke = async (req, res) => {
     }
 };
 
-module.exports = { webSoudanUketsuke };
+module.exports = { webSoudanUketsuke_dev };
 
