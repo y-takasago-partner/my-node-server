@@ -26,7 +26,7 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const crypto = require('crypto');                           // 不要か
 const algorithm = 'aes-256-ctr';                            // 不要か
 
-const subPicKanryou = async (req, res) => {
+const picKanryou = async (req, res) => {
     console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
     try {
