@@ -4,7 +4,7 @@ const { sendEMail } = require('./subUtils.js');             // 他ファイル�
 
 // ★送信メールの件名に付けるプレフィックス
 //const sbjPreFix = '';                                       // 運用
-const sbjPreFix = '【テスト】';                             // テスト時
+const sbjPreFix = '【開発】';                             // テスト時
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 
@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '09 19 * * *') => {
+const subCronJob_dev = (scheduleTime = '19 19 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
