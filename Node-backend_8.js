@@ -12,7 +12,7 @@ const { webSoudanUketsuke }     = require('./subWebSoudanUketsuke.js');
 const { webSoudanUketsuke_dev } = require('./subWebSoudanUketsuke_dev.js');
 
 const { picKanryou }            = require('./subPicKanryou.js');
-//const { picKanryou_dev }        = require('./subPicKanryou_dev.js');
+const { picKanryou_dev }        = require('./subPicKanryou_dev.js');
 
 const { subCronJob }            = require('./subCronJob.js');
 const { subCronJob_dev }        = require('./subCronJob_dev.js');
@@ -26,11 +26,11 @@ app.use(express.static('public'));                          // PDFファイル�
 
 var client;
 
-// *********************************************************
-// ☆ PIC Webhook 用（認証完了時）
-// *********************************************************
-app.post('/pic-webhook', picKanryou);           // 運用
-//app.post('/pic-webhook-dev', picKanryou_dev);   // 開発
+// =========================================================
+// PIC Webhook 用（認証完了時）
+// =========================================================
+app.post('/pic-webhook', picKanryou);                       // 運用
+app.post('/pic-webhook-dev', picKanryou_dev);               // 開発
 
 /*
 app.post('/webhook/', async (req, res) => {
@@ -40,19 +40,18 @@ app.post('/webhook/', async (req, res) => {
 // =========================================================
 // 新規相談受付 Zapier-kintone Webhook 受信エンドポイント
 // =========================================================
-app.post('/pic-webhook', webSoudanUketsuke);           // 運用
-app.post('/pic-webhook-dev', webSoudanUketsuke_dev);   // 開発
+app.post('/pic-webhook', webSoudanUketsuke);                // 運用
+app.post('/pic-webhook-dev', webSoudanUketsuke_dev);        // 開発
 
 // =========================================================
 // 新規相談受付 Zapier-kintone Webhook 受信エンドポイント
 // =========================================================
-app.post('/kintone-webhook', webSoudanUketsuke);           // 運用
-app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);   // 開発
+app.post('/kintone-webhook', webSoudanUketsuke);            // 運用
+app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
-
 subCronJob();
 subCronJob_dev();
 

@@ -5,15 +5,15 @@ const { sendEMail } = require('./subUtils.js');
 //const sbjPreFix = '';                                       // ★送信メールの件名に付けるプレフィックス（運用）
 const sbjPreFix = '【テスト】';                             // ★送信メールの件名に付けるプレフィックス（開発、テスト）
 
-const scKey = process.env.SHOWCASE_KEY;                         // ★ProTeck ID Checker キー
+const scKey = process.env.SHOWCASE_KEY_DEV;                     // ★ProTeck ID Checker キー
 const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';  // ★kintone URL
 
 //const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // ★宛先職員メールアドレス（運用）
 const addrToJishukuStaff = 'y-takasago_j01@go-partner.jp';  // ★宛先職員メールアドレス（開発、テスト）
 
-const appId = 37;                                           // ★kintone 貸付自粛Web申告 アプリID
-const apiToken = process.env.KINTONE_API_KEY;               // ★kintone 貸付自粛Web申告 APIトークン
+const appId = 26;                                           // ★kintone 貸付自粛Web申告 アプリID
+const apiToken = process.env.KINTONE_API_KEY_DEV;           // ★kintone 貸付自粛Web申告 APIトークン
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 //const cors = require('cors');
@@ -22,7 +22,7 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
 var client;
 
-const picKanryou = async (req, res) => {
+const picKanryou_dev = async (req, res) => {
     console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
     try {
@@ -184,5 +184,5 @@ const picKanryou = async (req, res) => {
     }
 };
 
-module.exports = { picKanryou };
+module.exports = { picKanryou_dev };
 
