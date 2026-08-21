@@ -10,7 +10,6 @@
 
 const { webSoudanUketsuke }     = require('./subWebSoudanUketsuke.js');         // 他ファイル読込
 const { webSoudanUketsuke_dev } = require('./subWebSoudanUketsuke_dev.js');     // 他ファイル読込
-const { subCronSchedule }       = require('./subCronSchedule');
 const { subCronJob }            = require('./subCronJob.js');
 
 
@@ -248,7 +247,7 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);   // 開発
 // 定期実行（Cronタスク）の処理
 // ==========================================
 
-startCronJob();
+subCronJob();
 
 /*
 //cron.schedule('0 19 * * *', async () => {
