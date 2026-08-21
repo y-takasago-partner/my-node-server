@@ -125,11 +125,11 @@ console.log('shimei is ' + shimei);
     } catch (error) {
         console.error('定期タスク中にエラーが発生しました:', error);
     }
-  });
-}, {
-    scheduled: true,
-    timezone: "Asia/Tokyo"
-};
+  }, {
+      scheduled: true,
+      timezone: "Asia/Tokyo"
+  };
+});
 
 module.exports = { subCronJob };
 
