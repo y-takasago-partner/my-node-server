@@ -13,7 +13,7 @@ const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 // *********************************************************
 
 const cron = require('node-cron');
-const apiToken_send = process.env.KINTONE_API_KEY_SEND;     // ★kintone 貸付自粛Web申告 APIトークン
+const apiToken_send = process.env.KINTONE_API_KEY_SEND_DEV; // ★kintone 貸付自粛Web申告 APIトークン
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const kintoneClient = new KintoneRestAPIClient({
@@ -21,7 +21,7 @@ const kintoneClient = new KintoneRestAPIClient({
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
 });
 console.log('APIキー：' + apiToken_send);
-const JishukuSendAppID = 37;                                // ★コピー先アプリBのアプリID
+const JishukuSendAppID = 26;                                // ★コピー先アプリBのアプリID
 
 
 const express = require('express');
@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob = (scheduleTime = '0 19 * * *') => {
-const subCronJob = (scheduleTime = '08 19 * * *') => {
+const subCronJob = (scheduleTime = '09 19 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
