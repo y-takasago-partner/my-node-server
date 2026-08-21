@@ -21,9 +21,11 @@ const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 // *********************************************************
 
 // ★宛先職員メールアドレス ***
-const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 運用
-const webSoudanAppId = '32';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
+//const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 運用
+//const webSoudanAppId = '32';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
 
+const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発時
+const webSoudanAppId = '28';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
 
 
 // *********************************************************
