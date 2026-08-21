@@ -24,7 +24,7 @@ const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 //const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 運用
 //const webSoudanAppId = '32';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
 
-const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発時
+const addrToSoudanStaff = 'y-takasago_j02@go-partner.jp';   // 開発時
 const webSoudanAppId = '28';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
 
 
@@ -50,7 +50,7 @@ async function sendEMail(msg) {
 const webSoudanUketsuke = async (req, res) => {
     console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
-    console.log(webhookData);
+    //console.log(webhookData);
     console.log(webhookData.レコード番号);
     console.log(webhookData.氏名);
     console.log(webhookData.メールアドレス);

@@ -48,10 +48,9 @@ async function sendEMail(msg) {
 const webSoudanUketsuke_dev = async (req, res) => {
     console.log('--- Webhook(dev)を受信しました ---');
     const webhookData = req.body;
-    //console.log(webhookData);
-    //console.log(webhookData.レコード番号);
-    //console.log(webhookData.氏名);
-    //console.log(webhookData.メールアドレス);
+    console.log(webhookData.レコード番号);
+    console.log(webhookData.氏名);
+    console.log(webhookData.メールアドレス);
     const WebSoudan_honbun = 
         "(このメールは送信専用メールからお送りさせていただいております。ご返信いただいてもお答えできませんのでご注意ください。)\n\n" + 
         "日本貸金業協会貸金業相談・紛争解決センターです。ご相談を受付けました。\n" + 
