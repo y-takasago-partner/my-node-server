@@ -128,7 +128,7 @@ console.log('shimei is ' + shimei);
   }, {
       scheduled: true,
       timezone: "Asia/Tokyo"
-  };
+  });
 };
 
 module.exports = { subCronJob };
