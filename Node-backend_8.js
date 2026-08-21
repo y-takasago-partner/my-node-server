@@ -30,7 +30,7 @@ var client;
 // ☆ PIC Webhook 用（認証完了時）
 // *********************************************************
 app.post('/pic-webhook', picKanryou);           // 運用
-app.post('/pic-webhook-dev', picKanryou_dev);   // 開発
+//app.post('/pic-webhook-dev', picKanryou_dev);   // 開発
 
 /*
 app.post('/webhook/', async (req, res) => {
