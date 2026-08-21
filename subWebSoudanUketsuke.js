@@ -50,10 +50,10 @@ async function sendEMail(msg) {
 const webSoudanUketsuke = async (req, res) => {
     console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
-    //console.log(webhookData);
-    //console.log(webhookData.レコード番号);
-    //console.log(webhookData.氏名);
-    //console.log(webhookData.メールアドレス);
+    console.log(webhookData);
+    console.log(webhookData.レコード番号);
+    console.log(webhookData.氏名);
+    console.log(webhookData.メールアドレス);
     const WebSoudan_honbun = 
         "(このメールは送信専用メールからお送りさせていただいております。ご返信いただいてもお答えできませんのでご注意ください。)\n\n" + 
         "日本貸金業協会貸金業相談・紛争解決センターです。ご相談を受付けました。\n" + 
@@ -88,8 +88,8 @@ const webSoudanUketsuke = async (req, res) => {
     };
     try {
         res.status(200).send('Webhook received successfully');
-//        sendEMail(msg);
-//        sendEMail(msg2);
+        sendEMail(msg);
+        sendEMail(msg2);
     } catch (error) {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
