@@ -11,6 +11,7 @@
 const { webSoudanUketsuke }     = require('./subWebSoudanUketsuke.js');         // 他ファイル読込
 const { webSoudanUketsuke_dev } = require('./subWebSoudanUketsuke_dev.js');     // 他ファイル読込
 const { subCronJob }            = require('./subCronJob.js');
+const { subCronJob_dev }        = require('./subCronJob_dev.js');
 
 
 // *********************************************************
@@ -42,24 +43,6 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const crypto = require('crypto');                           // 不要か
 const algorithm = 'aes-256-ctr';                            // 不要か
 
-
-
-
-// *********************************************************
-// ☆ Render 定期実行用
-// *********************************************************
-
-//const cron = require('node-cron');
-//const apiToken_send = process.env.KINTONE_API_KEY_SEND;               // kintone 貸付自粛Web申告 APIトークン
-
-//const kintoneClient = new KintoneRestAPIClient({
-//    baseUrl: subDomain,
-//    auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
-//});
-//console.log('APIキー：' + apiToken_send);
-//
-////const JishukuSendAppID = process.env.KINTONE_APP_ID; // コピー先アプリBのアプリID
-//const JishukuSendAppID = 36; // コピー先アプリBのアプリID
 
 
 // *********************************************************
@@ -248,6 +231,7 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);   // 開発
 // ==========================================
 
 subCronJob();
+subCronJob_dev();
 
 /*
 //cron.schedule('0 19 * * *', async () => {

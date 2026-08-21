@@ -36,8 +36,8 @@ app.use(express.static('public'));                          // PDFファイル�
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
-//const subCronJob = (scheduleTime = '0 19 * * *') => {
-const subCronJob = (scheduleTime = '09 19 * * *') => {
+//const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
+const subCronJob_dev = (scheduleTime = '09 19 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -118,5 +118,5 @@ console.log('shimei is ' + shimei);
   });
 };
 
-module.exports = { subCronJob };
+module.exports = { subCronJob_dev };
 
