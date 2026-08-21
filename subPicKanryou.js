@@ -2,7 +2,6 @@
 
 const { sendEMail } = require('./subUtils.js');
 
-
 // ★送信メールの件名に付けるプレフィックス
 //const sbjPreFix = '';                                       // 運用
 const sbjPreFix = '【テスト】';                             // テスト時
@@ -10,19 +9,21 @@ const sbjPreFix = '【テスト】';                             // テスト時
 const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
 
-const scKey = process.env.SHOWCASE_KEY;                     // ProTeck ID Checker キー
-const subDomain = 'https://jueaogoxsa02.cybozu.com';        // kintone サブドメイン
-const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
+const scKey = process.env.SHOWCASE_KEY;                         // ★ProTeck ID Checker キー
+//const scKey = process.env.SHOWCASE_KEY_DEV;                     // ★ProTeck ID Checker キー
+const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone サブドメイン
+const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';  // ★kintone URL
 
-// ★宛先職員メールアドレス
-const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // 運用
-//const addrToJishukuStaff = 'y-takasago_j03@go-partner.jp';  // 開発時
+//const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // ★宛先職員メールアドレス（運用）
+const addrToJishukuStaff = 'y-takasago_j01@go-partner.jp';  // ★宛先職員メールアドレス（開発、テスト）
 
-const appId = 33;                                           // kintone 貸付自粛Web申告 アプリID
-const apiToken = process.env.KINTONE_API_KEY;               // kintone 貸付自粛Web申告 APIトークン
+const appId = 37;                                           // ★kintone 貸付自粛Web申告 アプリID
+const apiToken = process.env.KINTONE_API_KEY;               // ★kintone 貸付自粛Web申告 APIトークン
+//const appId = 26;                                           // ★kintone 貸付自粛Web申告 アプリID
+//const apiToken = process.env.KINTONE_API_KEY_DEV;           // ★kintone 貸付自粛Web申告 APIトークン
+
 //const cors = require('cors');
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
-
 const crypto = require('crypto');                           // 不要か
 const algorithm = 'aes-256-ctr';                            // 不要か
 
@@ -31,12 +32,11 @@ const picKanryou = async (req, res) => {
     const webhookData = req.body;
     try {
 
-        //******** 認証データ受取 ********
+        // ******** 認証データ受取 ********
 
         // 1. IV（初期化ベクトル）を16進数（hex）として確実にBufferに変換
         const ivStr = webhookData.iv || '02089f4b27dc6fd18dbb8d2cb55d251e';
         const iv = Buffer.from(ivStr, 'hex');
-
         // 2. 暗号化された「姓」と「生年月日」を取得
         // ※ ログに出力されていたデータ構造に合わせて確実に抽出します
         let keyEncrypted = '';
@@ -55,7 +55,6 @@ const picKanryou = async (req, res) => {
         }
 
         console.log(webhookData);
-
         console.log('更新キー: ' + keyEncrypted);
         console.log('申告種別: ' + shubetsuEncrypted);
         console.log('対象暗号(姓): ' + seiEncrypted);
@@ -88,7 +87,6 @@ const picKanryou = async (req, res) => {
 //        // ----------------------------------------
 //
         // その他データのログ出力
-        //console.log('result is: ' + (webhookData.result || 'データなし'));
         console.log('result is: ' + (webhookData.result));
         console.log('operation is: ' + (webhookData.operation));
         console.log('authType is: ' + (webhookData.authType));
@@ -96,7 +94,8 @@ const picKanryou = async (req, res) => {
 
         res.status(200).send('Webhook received successfully');
 
-        //******** kintoneデータにアクセス ********
+        // ******** kintoneデータにアクセス ********
+
         // kintone クライアントの作成
         client = new KintoneRestAPIClient({
             baseUrl: subDomain,
@@ -114,6 +113,7 @@ const picKanryou = async (req, res) => {
           // 必要なフィールド（レコード番号）だけを指定して高速化
           fields: ['$id'] 
         });
+
         // レコードが見つかった場合の処理
         if (response.records.length > 0) {
           const recordId = response.records[0].$id.value;
