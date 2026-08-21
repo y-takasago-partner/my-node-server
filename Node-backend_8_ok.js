@@ -6,12 +6,9 @@ const sgMail = require('@sendgrid/mail');                   // SendGrid 公式�
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 
-
 // ★宛先職員メールアドレス ***
 const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発時
 const webSoudanAppId = '28';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
-
-
 
 const express = require('express');
 const app = express();
@@ -19,8 +16,6 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));            // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
 app.use(express.json());
 app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
-
-var client;
 
 // **** function メール送信 **********************
 async function sendEMail(msg) {
@@ -35,8 +30,7 @@ async function sendEMail(msg) {
   }
 }
 
-
-app.post('/kintone-webhook/', async (req, res) => {
+app.post('/kintone-webhook', async (req, res) => {
 //app.post('/kintone-webhook-dev', async (req, res) => {
     console.log('--- kintone-webhook-dev を受信しました ---');
     const webhookData = req.body;
@@ -68,7 +62,6 @@ app.post('/kintone-webhook/', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
