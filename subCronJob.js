@@ -25,6 +25,7 @@ const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 const cron = require('node-cron');
 const apiToken_send = process.env.KINTONE_API_KEY_SEND;               // kintone 貸付自粛Web申告 APIトークン
 
+const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const kintoneClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
