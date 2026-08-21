@@ -252,8 +252,8 @@ app.post('/webhook/', async (req, res) => {
 });
 
 // **** Zapier-kintone Webhook受信エンドポイント ***********
-app.post('/kintone-webhook/', webSoudanUketsuke);           // 運用エンドポイント
-app.post('/kintone-webhook-dev/', webSoudanUketsuke_dev);   // 開発エンドポイント
+app.post('/kintone-webhook', webSoudanUketsuke);           // 運用エンドポイント
+app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);   // 開発エンドポイント
 /*
 app.post('/kintone-webhook/', async (req, res) => {
     console.log('--- Webhookを受信しました ---');
