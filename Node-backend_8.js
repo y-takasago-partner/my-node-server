@@ -260,7 +260,7 @@ app.post('/webhook/', async (req, res) => {
 // **** Zapier-kintone Webhook受信エンドポイント ***********
 
 app.post('/kintone-webhook/', async (req, res) => {
-    //console.log('--- Webhookを受信しました ---');
+    console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
     //console.log(webhookData);
     //console.log(webhookData.レコード番号);
