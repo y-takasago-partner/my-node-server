@@ -49,17 +49,17 @@ const algorithm = 'aes-256-ctr';                            // 不要か
 // ☆ Render 定期実行用
 // *********************************************************
 
-const cron = require('node-cron');
-const apiToken_send = process.env.KINTONE_API_KEY_SEND;               // kintone 貸付自粛Web申告 APIトークン
+//const cron = require('node-cron');
+//const apiToken_send = process.env.KINTONE_API_KEY_SEND;               // kintone 貸付自粛Web申告 APIトークン
 
-const kintoneClient = new KintoneRestAPIClient({
-    baseUrl: subDomain,
-    auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
-});
-console.log('APIキー：' + apiToken_send);
+//const kintoneClient = new KintoneRestAPIClient({
+//    baseUrl: subDomain,
+//    auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
+//});
+//console.log('APIキー：' + apiToken_send);
 //
 ////const JishukuSendAppID = process.env.KINTONE_APP_ID; // コピー先アプリBのアプリID
-const JishukuSendAppID = 36; // コピー先アプリBのアプリID
+//const JishukuSendAppID = 36; // コピー先アプリBのアプリID
 
 
 // *********************************************************
