@@ -28,23 +28,6 @@ const addrToSoudanStaff = 'y-takasago_j02@go-partner.jp';   // 開発時
 const webSoudanAppId = '28';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
 
 
-// *********************************************************
-
-// **** function メール送信 **********************
-/*
-async function sendEMail(msg) {
-  try {
-    await sgMail.send(msg);
-    console.log('メールが正常に送信されました（' + msg.subject + ', ' + msg.to + '）');
-  } catch (error) {
-    console.error('メール送信中にエラーが発生しました：');
-    if (error.response) {
-      console.error(error.response.body);
-    }
-  }
-}
-*/
-
 // **** Zapier-kintone Webhook受信エンドポイント ***********
 
 const webSoudanUketsuke = async (req, res) => {

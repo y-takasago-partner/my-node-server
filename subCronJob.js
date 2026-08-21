@@ -1,5 +1,7 @@
 'use strict';
 
+const { sendEMail } = require('./subUtils.js');             // 他ファイル読込
+
 // *********************************************************
 // ☆ 共通
 // *********************************************************
@@ -47,9 +49,11 @@ app.use(express.static('public'));                          // PDFファイル�
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
-//cron.schedule('0 19 * * *', async () => {
-cron.schedule('03 11 * * *', async () => {
-    console.log('定期タスクを開始します...');
+//const startCronJob = (scheduleTime = '0 19 * * *') => {
+const startCronJob = (scheduleTime = '03 11 * * *') => {
+  cron.schedule(scheduleTime, async () => {
+    console.log('定期実行タスクを開始します...');
+    // 実際の非同期処理をここに記述
     try {
         // 1. kintoneから「まだメールを送信していないレコード」を取得する
         // クエリ条件: mail_status に「送信済」が含まれない
@@ -115,13 +119,17 @@ console.log('shimei is ' + shimei);
 //                }
 //            });
 //            console.log(`kintoneのステータスを送信済に更新しました。`);
+      // await 処理など
         }
         console.log('定期タスクが完了しました。');
     } catch (error) {
         console.error('定期タスク中にエラーが発生しました:', error);
     }
+  });
 }, {
     scheduled: true,
     timezone: "Asia/Tokyo"
-});
+};
+
+module.exports = { subCronJob };
 

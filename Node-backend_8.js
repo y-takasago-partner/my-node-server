@@ -10,6 +10,9 @@
 
 const { webSoudanUketsuke }     = require('./subWebSoudanUketsuke.js');         // 他ファイル読込
 const { webSoudanUketsuke_dev } = require('./subWebSoudanUketsuke_dev.js');     // 他ファイル読込
+const { subCronSchedule }       = require('./subCronSchedule');
+const { subCronJob }            = require('./subCronJob.js');
+
 
 // *********************************************************
 // ☆ 共通
@@ -19,8 +22,6 @@ const { webSoudanUketsuke_dev } = require('./subWebSoudanUketsuke_dev.js');     
 //const sbjPreFix = '';                                       // 運用
 const sbjPreFix = '【テスト】';                             // テスト時
 
-//const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
-//sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
 const scKey = process.env.SHOWCASE_KEY;                     // ProTeck ID Checker キー
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // kintone サブドメイン
 
@@ -72,20 +73,6 @@ app.use(express.json());
 app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
 
 var client;
-
-// **** function メール送信 **********************
-//async function sendEMail(msg) {
-//  try {
-//    await sgMail.send(msg);
-//    console.log('メールが正常に送信されました（' + msg.subject + ', ' + msg.to + '）');
-//  } catch (error) {
-//    console.error('メール送信中にエラーが発生しました：');
-//    if (error.response) {
-//      console.error(error.response.body);
-//    }
-//  }
-//}
-
 
 // **** PIC Webhook受信エンドポイント **********************
 app.post('/webhook/', async (req, res) => {
@@ -260,6 +247,10 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);   // 開発
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
+
+startCronJob();
+
+/*
 //cron.schedule('0 19 * * *', async () => {
 cron.schedule('03 11 * * *', async () => {
     console.log('定期タスクを開始します...');
@@ -337,7 +328,7 @@ console.log('shimei is ' + shimei);
     scheduled: true,
     timezone: "Asia/Tokyo"
 });
-
+*/
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
