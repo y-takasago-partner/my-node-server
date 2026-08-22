@@ -129,9 +129,8 @@ const jishukuSend2_dev = async (req, res) => {
     }
     console.log(`kintoneからレコード保存通知を受信しました。レコード番号: ${recordId}`);
     res.status(200).send('Webhook received successfully');
-    const client = new KintoneRestAPIClient();
     try {
-        const result = await client.record.getRecord({
+        const result = await kintoneClient.record.getRecord({
             app: JishukuSendAppID,
             id: recordId
         });
