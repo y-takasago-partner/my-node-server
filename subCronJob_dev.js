@@ -135,8 +135,7 @@ const jishukuSend2_dev = async (req, res) => {
             id: recordId
         });
         const record = result.record;
-        console.log('取得したレコードデータ:', record);
-
+//        console.log('取得したレコードデータ:', record);
 //        sendEMail(msg);
 //        sendEMail(msg2);
     } catch (error) {

@@ -125,9 +125,19 @@ module.exports = { subCronJob };
 // ==========================================
 const jishukuSend2 = async (req, res) => {
     console.log('--- 貸付自粛Web申告保存処理から受信しました ---');
-    const webhookData = req.body;
+    const recordId = req.body.record_id;
+    if (!recordId) {
+        return res.status(400).json({ error: 'record_id is required' });
+    }
+    console.log(`kintoneからレコード保存通知を受信しました。レコード番号: ${recordId}`);
     res.status(200).send('Webhook received successfully');
     try {
+        const result = await kintoneClient.record.getRecord({
+            app: JishukuSendAppID,
+            id: recordId
+        });
+        const record = result.record;
+//        console.log('取得したレコードデータ:', record);
 //        sendEMail(msg);
 //        sendEMail(msg2);
     } catch (error) {
