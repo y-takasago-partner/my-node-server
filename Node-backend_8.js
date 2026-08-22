@@ -8,16 +8,14 @@
  * ９．その他（サブフォルダに①貸付自粛Web申告の承諾事項PDF、②貸付自粛Web申告のThanksページとWeb相談のThanksページ）
  */
 
-const { webSoudanUketsuke }     = require('./subWebSoudanUketsuke.js');
-const { webSoudanUketsuke_dev } = require('./subWebSoudanUketsuke_dev.js');
+const { webSoudanUketsuke }                = require('./subWebSoudanUketsuke.js');
+const { webSoudanUketsuke_dev }            = require('./subWebSoudanUketsuke_dev.js');
 
-const { picKanryou }            = require('./subPicKanryou.js');
-const { picKanryou_dev }        = require('./subPicKanryou_dev.js');
+const { picKanryou }                       = require('./subPicKanryou.js');
+const { picKanryou_dev }                   = require('./subPicKanryou_dev.js');
 
-const { jishukuSend2_dev }      = require('./subCronJob.js');
-
-const { subCronJob }            = require('./subCronJob.js');
-const { subCronJob_dev }        = require('./subCronJob_dev.js');
+const { subCronJob }                       = require('./subCronJob.js');
+const { subCronJob_dev, jishukuSend2_dev } = require('./subCronJob_dev.js');
 
 const express = require('express');
 const app = express();
@@ -43,7 +41,7 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 // =========================================================
 //app.post('/jishukuUpdt-webhook', webSoudanUketsuke);        // 運用
 //app.post('/jishukuUpdt-webhook-dev', webSoudanUketsuke_dev);// 開発
-app.post('/jishukuSend2-dev', jishukuSend2_dev);// 開発
+//app.post('/jishukuSend2-dev', jishukuSend2_dev);// 開発
 
 // =========================================================
 // Web相談更新 Webhook 受信エンドポイント
