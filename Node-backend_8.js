@@ -41,7 +41,7 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 // =========================================================
 //app.post('/jishukuUpdt-webhook', webSoudanUketsuke);        // 運用
 //app.post('/jishukuUpdt-webhook-dev', webSoudanUketsuke_dev);// 開発
-//app.post('/jishukuSend2-dev', jishukuSend2_dev);// 開発
+app.post('/jishukuSend2-dev', jishukuSend2_dev);// 開発
 
 // =========================================================
 // Web相談更新 Webhook 受信エンドポイント
