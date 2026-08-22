@@ -119,7 +119,7 @@ console.log('shimei is ' + shimei);
 };
 
 //まず受け側の作成
-const jishukuSend2-dev = async (req, res) => {
+const jishukuSend2_dev = async (req, res) => {
     console.log('--- 貸付自粛Web申告保存処理から受信しました ---');
     const webhookData = req.body;
     res.status(200).send('Webhook received successfully');
@@ -132,4 +132,4 @@ const jishukuSend2-dev = async (req, res) => {
     }
 };
 
-module.exports = { subCronJob_dev, jishukuSend2-dev };
+module.exports = { subCronJob_dev, jishukuSend2_dev };

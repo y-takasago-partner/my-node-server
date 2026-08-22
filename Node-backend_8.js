@@ -14,7 +14,7 @@ const { webSoudanUketsuke_dev } = require('./subWebSoudanUketsuke_dev.js');
 const { picKanryou }            = require('./subPicKanryou.js');
 const { picKanryou_dev }        = require('./subPicKanryou_dev.js');
 
-const { jishukuSend2-dev }      = require('./subCronJob.js');
+const { jishukuSend2_dev }      = require('./subCronJob.js');
 
 const { subCronJob }            = require('./subCronJob.js');
 const { subCronJob_dev }        = require('./subCronJob_dev.js');
@@ -43,7 +43,7 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 // =========================================================
 //app.post('/jishukuUpdt-webhook', webSoudanUketsuke);        // 運用
 //app.post('/jishukuUpdt-webhook-dev', webSoudanUketsuke_dev);// 開発
-app.post('/jishukuSend2-dev', jishukuSend2-dev);// 開発
+app.post('/jishukuSend2-dev', jishukuSend2_dev);// 開発
 
 // =========================================================
 // Web相談更新 Webhook 受信エンドポイント
