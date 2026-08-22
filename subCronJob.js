@@ -120,3 +120,20 @@ console.log('shimei is ' + shimei);
 
 module.exports = { subCronJob };
 
+// ==========================================
+// 貸付自粛Web申告画面保存成功時の処理
+// ==========================================
+const jishukuSend2 = async (req, res) => {
+    console.log('--- 貸付自粛Web申告保存処理から受信しました ---');
+    const webhookData = req.body;
+    res.status(200).send('Webhook received successfully');
+    try {
+//        sendEMail(msg);
+//        sendEMail(msg2);
+    } catch (error) {
+        console.error('Webhook処理エラー:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+module.exports = { subCronJob, jishukuSend2 };

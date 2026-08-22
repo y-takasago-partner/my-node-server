@@ -14,7 +14,7 @@ const { webSoudanUketsuke_dev }            = require('./subWebSoudanUketsuke_dev
 const { picKanryou }                       = require('./subPicKanryou.js');
 const { picKanryou_dev }                   = require('./subPicKanryou_dev.js');
 
-const { subCronJob }                       = require('./subCronJob.js');
+const { subCronJob, jishukuSend2 }         = require('./subCronJob.js');
 const { subCronJob_dev, jishukuSend2_dev } = require('./subCronJob_dev.js');
 
 const express = require('express');
@@ -39,15 +39,8 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 // =========================================================
 // 貸付自粛Web申告更新 Webhook 受信エンドポイント
 // =========================================================
-//app.post('/jishukuUpdt-webhook', webSoudanUketsuke);        // 運用
-//app.post('/jishukuUpdt-webhook-dev', webSoudanUketsuke_dev);// 開発
-app.post('/jishukuSend2-dev', jishukuSend2_dev);// 開発
-
-// =========================================================
-// Web相談更新 Webhook 受信エンドポイント
-// =========================================================
-//app.post('/soudanUpdt-webhook', webSoudanUketsuke);         // 運用
-//app.post('/soudanUpdt-webhook-dev', webSoudanUketsuke_dev); // 開発
+app.post('/jishukuSend2', jishukuSend2);                     // 運用
+app.post('/jishukuSend2-dev', jishukuSend2_dev);             // 開発
 
 // ==========================================
 // 定期実行（Cronタスク）の処理
