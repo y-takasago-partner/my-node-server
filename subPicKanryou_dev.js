@@ -5,7 +5,7 @@ const { sendEMail } = require('./subUtils.js');
 //const sbjPreFix = '';                                       // ★送信メールの件名に付けるプレフィックス（運用）
 const sbjPreFix = '【テスト】';                             // ★送信メールの件名に付けるプレフィックス（開発、テスト）
 
-const scKey = process.env.SHOWCASE_KEY_DEV;                     // ★ProTeck ID Checker キー
+const scKey = process.env.SHOWCASE_KEY;                         // ★ProTeck ID Checker キー（運用・開発共通）
 const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';  // ★kintone URL
 

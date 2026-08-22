@@ -118,19 +118,5 @@ console.log('shimei is ' + shimei);
   });
 };
 
-//まず受け側の作成
-const jishukuSend2-dev = async (req, res) => {
-    console.log('--- 貸付自粛Web申告保存処理から受信しました ---');
-    const webhookData = req.body;
-    res.status(200).send('Webhook received successfully');
-    try {
-//        sendEMail(msg);
-//        sendEMail(msg2);
-    } catch (error) {
-        console.error('Webhook処理エラー:', error);
-        res.status(500).send('Internal Server Error');
-    }
-};
+module.exports = { subCronJob_dev };
 
-
-module.exports = { jishukuSend2-dev };
