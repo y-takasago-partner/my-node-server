@@ -132,5 +132,4 @@ const jishukuSend2-dev = async (req, res) => {
     }
 };
 
-
-module.exports = { jishukuSend2-dev };
+module.exports = { subCronJob_dev, jishukuSend2-dev };
