@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '56 02 * * *') => {
+const subCronJob_dev = (scheduleTime = '01 03 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -53,9 +53,9 @@ const subCronJob_dev = (scheduleTime = '56 02 * * *') => {
         // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
         // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
         const query = 
-            'email not in ("") and ' + 
+            'email != "" and ' + 
             '  ( ' + 
-            '    (EmailDeliv_DateSent = "' + dateFormatted + '" and EmailDeliv_Result = "") Or ' + 
+            '    (EmailDeliv_DateSent = "' + dateFormatted + '" and EmailDeliv_Result = "") or ' + 
             '    (EmailDeliv_Resend in ("する") and EmailDeliv_Resend_CompletedDate = "") ' + 
             '  ) ' + 
             ' limit 10';
