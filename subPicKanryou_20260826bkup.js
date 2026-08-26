@@ -119,26 +119,6 @@ const picKanryou = async (req, res) => {
           return;
         }
 
-        //******** kintone申告ID取得 start ********
-        const FIELD_ShinkokuID = 'ShinkokuID';                  // 申告ID（6桁の文字列）
-        const response2 = await client.record.getRecords({
-            app: APP_ID,
-            fields: [FIELD_ShinkokuID],
-            // 6桁の数字のみで構成されているレコードを想定
-            query: `${FIELD_ShinkokuID} != "" order by ${FIELD_ShinkokuID} desc limit 1`
-        });
-        var nextStr = "";
-        if (response2.records.length === 0) {
-            nextStr = '000001';
-            console.log('レコードがありません。最初の番号:', nextStr);
-        } else {
-            const maxStr = response2.records[0][FIELD_ShinkokuID].value;
-            const nextNum = Number(maxStr) + 1;
-            nextStr = String(nextNum).padStart(6, '0');
-            console.log(`現在の最大値: ${maxStr} -> 次の採番: ${nextStr}`);
-        }
-        //******** kintone申告ID取得 end ********
-
         //******** kintoneデータ更新 ********
         const updtResult = await client.record.updateRecord({
             app: appId,                 // アプリID
@@ -152,9 +132,6 @@ const picKanryou = async (req, res) => {
                 },
                 '認証結果': {           // 認証結果
                     value: webhookData.result
-                },
-                FIELD_ShinkokuID: {     // 申告ID
-                    value: nextStr
                 }
             }
         });
@@ -190,6 +167,7 @@ const picKanryou = async (req, res) => {
             subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
             text: WebShinkoku_honbun,                // 本文
         };
+      //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value + '&mode=edit';
         const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
