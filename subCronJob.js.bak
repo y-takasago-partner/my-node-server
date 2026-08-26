@@ -4,7 +4,7 @@ const { sendEMail } = require('./subUtils.js');             // 他ファイル�
 
 // ★送信メールの件名に付けるプレフィックス
 //const sbjPreFix = '';                                       // 運用
-const sbjPreFix = '【開発】';                             // テスト時
+const sbjPreFix = '【テスト】';                             // テスト時
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 
@@ -13,7 +13,7 @@ const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 // *********************************************************
 
 const cron = require('node-cron');
-const apiToken_send = process.env.KINTONE_API_KEY_DEV;      // ★kintone 貸付自粛Web申告 APIトークン
+const apiToken_send = process.env.KINTONE_API_KEY;          // ★kintone 貸付自粛Web申告 APIトークン
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const kintoneClient = new KintoneRestAPIClient({
@@ -21,7 +21,7 @@ const kintoneClient = new KintoneRestAPIClient({
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
 });
 console.log('APIキー：' + apiToken_send);
-const JishukuSendAppID = 26;                                // ★コピー先アプリBのアプリID
+const JishukuSendAppID = 37;                                // ★コピー先アプリBのアプリID
 
 
 const express = require('express');
@@ -36,32 +36,17 @@ app.use(express.static('public'));                          // PDFファイル�
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
-//const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '40 02 * * *') => {
+//const subCronJob = (scheduleTime = '0 19 * * *') => {
+const subCronJob = (scheduleTime = '17 19 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
     try {
-        // 本日日付
-        const d = new Date();
-        const dateFormatted = [         
-            d.getFullYear(),
-            String(d.getMonth() + 1).padStart(2, '0'),
-            String(d.getDate()).padStart(2, '0')
-        ].join('/');
-        // 1. kintoneから送信対象レコードを取得する
-        // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
-        // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
-        const query = 
-            'email not in ("") and ' + 
-            '  ( ' + 
-            '    (EmailDeliv_DateSent = dateFormatted and EmailDeliv_Result = "") Or ' + 
-            '    (EmailDeliv_Resend in ("する") and EmailDeliv_Resend_CompletedDate = "") ' + 
-            '  ) ' + 
-            ' limit 10';
+        // 1. kintoneから「まだメールを送信していないレコード」を取得する
+        // クエリ条件: mail_status に「送信済」が含まれない
         const response = await kintoneClient.record.getRecords({
             app: JishukuSendAppID,
-            query: query
+            query: 'email not in ("") limit 10'
         });
         const records = response.records;
         console.log(`未送信のレコードが ${records.length} 件見つかりました。`);
@@ -71,17 +56,9 @@ const subCronJob_dev = (scheduleTime = '40 02 * * *') => {
             const recordId = record.$id.value;
             const mailAddress = record['email'].value;
             const shimei = record['Shimei_Sei'].value + '　' + record['Shimei_Mei'].value;
-
-console.log('◆送信対象は...');
 console.log('recordId is ' + recordId);
 console.log('mailAddress is ' + mailAddress);
 console.log('shimei is ' + shimei);
-console.log('送信日付 is ' + record['dateFormatted'].value);
-console.log('送信結果 is ' + record['EmailDeliv_Result'].value);
-console.log('再送 is ' + record['EmailDeliv_Resend'](0).value);
-console.log('再送日付 is ' + record['EmailDeliv_Resend_CompletedDate'](0).value);
-
-
             const honbun = 
                 shimei + "様\n\n\n" + 
                 "【問合せ先】\n" + 
@@ -98,7 +75,7 @@ console.log('再送日付 is ' + record['EmailDeliv_Resend_CompletedDate'](0).va
                 subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
                 text: honbun,                               // 本文
             };
-//****            sendEMail(msg);
+            sendEMail(msg);
 
 //            const customerName = record['顧客名'] ? record['顧客名'].value : 'お客様';
 //            const toEmail = record['メールアドレス'] ? record['メールアドレス'].value : null;
@@ -141,10 +118,12 @@ console.log('再送日付 is ' + record['EmailDeliv_Resend_CompletedDate'](0).va
   });
 };
 
+module.exports = { subCronJob };
+
 // ==========================================
-// 貸付自粛Web申告画面保存成功時の処理⇒送信ボタン押下時に変更
+// 貸付自粛Web申告画面保存成功時の処理
 // ==========================================
-const jishukuSend2_dev = async (req, res) => {
+const jishukuSend2 = async (req, res) => {
     console.log('--- 貸付自粛Web申告保存処理から受信しました ---');
     const recordId = req.body.record_id;
     if (!recordId) {
@@ -167,4 +146,4 @@ const jishukuSend2_dev = async (req, res) => {
     }
 };
 
-module.exports = { subCronJob_dev, jishukuSend2_dev };
+module.exports = { subCronJob, jishukuSend2 };
