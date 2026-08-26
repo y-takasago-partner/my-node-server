@@ -2,26 +2,19 @@
 
 const { sendEMail } = require('./subUtils.js');             // 他ファイル読込
 
+
 // *********************************************************
 // ☆ 共通
 // *********************************************************
 
 // ★送信メールの件名に付けるプレフィックス
-//const sbjPreFix = '';                                     // 運用
+//const sbjPreFix = '';                                       // 運用
 const sbjPreFix = '【テスト】';                             // テスト時
 
 const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
 
-const subDomain = 'https://jueaogoxsa02.cybozu.com';        // ★kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
-
-//const appId = 38;                                           // ★kintone Web相談 アプリID（検証２）
-//const apiToken = process.env.KINTONE_API_KEY_SODAN;         // ★kintone Web相談 APIトークン（検証２）
-const appId = 28;                                           // ★kintone Web相談 アプリID（開発）
-const apiToken = process.env.KINTONE_API_KEY_SODAN_DEV;     // ★kintone Web相談 APIトークン（開発）
-
-const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
 // *********************************************************
 // ☆ Zapier Webhook 用（新規Web相談登録時）
@@ -29,8 +22,7 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
 // ★宛先職員メールアドレス ***
 const addrToSoudanStaff = 'y-takasago_j03@go-partner.jp';   // 開発時
-
-var client;
+const webSoudanAppId = '28';                                // kintone Web相談 アプリID（APIトークンはZapierが保持ゆえ不要）
 
 
 // **** Zapier-kintone Webhook受信エンドポイント ***********
@@ -65,7 +57,8 @@ const webSoudanUketsuke_dev = async (req, res) => {
         subject: sbjPreFix + 'ご相談受付けの件', // 件名
         text: WebSoudan_honbun,                  // 本文
     };
-    const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + webhookData.レコード番号;
+  //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + webSoudanAppId + '/show#record=' + webhookData.レコード番号 + '&mode=edit';
+    const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + webSoudanAppId + '/show#record=' + webhookData.レコード番号;
     const msg2 = {
         to  :  addrToSoudanStaff,                // 宛先メールアドレス
         from:  'soudan@j-fsa.jp',                //From（SendGridで認証済みドメインのメールアドレス）
@@ -74,45 +67,6 @@ const webSoudanUketsuke_dev = async (req, res) => {
     };
     try {
         res.status(200).send('Webhook received successfully');
-
-        // ******** kintoneデータにアクセス ********
-        client = new KintoneRestAPIClient({
-            baseUrl: subDomain,
-            auth: {
-                apiToken: apiToken
-            }
-        });
-        //******** kintone NO 取得 start ********
-        const response2 = await client.record.getRecords({
-            app: appId,
-            fields: ['NO'],
-            // 6桁の数字のみで構成されているレコードを想定
-            query: `${'NO'} != "" order by ${'NO'} desc limit 1`
-        });
-        var nextStr = "";
-        if (response2.records.length === 0) {
-            nextStr = '3001';
-            console.log('レコードがありません。最初の番号:', nextStr);
-        } else {
-            const maxStr = response2.records[0]['NO'].value;
-            const nextNum = Number(maxStr) + 1;
-            nextStr = String(nextNum);
-            console.log(`現在の最大値: ${maxStr} -> 次の採番: ${nextStr}`);
-        }
-        //******** kintoneNO取得 end ********
-        //******** kintoneデータ更新 ********
-        const updtResult = await client.record.updateRecord({
-            app: appId,                        // アプリID
-            id: webhookData.レコード番号,      // ここにレコード番号（$id）を指定
-            record: {
-                'NO': {     // NO
-                    value: `${nextStr}`
-                }
-            }
-        });
-        console.log('更新しました');
-        //******** kintoneデータ更新 End ********
-
         sendEMail(msg);
         sendEMail(msg2);
     } catch (error) {
