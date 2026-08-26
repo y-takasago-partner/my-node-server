@@ -140,9 +140,9 @@ const picKanryou = async (req, res) => {
         //******** kintone申告ID取得 end ********
 
         //******** kintoneデータ更新 ********
+        console.log(`申告IDを登録するよ1 ${nextStr}`);
+        console.log('申告IDを登録するよ2 ' + nextStr);
         const updtResult = await client.record.updateRecord({
-            console.log(`申告IDを登録するよ1 ${nextStr}`);
-            console.log('申告IDを登録するよ2 ' + nextStr);
             app: appId,                 // アプリID
             updateKey: {
                field: '更新キー',       // Field code with "Prohibit duplicate values" checked
