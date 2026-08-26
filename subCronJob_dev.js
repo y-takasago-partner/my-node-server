@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '01 03 * * *') => {
+const subCronJob_dev = (scheduleTime = '06 03 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -77,7 +77,7 @@ console.log('◆送信対象は...');
 console.log('recordId is ' + recordId);
 console.log('mailAddress is ' + mailAddress);
 console.log('shimei is ' + shimei);
-console.log('送信日付 is ' + record['dateFormatted'].value);
+console.log('送信日付 is ' + record['EmailDeliv_DateSent'].value);
 console.log('送信結果 is ' + record['EmailDeliv_Result'].value);
 console.log('再送 is ' + record['EmailDeliv_Resend'](0).value);
 console.log('再送日付 is ' + record['EmailDeliv_Resend_CompletedDate'](0).value);
