@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '43 03 * * *') => {
+const subCronJob_dev = (scheduleTime = '15 04 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -111,14 +111,15 @@ console.log('再送日付 is ' + record['EmailDeliv_Resend_CompletedDate'].value
                 subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
                 text: honbun,                               // 本文
             };
+//            sendEMail(msg);
             // 3. 送信が成功したら、kintoneの該当レコードを「送信済」に更新する
             if(record['ReplyCompletedDate'].value === "") {
                 await kintoneClient.record.updateRecord({
                     app: JishukuSendAppID,
                     id: recordId,
                     record: {
-                        ReplyCompletedDate: { value: [dateTimeFormatted] },
-                        EmailDeliv_Result: { value: ['配信済'] }
+                        ReplyCompletedDate: { value: dateTimeFormatted },
+                        EmailDeliv_Result: { value: '配信済' }
                     }
                 });
                 console.log(`送信結果と返信処理完了日。`);
@@ -128,7 +129,7 @@ console.log('再送日付 is ' + record['EmailDeliv_Resend_CompletedDate'].value
                     app: JishukuSendAppID,
                     id: recordId,
                     record: {
-                        EmailDeliv_Resend_CompletedDate: { value: [dateFormatted] }
+                        EmailDeliv_Resend_CompletedDate: { value: dateFormatted }
                     }
                 });
                 console.log(`送信結果と返信処理完了日。`);
