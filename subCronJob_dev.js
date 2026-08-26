@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '41 03 * * *') => {
+const subCronJob_dev = (scheduleTime = '43 03 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -56,9 +56,9 @@ const subCronJob_dev = (scheduleTime = '41 03 * * *') => {
             '月',
             String(d.getDate()).padStart(2, '0'),
             '日 ',
-            String(now.getHours()).padStart(2, '0'),
+            String(d.getHours()).padStart(2, '0'),
             '時',
-            String(now.getMinutes()).padStart(2, '0'),
+            String(d.getMinutes()).padStart(2, '0'),
             '分',
         ].join('');
         // 1. kintoneから送信対象レコードを取得する
