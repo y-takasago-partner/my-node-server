@@ -122,7 +122,7 @@ const picKanryou = async (req, res) => {
         //******** kintone申告ID取得 start ********
         const FIELD_ShinkokuID = 'ShinkokuID';                  // 申告ID（6桁の文字列）
         const response2 = await client.record.getRecords({
-            app: APP_ID,
+            app: appId,
             fields: [FIELD_ShinkokuID],
             // 6桁の数字のみで構成されているレコードを想定
             query: `${FIELD_ShinkokuID} != "" order by ${FIELD_ShinkokuID} desc limit 1`
