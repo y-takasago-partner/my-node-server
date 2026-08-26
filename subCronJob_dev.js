@@ -42,13 +42,25 @@ const subCronJob_dev = (scheduleTime = '09 03 * * *') => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
     try {
-        // 本日日付
+        // 本日日付と現在日時
         const d = new Date();
-        const dateFormatted = [         
+        const dateFormatted = [
             d.getFullYear(),
             String(d.getMonth() + 1).padStart(2, '0'),
             String(d.getDate()).padStart(2, '0')
         ].join('/');
+        const dateTimeFormatted = [
+            d.getFullYear(),
+            '年',
+            String(d.getMonth() + 1).padStart(2, '0'),
+            '月',
+            String(d.getDate()).padStart(2, '0'),
+            '日 ',
+            String(now.getHours()).padStart(2, '0'),
+            '時',
+            String(now.getMinutes()).padStart(2, '0'),
+            '分',
+        ].join('');
         // 1. kintoneから送信対象レコードを取得する
         // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
         // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
@@ -99,38 +111,28 @@ console.log('再送日付 is ' + record['EmailDeliv_Resend_CompletedDate'].value
                 subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
                 text: honbun,                               // 本文
             };
-//****            sendEMail(msg);
-
-//            const customerName = record['顧客名'] ? record['顧客名'].value : 'お客様';
-//            const toEmail = record['メールアドレス'] ? record['メールアドレス'].value : null;
-//            const detail = record['問い合わせ内容'] ? record['問い合わせ内容'].value : '内容なし';
-//
-//            if (!toEmail) {
-//                console.log(`レコードID: ${recordId} はメールアドレスがないためスキップします。`);
-//                continue;
-//            }
-//
-//            // SendGridでメール送信
-//            const msg = {
-//                to: toEmail,
-//                from: process.env.FROM_EMAIL,
-//                subject: '【定期送信】お手続きのご案内',
-//                text: `${customerName} 様\n\nお世話になっております。以下内容をご確認ください。\n\n---\n${detail}\n---`,
-//            };
-//
-//            await sgMail.send(msg);
-//            console.log(`メール送信成功: ${toEmail} 宛 (レコードID: ${recordId})`);
-//
-//            // 3. 送信が成功したら、kintoneの該当レコードを「送信済」に更新する
-//            await kintoneClient.record.updateRecord({
-//                app: JishukuSendAppID,
-//                id: recordId,
-//                record: {
-//                    mail_status: { value: ['送信済'] }
-//                }
-//            });
-//            console.log(`kintoneのステータスを送信済に更新しました。`);
-      // await 処理など
+            // 3. 送信が成功したら、kintoneの該当レコードを「送信済」に更新する
+            if(record['ReplyCompletedDate'].value === "") {
+                await kintoneClient.record.updateRecord({
+                    app: JishukuSendAppID,
+                    id: recordId,
+                    record: {
+                        ReplyCompletedDate: { value: [dateTimeFormatted] },
+                        EmailDeliv_Result: { value: ['配信済'] }
+                    }
+                });
+                console.log(`送信結果と返信処理完了日。`);
+            } else {
+                //再送にチェックのあるとき
+                await kintoneClient.record.updateRecord({
+                    app: JishukuSendAppID,
+                    id: recordId,
+                    record: {
+                        EmailDeliv_Resend_CompletedDate: { value: [dateFormatted] }
+                    }
+                });
+                console.log(`送信結果と返信処理完了日。`);
+            }
         }
         console.log('定期タスクが完了しました。');
     } catch (error) {
