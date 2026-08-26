@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '54 02 * * *') => {
+const subCronJob_dev = (scheduleTime = '56 02 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -60,7 +60,6 @@ const subCronJob_dev = (scheduleTime = '54 02 * * *') => {
             '  ) ' + 
             ' limit 10';
 console.log(query);
-return;
         const response = await kintoneClient.record.getRecords({
             app: JishukuSendAppID,
             query: query
