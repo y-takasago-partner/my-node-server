@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '50 19 * * *') => {
+const subCronJob_dev = (scheduleTime = '57 19 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -61,9 +61,9 @@ const subCronJob_dev = (scheduleTime = '50 19 * * *') => {
             String(d.getHours()).padStart(2, '0'), '時',
             String(d.getMinutes()).padStart(2, '0'), '分',
         ].join('');
-console.log('dateFormatted is ' + dateFormatted);
-console.log('dateFormattedJ is ' + dateFormattedJ);
-console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
+        //  console.log('dateFormatted is ' + dateFormatted);
+        //  console.log('dateFormattedJ is ' + dateFormattedJ);
+        //  console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
         // 1. kintoneから送信対象レコードを取得する（① or ②）
         // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
         // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
@@ -74,10 +74,7 @@ console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
             '    (EmailDeliv_Resend in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_Resend_CompletedDate = "") ' + 
             '  ) ' + 
             ' limit 100';
-//        const query = 
-//            'email != "" ' + 
-//            ' limit 100';
-console.log(query);
+        //  console.log(query);
         const response = await kintoneClient.record.getRecords({
             app: JishukuSendAppID,
             query: query
@@ -101,24 +98,23 @@ console.log(query);
             const fubi4 = record['Fubi_4'].value;
             const fubi5 = record['Fubi_5'].value;
             const bun = record['EmailDeliv_Body'].value;
-
-console.log('recordId is '    + recordId);
-console.log('mailAddress is ' + mailAddress);
-console.log('result is '      + result);
-console.log('shimei is '      + shimei);
-console.log('申告番号 is '    + irai_no);
-console.log('申告種別 is '    + irai_cd);
-console.log('送信日付 is '    + record['EmailDeliv_DateSent'].value);
-console.log('返信完了日 is '  + record['ReplyCompletedDate'].value);
-console.log('送信結果 is '    + record['EmailDeliv_Result'].value);
-console.log('再送 is '        + record['EmailDeliv_Resend'].value);
-console.log('再送完了日 is '  + record['EmailDeliv_Resend_CompletedDate'].value);
-console.log('不備１ is '  + record['Fubi_1'].value);
-console.log('不備２ is '  + record['Fubi_2'].value);
-console.log('不備３ is '  + record['Fubi_3'].value);
-console.log('不備４ is '  + record['Fubi_4'].value);
-console.log('不備５ is '  + record['Fubi_5'].value);
-console.log('メール文 is '  + bun);
+            //  console.log('recordId is '    + recordId);
+            //  console.log('mailAddress is ' + mailAddress);
+            //  console.log('result is '      + result);
+            //  console.log('shimei is '      + shimei);
+            //  console.log('申告番号 is '    + irai_no);
+            //  console.log('申告種別 is '    + irai_cd);
+            //  console.log('送信日付 is '    + record['EmailDeliv_DateSent'].value);
+            //  console.log('返信完了日 is '  + record['ReplyCompletedDate'].value);
+            //  console.log('送信結果 is '    + record['EmailDeliv_Result'].value);
+            //  console.log('再送 is '        + record['EmailDeliv_Resend'].value);
+            //  console.log('再送完了日 is '  + record['EmailDeliv_Resend_CompletedDate'].value);
+            //  console.log('不備１ is '  + record['Fubi_1'].value);
+            //  console.log('不備２ is '  + record['Fubi_2'].value);
+            //  console.log('不備３ is '  + record['Fubi_3'].value);
+            //  console.log('不備４ is '  + record['Fubi_4'].value);
+            //  console.log('不備５ is '  + record['Fubi_5'].value);
+            //  console.log('メール文 is '  + bun);
             const fubi = 
                 ((!fubi1 || fubi1.slice(0, 2) === "--") ? "" : fubi1 + '\n') + 
                 ((!fubi2 || fubi2.slice(0, 2) === "--") ? "" : fubi2 + '\n') + 
@@ -142,8 +138,7 @@ console.log('メール文 is '  + bun);
                 "お願い申し上げます。\n\n" +
                 "受付処理日　　　:　" + dateFormattedJ + "\n\n" + 
                 "【不受理理由】\n" +
-                "★（1行目　不備確認欄で選択された理由を明記する/プルダウンで選択がない場合は空欄）\n" +
-                "★（2行目　管理画面メール配信のメール文入力欄に記載があった場合は転記する）\n" ;
+                fubi ;
             const honbun_chui = 
                 "≪注意事項－登録申告の場合≫\n" +
                 "・登録情報の反映には、本メールの受信日の翌日から3営業日程度を要します。  \n" +
@@ -184,6 +179,7 @@ console.log('メール文 is '  + bun);
                 "〒108-0074東京都港区高輪3丁目19番15号 \n" + 
                 "TEL 03-5739-3861/050-3494-7988\n" ;
             const honbun = ((result==='受理') ? honbun_juri : honbun_fujuri) + honbun_chui + honbun_info + honbun_contact ;
+            console.log('本文\n'  + honbun);
             const msg = {
                 to  :  mailAddress,                         // 宛先メールアドレス
                 from: {
