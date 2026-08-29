@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '15 20 * * *') => {
+const subCronJob_dev = (scheduleTime = '22 20 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -92,11 +92,11 @@ const subCronJob_dev = (scheduleTime = '15 20 * * *') => {
             const shimei = record['Shimei_Sei'].value + '　' + record['Shimei_Mei'].value;
             const irai_no = record['IRAI_NO'].value + record['IRAI_NO_SUB'].value;
             const irai_cd = record['IRAI_CD'].value;
-            const fubi1 = record['Fubi_1'].value;
-            const fubi2 = record['Fubi_2'].value;
-            const fubi3 = record['Fubi_3'].value;
-            const fubi4 = record['Fubi_4'].value;
-            const fubi5 = record['Fubi_5'].value;
+            const fubi1 = '　' + record['Fubi_1'].value.slice(2);
+            const fubi2 = '　' + record['Fubi_2'].value.slice(2);
+            const fubi3 = '　' + record['Fubi_3'].value.slice(2);
+            const fubi4 = '　' + record['Fubi_4'].value.slice(2);
+            const fubi5 = '　' + record['Fubi_5'].value.slice(2);
             const bun = record['EmailDeliv_Body'].value;
             //  console.log('recordId is '    + recordId);
             //  console.log('mailAddress is ' + mailAddress);
