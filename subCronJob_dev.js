@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '48 0 * * *') => {
+const subCronJob_dev = (scheduleTime = '52 0 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -214,8 +214,8 @@ const subCronJob_dev = (scheduleTime = '48 0 * * *') => {
 //                });
 //                console.log(`再送日付更新！`);
 //            }
-//        }
-//        console.log('定期タスクが完了しました。');
+        }
+        console.log('定期タスクが完了しました。');
     } catch (error) {
         console.error('定期タスク中にエラーが発生しました:', error);
     }
