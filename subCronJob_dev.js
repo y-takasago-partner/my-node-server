@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '52 0 * * *') => {
+const subCronJob_dev = (scheduleTime = '59 0 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -122,7 +122,7 @@ const subCronJob_dev = (scheduleTime = '52 0 * * *') => {
                 ((!fubi4 || fubi4.slice(0, 2) === "--") ? "" : "・" + fubi4 + '\n') + 
                 ((!fubi5 || fubi5.slice(0, 2) === "--") ? "" : "・" + fubi5 + '\n') + 
                 (!bun ? "" : "・" + bun + '\n') + '\n';
-            const sbjPreFixResend = record['EmailDeliv_Resend'].value ? "" : "【再送】";
+            const sbjPreFixResend = !record['EmailDeliv_DateSent'].value ? "" : "【再送】";
             const honbun_juri = 
                 shimei + "様\n\n" + 
                 "申告をいただきました貸付自粛（" + irai_cd + "申告）の処理が完了しましたので、\n" +
