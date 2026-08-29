@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '57 19 * * *') => {
+const subCronJob_dev = (scheduleTime = '1 20 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -189,7 +189,7 @@ const subCronJob_dev = (scheduleTime = '57 19 * * *') => {
                 subject: sbjPreFix + sbjPreFixResend + '「日本貸金業協会」貸付自粛申告　' + result + 'のお知らせ', // 件名
                 text: honbun,                               // 本文
             };
-//            sendEMail(msg);
+            sendEMail(msg);
             // 3. 送信が成功したら、kintoneの該当レコードを「配信済」に更新する
 // ★送信のテストが完了するまでコメントアウト
 //            if(record['ReplyCompletedDate'].value === "") {
