@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '59 0 * * *') => {
+const subCronJob_dev = (scheduleTime = '2 1 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -191,29 +191,29 @@ const subCronJob_dev = (scheduleTime = '59 0 * * *') => {
                 html: honbun.replaceAll("\n", "<br>"),      // 本文
             };
             sendEMail(msg);
-//            // 3. 送信が成功したら、kintoneの該当レコードを「配信済」に更新する
-//            if(record['ReplyCompletedDate'].value === "") {
-//                await kintoneClient.record.updateRecord({
-//                    app: JishukuSendAppID,
-//                    id: recordId,
-//                    record: {
-//                        EmailDeliv_DateSent: { value: dateTimeFormattedJ },
-//                        ReplyCompletedDate: { value: dateTimeFormattedJ },
-//                        EmailDeliv_Result: { value: '配信済' }
-//                    }
-//                });
-//                console.log(`送信結果と返信処理完了日更新！`);
-//            } else {
-//                //再送にチェックのあるとき
-//                await kintoneClient.record.updateRecord({
-//                    app: JishukuSendAppID,
-//                    id: recordId,
-//                    record: {
-//                        EmailDeliv_Resend_CompletedDate: { value: dateFormatted }
-//                    }
-//                });
-//                console.log(`再送日付更新！`);
-//            }
+            // 3. 送信が成功したら、kintoneの該当レコードを「配信済」に更新する
+            if(record['ReplyCompletedDate'].value === "") {
+                await kintoneClient.record.updateRecord({
+                    app: JishukuSendAppID,
+                    id: recordId,
+                    record: {
+                        EmailDeliv_DateSent: { value: dateTimeFormattedJ },
+                        ReplyCompletedDate: { value: dateTimeFormattedJ },
+                        EmailDeliv_Result: { value: '配信済' }
+                    }
+                });
+                console.log(`送信結果と返信処理完了日更新！`);
+            } else {
+                //再送にチェックのあるとき
+                await kintoneClient.record.updateRecord({
+                    app: JishukuSendAppID,
+                    id: recordId,
+                    record: {
+                        EmailDeliv_Resend_CompletedDate: { value: dateFormatted }
+                    }
+                });
+                console.log(`再送日付更新！`);
+            }
         }
         console.log('定期タスクが完了しました。');
     } catch (error) {
