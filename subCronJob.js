@@ -64,11 +64,11 @@ const subCronJob = (scheduleTime = '14 16 * * *') => {
 console.log('dateFormatted is ' + dateFormatted);
 console.log('dateFormattedJ is ' + dateFormattedJ);
 console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
-        // クエリ条件: mail_status に「送信済」が含まれない
+        // 1. kintoneから送信対象レコードを取得する（① or ②）
         // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
         // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
         const query = 
-            'email is not "" and ' + // 👈 != "" から is not "" に変更
+            'email is not "" and ' + // != "" から is not "" に変更
             '  ( ' + 
             '    (EmailDeliv_Delivery = "する" and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_DateSent = "") or ' + 
             '    (EmailDeliv_Resend   = "する" and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_Resend_CompletedDate = "") ' + 
