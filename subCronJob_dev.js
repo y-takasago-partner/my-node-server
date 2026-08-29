@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '42 19 * * *') => {
+const subCronJob_dev = (scheduleTime = '50 19 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -118,7 +118,7 @@ console.log('不備２ is '  + record['Fubi_2'].value);
 console.log('不備３ is '  + record['Fubi_3'].value);
 console.log('不備４ is '  + record['Fubi_4'].value);
 console.log('不備５ is '  + record['Fubi_5'].value);
-console.log('メール文 is '  + record['bun'].value);
+console.log('メール文 is '  + bun);
             const fubi = 
                 ((!fubi1 || fubi1.slice(0, 2) === "--") ? "" : fubi1 + '\n') + 
                 ((!fubi2 || fubi2.slice(0, 2) === "--") ? "" : fubi2 + '\n') + 
