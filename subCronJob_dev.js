@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '28 19 * * *') => {
+const subCronJob_dev = (scheduleTime = '32 19 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -67,12 +67,15 @@ console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
         // 1. kintoneから送信対象レコードを取得する（① or ②）
         // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
         // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
+//        const query = 
+//            'email is not "" and ' + 
+//            '  ( ' + 
+//            '    (EmailDeliv_Delivery in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_DateSent = "") or ' + 
+//            '    (EmailDeliv_Resend in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_Resend_CompletedDate = "") ' + 
+//            '  ) ' + 
+//            ' limit 100';
         const query = 
-            'email is not "" and ' + 
-            '  ( ' + 
-            '    (EmailDeliv_Delivery in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_DateSent = "") or ' + 
-            '    (EmailDeliv_Resend in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_Resend_CompletedDate = "") ' + 
-            '  ) ' + 
+            'email is not "" ' + 
             ' limit 100';
 console.log(query);
         const response = await kintoneClient.record.getRecords({
