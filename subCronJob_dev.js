@@ -37,20 +37,20 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '22 20 * * *') => {
+const subCronJob_dev = (scheduleTime = '35 0 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
     try {
         // 本日日付と現在日時
         const d = new Date();
-        const dateFormatted = [
-            d.getFullYear(),
-            String(d.getMonth() + 1).padStart(2, '0'),
-            String(d.getDate()).padStart(2, '0')
-        ].join('/');
+        //const dateFormatted = [
+        //    d.getFullYear(),
+        //    String(d.getMonth() + 1).padStart(2, '0'),
+        //    String(d.getDate()).padStart(2, '0')
+        //].join('/');
         const dateFormattedJ = [
-            '西暦', d.getFullYear(), '年',
+            d.getFullYear(), '年',
             String(d.getMonth() + 1).padStart(2, '0'), '月',
             String(d.getDate()).padStart(2, '0'), '日' 
         ].join('');
@@ -116,12 +116,12 @@ const subCronJob_dev = (scheduleTime = '22 20 * * *') => {
             //  console.log('不備５ is '  + record['Fubi_5'].value);
             //  console.log('メール文 is '  + bun);
             const fubi = 
-                ((!fubi1 || fubi1.slice(0, 2) === "--") ? "" : fubi1 + '\n') + 
-                ((!fubi2 || fubi2.slice(0, 2) === "--") ? "" : fubi2 + '\n') + 
-                ((!fubi3 || fubi3.slice(0, 2) === "--") ? "" : fubi3 + '\n') + 
-                ((!fubi4 || fubi4.slice(0, 2) === "--") ? "" : fubi4 + '\n') + 
-                ((!fubi5 || fubi5.slice(0, 2) === "--") ? "" : fubi5 + '\n') + 
-                (!bun ? "" : bun + '\n') ;
+                ((!fubi1 || fubi1.slice(0, 2) === "--") ? "" : "・" + fubi1 + '\n') + 
+                ((!fubi2 || fubi2.slice(0, 2) === "--") ? "" : "・" + fubi2 + '\n') + 
+                ((!fubi3 || fubi3.slice(0, 2) === "--") ? "" : "・" + fubi3 + '\n') + 
+                ((!fubi4 || fubi4.slice(0, 2) === "--") ? "" : "・" + fubi4 + '\n') + 
+                ((!fubi5 || fubi5.slice(0, 2) === "--") ? "" : "・" + fubi5 + '\n') + 
+                (!bun ? "" : "・" + bun + '\n') + '\n';
             const sbjPreFixResend = record['EmailDeliv_Resend'].value ? "" : "【再送】";
             const honbun_juri = 
                 shimei + "様\n\n" + 
@@ -192,28 +192,28 @@ const subCronJob_dev = (scheduleTime = '22 20 * * *') => {
             };
             sendEMail(msg);
             // 3. 送信が成功したら、kintoneの該当レコードを「配信済」に更新する
-// ★送信のテストが完了するまでコメントアウト
-//            if(record['ReplyCompletedDate'].value === "") {
-//                await kintoneClient.record.updateRecord({
-//                    app: JishukuSendAppID,
-//                    id: recordId,
-//                    record: {
-//                        ReplyCompletedDate: { value: dateTimeFormattedJ },
-//                        EmailDeliv_Result: { value: '配信済' }
-//                    }
-//                });
-//                console.log(`送信結果と返信処理完了日。`);
-//            } else {
-//                //再送にチェックのあるとき
-//                await kintoneClient.record.updateRecord({
-//                    app: JishukuSendAppID,
-//                    id: recordId,
-//                    record: {
-//                        EmailDeliv_Resend_CompletedDate: { value: dateFormatted }
-//                    }
-//                });
-//                console.log(`送信結果と返信処理完了日。`);
-//            }
+            if(record['ReplyCompletedDate'].value === "") {
+                await kintoneClient.record.updateRecord({
+                    app: JishukuSendAppID,
+                    id: recordId,
+                    record: {
+                        EmailDeliv_DateSent: { value: dateTimeFormattedJ },
+                        ReplyCompletedDate: { value: dateTimeFormattedJ },
+                        EmailDeliv_Result: { value: '配信済' }
+                    }
+                });
+                console.log(`送信結果と返信処理完了日更新！`);
+            } else {
+                //再送にチェックのあるとき
+                await kintoneClient.record.updateRecord({
+                    app: JishukuSendAppID,
+                    id: recordId,
+                    record: {
+                        EmailDeliv_Resend_CompletedDate: { value: dateFormatted }
+                    }
+                });
+                console.log(`再送日付更新！`);
+            }
         }
         console.log('定期タスクが完了しました。');
     } catch (error) {
