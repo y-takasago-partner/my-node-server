@@ -251,7 +251,7 @@ const jishukuSend2 = async (req, res) => {
         });
         const record = result.record;
         console.log('取得したレコードデータ:', record);
-        await oneMsgSend(record);
+        oneMsgSend(record);
     } catch (error) {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
