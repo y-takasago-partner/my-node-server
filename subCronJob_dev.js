@@ -20,8 +20,8 @@ const kintoneClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
 });
-console.log('APIキー：' + apiToken_send);
-const JishukuSendAppID = 26;                                // ★コピー先アプリBのアプリID
+//console.log('APIキー：' + apiToken_send);
+const JishukuSendAppID = 26;                                // ★アプリID
 
 
 const express = require('express');
@@ -179,7 +179,7 @@ const subCronJob_dev = (scheduleTime = '2 1 * * *') => {
                 "〒108-0074東京都港区高輪3丁目19番15号 \n" + 
                 "TEL 03-5739-3861/050-3494-7988\n" ;
             const honbun = ((result==='受理') ? honbun_juri : honbun_fujuri) + honbun_chui + honbun_info + honbun_contact ;
-            console.log('本文\n'  + honbun);
+            //console.log('本文\n'  + honbun);
             const msg = {
                 to  :  mailAddress,                         // 宛先メールアドレス
                 from: {
@@ -209,7 +209,7 @@ const subCronJob_dev = (scheduleTime = '2 1 * * *') => {
                     app: JishukuSendAppID,
                     id: recordId,
                     record: {
-                        EmailDeliv_Resend_CompletedDate: { value: dateFormatted }
+                        EmailDeliv_Resend_CompletedDate: { value: dateFormattedJ }
                     }
                 });
                 console.log(`再送日付更新！`);

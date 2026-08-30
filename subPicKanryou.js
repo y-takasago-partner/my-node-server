@@ -10,7 +10,7 @@ const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone �
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';  // ★kintone URL
 
 //const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // ★宛先職員メールアドレス（運用）
-const addrToJishukuStaff = 'y-takasago_j01@go-partner.jp';  // ★宛先職員メールアドレス（開発、テスト）
+const addrToJishukuStaff = 'y-takasago@go-partner.jp';      // ★宛先職員メールアドレス（開発、テスト）
 
 const appId = 37;                                           // ★kintone 貸付自粛Web申告 アプリID
 const apiToken = process.env.KINTONE_API_KEY;               // ★kintone 貸付自粛Web申告 APIトークン
@@ -160,7 +160,7 @@ const picKanryou = async (req, res) => {
         console.log('更新しました');
 
         //******** メール送信 ********
-        const WebShinkoku_honbun = 
+        const honbun = 
             seiEncrypted + " " + meiEncrypted + "様\n\n\n" + 
             "貸付自粛の" + shubetsuEncrypted + "申告を受け付けました。\n" + 
             "なお、申告の結果(受理・不受理)については、メールにて連絡いたします。\n\n" + 
@@ -187,14 +187,23 @@ const picKanryou = async (req, res) => {
               email: 'jisyuku_web@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
             },
             subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
-            text: WebShinkoku_honbun,                // 本文
+            text: honbun,                         // 本文
+            html: honbun.replaceAll("\n", "<br>") // HTML本文
         };
-        const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
+        const honbun2 = 
+            shubetsuEncrypted + '申告がありました。\n' + 
+            "下記URLからログインし、内容の確認をお願いします。\n\n" + 
+            "申告ID：" + `${nextStr}` + "\n" + 
+            "申告タイプ：本人\n" + 
+            "申告種別：" + shubetsuEncrypted + "\n\n" +
+            KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value + '\n';
+        //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
             from:  'jisyuku_web@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
             subject: sbjPreFix + '' + shubetsuEncrypted + '申告がありました',     // 件名
-            text: url2 + '\n',                     // 本文
+            text: honbun2,                         // 本文
+            html: honbun2.replaceAll("\n", "<br>") // HTML本文
         };
         sendEMail(msg);
         sendEMail(msg2);

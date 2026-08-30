@@ -84,21 +84,6 @@ const subCronJob = (scheduleTime = '14 16 * * *') => {
         if (records.length === 0) return;
         // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
         for (const record of records) {
-
-        }
-        console.log('定期タスクが完了しました。');
-    } catch (error) {
-        console.error('定期タスク中にエラーが発生しました:', error);
-    }
-  }, {
-      scheduled: true,
-      timezone: "Asia/Tokyo"
-  });
-};
-
-
-function async oneMsgSend (record) {
-
             const recordId = record.$id.value;
             const status = record['ProcStatus'].value;
             const result = ( status === '受理') ? "受理" : (status === '不受理' || status === '不受理（不備あり）') ? "不受理" : "";
@@ -229,13 +214,21 @@ function async oneMsgSend (record) {
                 });
                 console.log(`再送日付更新！`);
             }
-
-}
+        }
+        console.log('定期タスクが完了しました。');
+    } catch (error) {
+        console.error('定期タスク中にエラーが発生しました:', error);
+    }
+  }, {
+      scheduled: true,
+      timezone: "Asia/Tokyo"
+  });
+};
 
 // ==========================================
 // 貸付自粛Web申告画面保存成功時の処理⇒送信ボタン押下時に変更
 // ==========================================
-const jishukuSend2 = async (req, res) => {
+const jishukuSend2_dev = async (req, res) => {
     console.log('--- 貸付自粛Web申告保存処理から受信しました ---');
     const recordId = req.body.record_id;
     if (!recordId) {

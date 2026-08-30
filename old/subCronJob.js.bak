@@ -20,8 +20,8 @@ const kintoneClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
 });
-//console.log('APIキー：' + apiToken_send);
-const JishukuSendAppID = 37;                                // ★アプリID
+console.log('APIキー：' + apiToken_send);
+const JishukuSendAppID = 37;                                // ★コピー先アプリBのアプリID
 
 
 const express = require('express');
@@ -44,13 +44,13 @@ const subCronJob = (scheduleTime = '14 16 * * *') => {
     try {
         // 1. kintoneから「まだメールを送信していないレコード」を取得する
         const d = new Date();
-        //const dateFormatted = [
-        //    d.getFullYear(),
-        //    String(d.getMonth() + 1).padStart(2, '0'),
-        //    String(d.getDate()).padStart(2, '0')
-        //].join('/');
+        const dateFormatted = [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, '0'),
+            String(d.getDate()).padStart(2, '0')
+        ].join('/');
         const dateFormattedJ = [
-            d.getFullYear(), '年',
+            '西暦', d.getFullYear(), '年',
             String(d.getMonth() + 1).padStart(2, '0'), '月',
             String(d.getDate()).padStart(2, '0'), '日' 
         ].join('');
@@ -61,20 +61,20 @@ const subCronJob = (scheduleTime = '14 16 * * *') => {
             String(d.getHours()).padStart(2, '0'), '時',
             String(d.getMinutes()).padStart(2, '0'), '分',
         ].join('');
-        //  console.log('dateFormatted is ' + dateFormatted);
-        //  console.log('dateFormattedJ is ' + dateFormattedJ);
-        //  console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
+console.log('dateFormatted is ' + dateFormatted);
+console.log('dateFormattedJ is ' + dateFormattedJ);
+console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
         // 1. kintoneから送信対象レコードを取得する（① or ②）
         // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
         // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
         const query = 
-            'email != "" and ' + 
+            'email is not "" and ' + // != "" から is not "" に変更
             '  ( ' + 
-            '    (EmailDeliv_Delivery in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_DateSent = "") or ' + 
-            '    (EmailDeliv_Resend in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_Resend_CompletedDate = "") ' + 
+            '    (EmailDeliv_Delivery = "する" and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_DateSent = "") or ' + 
+            '    (EmailDeliv_Resend   = "する" and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_Resend_CompletedDate = "") ' + 
             '  ) ' + 
             ' limit 100';
-        //  console.log(query);
+console.log(query);
         const response = await kintoneClient.record.getRecords({
             app: JishukuSendAppID,
             query: query
@@ -84,21 +84,6 @@ const subCronJob = (scheduleTime = '14 16 * * *') => {
         if (records.length === 0) return;
         // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
         for (const record of records) {
-
-        }
-        console.log('定期タスクが完了しました。');
-    } catch (error) {
-        console.error('定期タスク中にエラーが発生しました:', error);
-    }
-  }, {
-      scheduled: true,
-      timezone: "Asia/Tokyo"
-  });
-};
-
-
-function async oneMsgSend (record) {
-
             const recordId = record.$id.value;
             const status = record['ProcStatus'].value;
             const result = ( status === '受理') ? "受理" : (status === '不受理' || status === '不受理（不備あり）') ? "不受理" : "";
@@ -107,37 +92,38 @@ function async oneMsgSend (record) {
             const shimei = record['Shimei_Sei'].value + '　' + record['Shimei_Mei'].value;
             const irai_no = record['IRAI_NO'].value + record['IRAI_NO_SUB'].value;
             const irai_cd = record['IRAI_CD'].value;
-            const fubi1 = record['Fubi_1'].value.slice(2);
-            const fubi2 = record['Fubi_2'].value.slice(2);
-            const fubi3 = record['Fubi_3'].value.slice(2);
-            const fubi4 = record['Fubi_4'].value.slice(2);
-            const fubi5 = record['Fubi_5'].value.slice(2);
+            const fubi1 = record['Fubi_1'].value;
+            const fubi2 = record['Fubi_2'].value;
+            const fubi3 = record['Fubi_3'].value;
+            const fubi4 = record['Fubi_4'].value;
+            const fubi5 = record['Fubi_5'].value;
             const bun = record['EmailDeliv_Body'].value;
-            //  console.log('recordId is '    + recordId);
-            //  console.log('mailAddress is ' + mailAddress);
-            //  console.log('result is '      + result);
-            //  console.log('shimei is '      + shimei);
-            //  console.log('申告番号 is '    + irai_no);
-            //  console.log('申告種別 is '    + irai_cd);
-            //  console.log('送信日付 is '    + record['EmailDeliv_DateSent'].value);
-            //  console.log('返信完了日 is '  + record['ReplyCompletedDate'].value);
-            //  console.log('送信結果 is '    + record['EmailDeliv_Result'].value);
-            //  console.log('再送 is '        + record['EmailDeliv_Resend'].value);
-            //  console.log('再送完了日 is '  + record['EmailDeliv_Resend_CompletedDate'].value);
-            //  console.log('不備１ is '  + record['Fubi_1'].value);
-            //  console.log('不備２ is '  + record['Fubi_2'].value);
-            //  console.log('不備３ is '  + record['Fubi_3'].value);
-            //  console.log('不備４ is '  + record['Fubi_4'].value);
-            //  console.log('不備５ is '  + record['Fubi_5'].value);
-            //  console.log('メール文 is '  + bun);
+
+console.log('recordId is '    + recordId);
+console.log('mailAddress is ' + mailAddress);
+console.log('result is '      + result);
+console.log('shimei is '      + shimei);
+console.log('申告番号 is '    + irai_no);
+console.log('申告種別 is '    + irai_cd);
+console.log('送信日付 is '    + record['EmailDeliv_DateSent'].value);
+console.log('返信完了日 is '  + record['ReplyCompletedDate'].value);
+console.log('送信結果 is '    + record['EmailDeliv_Result'].value);
+console.log('再送 is '        + record['EmailDeliv_Resend'].value);
+console.log('再送完了日 is '  + record['EmailDeliv_Resend_CompletedDate'].value);
+console.log('不備１ is '  + record['Fubi_1'].value);
+console.log('不備２ is '  + record['Fubi_2'].value);
+console.log('不備３ is '  + record['Fubi_3'].value);
+console.log('不備４ is '  + record['Fubi_4'].value);
+console.log('不備５ is '  + record['Fubi_5'].value);
+console.log('メール文 is '  + record['bun'].value);
             const fubi = 
-                ((!fubi1 || fubi1.slice(0, 2) === "--") ? "" : "・" + fubi1 + '\n') + 
-                ((!fubi2 || fubi2.slice(0, 2) === "--") ? "" : "・" + fubi2 + '\n') + 
-                ((!fubi3 || fubi3.slice(0, 2) === "--") ? "" : "・" + fubi3 + '\n') + 
-                ((!fubi4 || fubi4.slice(0, 2) === "--") ? "" : "・" + fubi4 + '\n') + 
-                ((!fubi5 || fubi5.slice(0, 2) === "--") ? "" : "・" + fubi5 + '\n') + 
-                (!bun ? "" : "・" + bun + '\n') + '\n';
-            const sbjPreFixResend = !record['EmailDeliv_DateSent'].value ? "" : "【再送】";
+                ((!fubi1 || fubi1.slice(0, 2) === "--") ? "" : fubi1 + '\n') + 
+                ((!fubi2 || fubi2.slice(0, 2) === "--") ? "" : fubi2 + '\n') + 
+                ((!fubi3 || fubi3.slice(0, 2) === "--") ? "" : fubi3 + '\n') + 
+                ((!fubi4 || fubi4.slice(0, 2) === "--") ? "" : fubi4 + '\n') + 
+                ((!fubi5 || fubi5.slice(0, 2) === "--") ? "" : fubi5 + '\n') + 
+                (!bun ? "" : bun + '\n') ;
+            const sbjPreFixResend = record['EmailDeliv_Resend'].value ? "" : "【再送】";
             const honbun_juri = 
                 shimei + "様\n\n" + 
                 "申告をいただきました貸付自粛（" + irai_cd + "申告）の処理が完了しましたので、\n" +
@@ -153,7 +139,8 @@ function async oneMsgSend (record) {
                 "お願い申し上げます。\n\n" +
                 "受付処理日　　　:　" + dateFormattedJ + "\n\n" + 
                 "【不受理理由】\n" +
-                fubi ;
+                "★（1行目　不備確認欄で選択された理由を明記する/プルダウンで選択がない場合は空欄）\n" +
+                "★（2行目　管理画面メール配信のメール文入力欄に記載があった場合は転記する）\n" ;
             const honbun_chui = 
                 "≪注意事項－登録申告の場合≫\n" +
                 "・登録情報の反映には、本メールの受信日の翌日から3営業日程度を要します。  \n" +
@@ -194,7 +181,6 @@ function async oneMsgSend (record) {
                 "〒108-0074東京都港区高輪3丁目19番15号 \n" + 
                 "TEL 03-5739-3861/050-3494-7988\n" ;
             const honbun = ((result==='受理') ? honbun_juri : honbun_fujuri) + honbun_chui + honbun_info + honbun_contact ;
-            //console.log('本文\n'  + honbun);
             const msg = {
                 to  :  mailAddress,                         // 宛先メールアドレス
                 from: {
@@ -203,37 +189,44 @@ function async oneMsgSend (record) {
                 },
                 subject: sbjPreFix + sbjPreFixResend + '「日本貸金業協会」貸付自粛申告　' + result + 'のお知らせ', // 件名
                 text: honbun,                               // 本文
-                html: honbun.replaceAll("\n", "<br>"),      // 本文
             };
-            sendEMail(msg);
+//                continue;
             // 3. 送信が成功したら、kintoneの該当レコードを「配信済」に更新する
-            if(record['ReplyCompletedDate'].value === "") {
-                await kintoneClient.record.updateRecord({
-                    app: JishukuSendAppID,
-                    id: recordId,
-                    record: {
-                        EmailDeliv_DateSent: { value: dateTimeFormattedJ },
-                        ReplyCompletedDate: { value: dateTimeFormattedJ },
-                        EmailDeliv_Result: { value: '配信済' }
-                    }
-                });
-                console.log(`送信結果と返信処理完了日更新！`);
-            } else {
-                //再送にチェックのあるとき
-                await kintoneClient.record.updateRecord({
-                    app: JishukuSendAppID,
-                    id: recordId,
-                    record: {
-                        EmailDeliv_Resend_CompletedDate: { value: dateFormattedJ }
-                    }
-                });
-                console.log(`再送日付更新！`);
-            }
-
-}
+//            }
+//
+//            // SendGridでメール送信
+//            const msg = {
+//                to: toEmail,
+//                from: process.env.FROM_EMAIL,
+//                subject: '【定期送信】お手続きのご案内',
+//                text: `${customerName} 様\n\nお世話になっております。以下内容をご確認ください。\n\n---\n${detail}\n---`,
+//            };
+//
+//            await sgMail.send(msg);
+//            console.log(`メール送信成功: ${toEmail} 宛 (レコードID: ${recordId})`);
+//
+//            // 3. 送信が成功したら、kintoneの該当レコードを「送信済」に更新する
+//            await kintoneClient.record.updateRecord({
+//                app: JishukuSendAppID,
+//                id: recordId,
+//                record: {
+//                    mail_status: { value: ['送信済'] }
+//                }
+//            });
+//            console.log(`kintoneのステータスを送信済に更新しました。`);
+        }
+        console.log('定期タスクが完了しました。');
+    } catch (error) {
+        console.error('定期タスク中にエラーが発生しました:', error);
+    }
+  }, {
+      scheduled: true,
+      timezone: "Asia/Tokyo"
+  });
+};
 
 // ==========================================
-// 貸付自粛Web申告画面保存成功時の処理⇒送信ボタン押下時に変更
+// 貸付自粛Web申告画面保存成功時の処理
 // ==========================================
 const jishukuSend2 = async (req, res) => {
     console.log('--- 貸付自粛Web申告保存処理から受信しました ---');

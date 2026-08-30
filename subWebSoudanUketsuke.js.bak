@@ -7,8 +7,8 @@ const { sendEMail } = require('./subUtils.js');
 // *********************************************************
 
 // ★送信メールの件名に付けるプレフィックス
-//const sbjPreFix = '';                                     // 運用
-const sbjPreFix = '【開発】';                             // テスト時
+//const sbjPreFix = '';                                       // 運用
+const sbjPreFix = '【テスト】';                             // テスト時
 
 const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
@@ -16,6 +16,8 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキ
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // ★kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 
+//const appId = 38;                                           // ★kintone Web相談 アプリID（検証２）
+//const apiToken = process.env.KINTONE_API_KEY_SODAN;         // ★kintone Web相談 APIトークン（検証２）
 const appId = 28;                                           // ★kintone Web相談 アプリID（開発）
 const apiToken = process.env.KINTONE_API_KEY_SODAN_DEV;     // ★kintone Web相談 APIトークン（開発）
 
@@ -26,15 +28,16 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 // *********************************************************
 
 // ★宛先職員メールアドレス ***
-const addrToSoudanStaff = 'y-takasago@go-partner.jp';   // 開発時
+//const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 検証/運用
+const addrToSoudanStaff = 'y-takasago@go-partner.jp';   // TEST時
 
 var client;
 
 
 // **** Zapier-kintone Webhook受信エンドポイント ***********
 
-const webSoudanUketsuke_dev = async (req, res) => {
-    console.log('--- Webhook(dev)を受信しました ---');
+const webSoudanUketsuke = async (req, res) => {
+    console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
     console.log(webhookData.レコード番号);
     console.log(webhookData.氏名);
@@ -124,5 +127,5 @@ const webSoudanUketsuke_dev = async (req, res) => {
     }
 };
 
-module.exports = { webSoudanUketsuke_dev };
+module.exports = { webSoudanUketsuke };
 

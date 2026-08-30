@@ -16,6 +16,8 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキ
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // ★kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 
+//const appId = 38;                                           // ★kintone Web相談 アプリID（検証２）
+//const apiToken = process.env.KINTONE_API_KEY_SODAN;         // ★kintone Web相談 APIトークン（検証２）
 const appId = 28;                                           // ★kintone Web相談 アプリID（開発）
 const apiToken = process.env.KINTONE_API_KEY_SODAN_DEV;     // ★kintone Web相談 APIトークン（開発）
 

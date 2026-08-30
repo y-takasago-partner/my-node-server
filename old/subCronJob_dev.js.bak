@@ -4,7 +4,7 @@ const { sendEMail } = require('./subUtils.js');             // 他ファイル�
 
 // ★送信メールの件名に付けるプレフィックス
 //const sbjPreFix = '';                                       // 運用
-const sbjPreFix = '【テスト】';                             // テスト時
+const sbjPreFix = '【開発】';                             // テスト時
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 
@@ -13,15 +13,15 @@ const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 // *********************************************************
 
 const cron = require('node-cron');
-const apiToken_send = process.env.KINTONE_API_KEY;          // ★kintone 貸付自粛Web申告 APIトークン
+const apiToken_send = process.env.KINTONE_API_KEY_DEV;      // ★kintone 貸付自粛Web申告 APIトークン
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const kintoneClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
 });
-//console.log('APIキー：' + apiToken_send);
-const JishukuSendAppID = 37;                                // ★アプリID
+console.log('APIキー：' + apiToken_send);
+const JishukuSendAppID = 26;                                // ★コピー先アプリBのアプリID
 
 
 const express = require('express');
@@ -36,13 +36,13 @@ app.use(express.static('public'));                          // PDFファイル�
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
-//const subCronJob = (scheduleTime = '0 19 * * *') => {
-const subCronJob = (scheduleTime = '14 16 * * *') => {
+//const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
+const subCronJob_dev = (scheduleTime = '2 1 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
     try {
-        // 1. kintoneから「まだメールを送信していないレコード」を取得する
+        // 本日日付と現在日時
         const d = new Date();
         //const dateFormatted = [
         //    d.getFullYear(),
@@ -84,21 +84,6 @@ const subCronJob = (scheduleTime = '14 16 * * *') => {
         if (records.length === 0) return;
         // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
         for (const record of records) {
-
-        }
-        console.log('定期タスクが完了しました。');
-    } catch (error) {
-        console.error('定期タスク中にエラーが発生しました:', error);
-    }
-  }, {
-      scheduled: true,
-      timezone: "Asia/Tokyo"
-  });
-};
-
-
-function async oneMsgSend (record) {
-
             const recordId = record.$id.value;
             const status = record['ProcStatus'].value;
             const result = ( status === '受理') ? "受理" : (status === '不受理' || status === '不受理（不備あり）') ? "不受理" : "";
@@ -194,7 +179,7 @@ function async oneMsgSend (record) {
                 "〒108-0074東京都港区高輪3丁目19番15号 \n" + 
                 "TEL 03-5739-3861/050-3494-7988\n" ;
             const honbun = ((result==='受理') ? honbun_juri : honbun_fujuri) + honbun_chui + honbun_info + honbun_contact ;
-            //console.log('本文\n'  + honbun);
+            console.log('本文\n'  + honbun);
             const msg = {
                 to  :  mailAddress,                         // 宛先メールアドレス
                 from: {
@@ -229,13 +214,21 @@ function async oneMsgSend (record) {
                 });
                 console.log(`再送日付更新！`);
             }
-
-}
+        }
+        console.log('定期タスクが完了しました。');
+    } catch (error) {
+        console.error('定期タスク中にエラーが発生しました:', error);
+    }
+  }, {
+      scheduled: true,
+      timezone: "Asia/Tokyo"
+  });
+};
 
 // ==========================================
 // 貸付自粛Web申告画面保存成功時の処理⇒送信ボタン押下時に変更
 // ==========================================
-const jishukuSend2 = async (req, res) => {
+const jishukuSend2_dev = async (req, res) => {
     console.log('--- 貸付自粛Web申告保存処理から受信しました ---');
     const recordId = req.body.record_id;
     if (!recordId) {
@@ -258,4 +251,4 @@ const jishukuSend2 = async (req, res) => {
     }
 };
 
-module.exports = { subCronJob, jishukuSend2 };
+module.exports = { subCronJob_dev, jishukuSend2_dev };

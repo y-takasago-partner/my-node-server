@@ -3,17 +3,17 @@
 const { sendEMail } = require('./subUtils.js');
 
 //const sbjPreFix = '';                                       // ★送信メールの件名に付けるプレフィックス（運用）
-const sbjPreFix = '【開発】';                                 // ★送信メールの件名に付けるプレフィックス（開発、テスト）
+const sbjPreFix = '【テスト】';                             // ★送信メールの件名に付けるプレフィックス（開発、テスト）
 
 const scKey = process.env.SHOWCASE_KEY;                         // ★ProTeck ID Checker キー（運用・開発共通）
 const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';  // ★kintone URL
 
 //const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // ★宛先職員メールアドレス（運用）
-const addrToJishukuStaff = 'y-takasago@go-partner.jp';      // ★宛先職員メールアドレス（開発、テスト）
+const addrToJishukuStaff = 'y-takasago_j01@go-partner.jp';  // ★宛先職員メールアドレス（開発、テスト）
 
-const appId = 26;                                           // ★kintone 貸付自粛Web申告 アプリID
-const apiToken = process.env.KINTONE_API_KEY_DEV;           // ★kintone 貸付自粛Web申告 APIトークン
+const appId = 37;                                           // ★kintone 貸付自粛Web申告 アプリID
+const apiToken = process.env.KINTONE_API_KEY;               // ★kintone 貸付自粛Web申告 APIトークン
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 //const cors = require('cors');
@@ -22,7 +22,7 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
 var client;
 
-const picKanryou_dev = async (req, res) => {
+const picKanryou = async (req, res) => {
     console.log('--- Webhookを受信しました ---');
     const webhookData = req.body;
     try {
@@ -119,7 +119,7 @@ const picKanryou_dev = async (req, res) => {
           return;
         }
 
-        //******** kintoneデータ更新 ********
+        //******** kintone申告ID取得 start ********
         const response2 = await client.record.getRecords({
             app: appId,
             fields: ['ShinkokuID'],
@@ -160,7 +160,7 @@ const picKanryou_dev = async (req, res) => {
         console.log('更新しました');
 
         //******** メール送信 ********
-        const honbun = 
+        const WebShinkoku_honbun = 
             seiEncrypted + " " + meiEncrypted + "様\n\n\n" + 
             "貸付自粛の" + shubetsuEncrypted + "申告を受け付けました。\n" + 
             "なお、申告の結果(受理・不受理)については、メールにて連絡いたします。\n\n" + 
@@ -187,23 +187,14 @@ const picKanryou_dev = async (req, res) => {
               email: 'jisyuku_web@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
             },
             subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
-            text: honbun,                         // 本文
-            html: honbun.replaceAll("\n", "<br>") // HTML本文
+            text: WebShinkoku_honbun,                // 本文
         };
-        const honbun2 = 
-            shubetsuEncrypted + '申告がありました。\n' + 
-            "下記URLからログインし、内容の確認をお願いします。\n\n" + 
-            "申告ID：" + `${nextStr}` + "\n" + 
-            "申告タイプ：本人\n" + 
-            "申告種別：" + shubetsuEncrypted + "\n\n" +
-            KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value + '\n';
-        //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
+        const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
             from:  'jisyuku_web@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
             subject: sbjPreFix + '' + shubetsuEncrypted + '申告がありました',     // 件名
-            text: honbun2,                         // 本文
-            html: honbun2.replaceAll("\n", "<br>") // HTML本文
+            text: url2 + '\n',                     // 本文
         };
         sendEMail(msg);
         sendEMail(msg2);
@@ -214,5 +205,5 @@ const picKanryou_dev = async (req, res) => {
     }
 };
 
-module.exports = { picKanryou_dev };
+module.exports = { picKanryou };
 
