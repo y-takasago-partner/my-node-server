@@ -4,7 +4,7 @@ const { sendEMail } = require('./subUtils.js');             // 他ファイル�
 
 // ★送信メールの件名に付けるプレフィックス
 //const sbjPreFix = '';                                       // 運用
-const sbjPreFix = '【開発】';                             // テスト時
+const sbjPreFix = '【テスト】';                             // テスト時
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 
@@ -13,7 +13,7 @@ const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 // *********************************************************
 
 const cron = require('node-cron');
-const apiToken_send = process.env.KINTONE_API_KEY_DEV;      // ★kintone 貸付自粛Web申告 APIトークン
+const apiToken_send = process.env.KINTONE_API_KEY;          // ★kintone 貸付自粛Web申告 APIトークン
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const kintoneClient = new KintoneRestAPIClient({
@@ -21,7 +21,7 @@ const kintoneClient = new KintoneRestAPIClient({
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
 });
 //console.log('APIキー：' + apiToken_send);
-const JishukuSendAppID = 26;                                // ★アプリID
+const JishukuSendAppID = 37;                                // ★アプリID
 
 
 const express = require('express');
@@ -36,12 +36,37 @@ app.use(express.static('public'));                          // PDFファイル�
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
-//const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '21 15 * * *') => {
+//const subCronJob = (scheduleTime = '0 19 * * *') => {
+const subCronJob = (scheduleTime = '14 16 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
     try {
+        // 1. kintoneから「まだメールを送信していないレコード」を取得する
+        const d = new Date();
+        //const dateFormatted = [
+        //    d.getFullYear(),
+        //    String(d.getMonth() + 1).padStart(2, '0'),
+        //    String(d.getDate()).padStart(2, '0')
+        //].join('/');
+        const dateFormattedJ = [
+            d.getFullYear(), '年',
+            String(d.getMonth() + 1).padStart(2, '0'), '月',
+            String(d.getDate()).padStart(2, '0'), '日' 
+        ].join('');
+        const dateTimeFormattedJ = [
+            d.getFullYear(), '年',
+            String(d.getMonth() + 1).padStart(2, '0'), '月',
+            String(d.getDate()).padStart(2, '0'), '日', 
+            String(d.getHours()).padStart(2, '0'), '時',
+            String(d.getMinutes()).padStart(2, '0'), '分',
+        ].join('');
+        //  console.log('dateFormatted is ' + dateFormatted);
+        //  console.log('dateFormattedJ is ' + dateFormattedJ);
+        //  console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
+        // 1. kintoneから送信対象レコードを取得する（① or ②）
+        // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
+        // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
         const query = 
             'email != "" and ' + 
             '  ( ' + 
@@ -73,32 +98,6 @@ const subCronJob_dev = (scheduleTime = '21 15 * * *') => {
 
 
 async function oneMsgSend (record) {
-
-        // 本日日付と現在日時
-        const d = new Date();
-        //const dateFormatted = [
-        //    d.getFullYear(),
-        //    String(d.getMonth() + 1).padStart(2, '0'),
-        //    String(d.getDate()).padStart(2, '0')
-        //].join('/');
-        const dateFormattedJ = [
-            d.getFullYear(), '年',
-            String(d.getMonth() + 1).padStart(2, '0'), '月',
-            String(d.getDate()).padStart(2, '0'), '日' 
-        ].join('');
-        const dateTimeFormattedJ = [
-            d.getFullYear(), '年',
-            String(d.getMonth() + 1).padStart(2, '0'), '月',
-            String(d.getDate()).padStart(2, '0'), '日', 
-            String(d.getHours()).padStart(2, '0'), '時',
-            String(d.getMinutes()).padStart(2, '0'), '分',
-        ].join('');
-        //  console.log('dateFormatted is ' + dateFormatted);
-        //  console.log('dateFormattedJ is ' + dateFormattedJ);
-        //  console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
-        // 1. kintoneから送信対象レコードを取得する（① or ②）
-        // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
-        // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
 
             const recordId = record.$id.value;
             const status = record['ProcStatus'].value;
@@ -225,7 +224,7 @@ async function oneMsgSend (record) {
                     app: JishukuSendAppID,
                     id: recordId,
                     record: {
-                        EmailDeliv_Resend_CompletedDate: { value: dateTimeFormattedJ }
+                        EmailDeliv_Resend_CompletedDate: { value: dateFormattedJ }
                     }
                 });
                 console.log(`再送日付更新！`);
@@ -236,7 +235,7 @@ async function oneMsgSend (record) {
 // ==========================================
 // 貸付自粛Web申告画面保存成功時の処理⇒送信ボタン押下時に変更
 // ==========================================
-const jishukuSend2_dev = async (req, res) => {
+const jishukuSend2 = async (req, res) => {
     console.log('--- 貸付自粛Web申告保存処理から受信しました ---');
     const recordId = req.body.record_id;
     if (!recordId) {
@@ -259,4 +258,4 @@ const jishukuSend2_dev = async (req, res) => {
     }
 };
 
-module.exports = { subCronJob_dev, jishukuSend2_dev };
+module.exports = { subCronJob, jishukuSend2 };
