@@ -73,6 +73,7 @@ const subCronJob = (scheduleTime = '14 16 * * *') => {
 
 
 async function oneMsgSend (record) {
+console.log('1');
 
         // 本日日付と現在日時
         const d = new Date();
@@ -99,6 +100,7 @@ async function oneMsgSend (record) {
         // 1. kintoneから送信対象レコードを取得する（① or ②）
         // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
         // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
+console.log('2');
 
             const recordId = record.$id.value;
             const status = record['ProcStatus'].value;
@@ -244,13 +246,22 @@ const jishukuSend2 = async (req, res) => {
     }
     console.log(`kintoneからレコード保存通知を受信しました。レコード番号: ${recordId}`);
     res.status(200).send('Webhook received successfully');
+
+    const status = record['ProcStatus'].value;
+    const result = ( status === '受理') ? "受理" : (status === '不受理' || status === '不受理（不備あり）') ? "不受理" : "";
+    if(!result) {
+        console.log('「受理」「不受理」ではありません。終了します');
+        return; 
+    }
+
+
     try {
         const result = await kintoneClient.record.getRecord({
             app: JishukuSendAppID,
             id: recordId
         });
         const record = result.record;
-        console.log('取得したレコードデータ:', record);
+        //console.log('取得したレコードデータ:', record);
         oneMsgSend(record);
     } catch (error) {
         console.error('Webhook処理エラー:', error);
