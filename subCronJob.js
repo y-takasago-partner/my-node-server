@@ -102,7 +102,7 @@ async function oneMsgSend (record) {
             const recordId = record.$id.value;
             const status = record['ProcStatus'].value;
             const result = ( status === '受理') ? "受理" : (status === '不受理' || status === '不受理（不備あり）') ? "不受理" : "";
-            if(!result) { continue; }   // 受理と不受理以外来ないはずだけど
+            if(!result) { return; }   // 受理と不受理以外来ないはずだけど
             const mailAddress = record['email'].value;
             const shimei = record['Shimei_Sei'].value + '　' + record['Shimei_Mei'].value;
             const irai_no = record['IRAI_NO'].value + record['IRAI_NO_SUB'].value;
