@@ -97,7 +97,7 @@ const subCronJob = (scheduleTime = '14 16 * * *') => {
 };
 
 
-function async oneMsgSend (record) {
+async function oneMsgSend (record) {
 
             const recordId = record.$id.value;
             const status = record['ProcStatus'].value;
