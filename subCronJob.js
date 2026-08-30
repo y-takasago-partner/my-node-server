@@ -84,7 +84,7 @@ const subCronJob = (scheduleTime = '14 16 * * *') => {
         if (records.length === 0) return;
         // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
         for (const record of records) {
-
+            oneMsgSend(record);
         }
         console.log('定期タスクが完了しました。');
     } catch (error) {

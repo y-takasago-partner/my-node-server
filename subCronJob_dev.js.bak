@@ -84,25 +84,10 @@ const subCronJob_dev = (scheduleTime = '2 1 * * *') => {
         if (records.length === 0) return;
         // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
         for (const record of records) {
-            oneMsgSend(record);
-        }
-        console.log('定期タスクが完了しました。');
-    } catch (error) {
-        console.error('定期タスク中にエラーが発生しました:', error);
-    }
-  }, {
-      scheduled: true,
-      timezone: "Asia/Tokyo"
-  });
-};
-
-
-async function oneMsgSend (record) {
-
             const recordId = record.$id.value;
             const status = record['ProcStatus'].value;
             const result = ( status === '受理') ? "受理" : (status === '不受理' || status === '不受理（不備あり）') ? "不受理" : "";
-            if(!result) { return; }   // 受理と不受理以外来ないはずだけど
+            if(!result) { continue; }   // 受理と不受理以外来ないはずだけど
             const mailAddress = record['email'].value;
             const shimei = record['Shimei_Sei'].value + '　' + record['Shimei_Mei'].value;
             const irai_no = record['IRAI_NO'].value + record['IRAI_NO_SUB'].value;
@@ -229,8 +214,16 @@ async function oneMsgSend (record) {
                 });
                 console.log(`再送日付更新！`);
             }
-
-}
+        }
+        console.log('定期タスクが完了しました。');
+    } catch (error) {
+        console.error('定期タスク中にエラーが発生しました:', error);
+    }
+  }, {
+      scheduled: true,
+      timezone: "Asia/Tokyo"
+  });
+};
 
 // ==========================================
 // 貸付自粛Web申告画面保存成功時の処理⇒送信ボタン押下時に変更
