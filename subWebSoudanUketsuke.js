@@ -26,8 +26,8 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 // *********************************************************
 
 // ★宛先職員メールアドレス ***
-//const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 検証/運用
-const addrToSoudanStaff = 'y-takasago@go-partner.jp';   // TEST時
+const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 検証/運用
+//const addrToSoudanStaff = 'y-takasago@go-partner.jp';   // TEST時
 
 var client;
 
