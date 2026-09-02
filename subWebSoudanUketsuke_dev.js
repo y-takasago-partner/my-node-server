@@ -75,18 +75,30 @@ const webSoudanUketsuke_dev = async (req, res) => {
         text: honbun2 + '\n',                    // 本文
         html: honbun2.replaceAll("\n", "<br>")   // HTML本文
     };
+    res.status(200).send('Webhook received successfully');
+
+    client = new KintoneRestAPIClient({
+        baseUrl: subDomain,
+        auth: {
+            apiToken: apiToken
+        }
+    });
     try {
-        res.status(200).send('Webhook received successfully');
+        // 存在しないアプリID（例: 0）を指定して、認証だけを通るか試す
+        await client.app.getApp({ id: 0 });
+        console.log("APIトークンは有効です（認証成功）");
+    } catch (error) {
+        if (error.status === 401 || error.status === 403) {
+            console.error(error.status + ": apiTokenが間違っている、または権限がありません！ 終了します．");
+            return ;
+        } else {
+            // 401/403 以外（例: アプリが見つからない等のエラー）なら、認証自体は成功しています
+            console.log(error.status + ": APIトークンは有効です（認証成功、ただし指定アプリは無し）");
+        }
+    }
 
-        // ******** kintoneデータにアクセス ********
-        client = new KintoneRestAPIClient({
-            baseUrl: subDomain,
-            auth: {
-                apiToken: apiToken
-            }
-        });
-console.log(client);
-
+    // ******** kintoneデータにアクセス ********
+    try {
         //******** kintone NO 取得 start ********
         const response2 = await client.record.getRecords({
             app: appId,
