@@ -36,9 +36,11 @@ var client;
 const webSoudanUketsuke_dev = async (req, res) => {
     console.log('--- Webhook(dev)を受信しました ---');
     const webhookData = req.body;
+    console.log(webhookData);
     console.log(webhookData.レコード番号);
     console.log(webhookData.氏名);
     console.log(webhookData.メールアドレス);
+    console.log(webhookData.APIKey);
 
     const origin = req.headers.origin;
     const origin2 = req.get('Origin');
