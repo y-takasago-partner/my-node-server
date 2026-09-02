@@ -40,7 +40,7 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 // 貸付自粛Web申告更新 Webhook 受信エンドポイント
 // =========================================================
 app.post('/jishukuSend2', jishukuSend2);                     // 運用
-app.post('/jishukuSend2-dev', jishukuSend2_dev);             // 開発
+//app.post('/jishukuSend2-dev', jishukuSend2_dev);             // 開発
 
 // ==========================================
 // 定期実行（Cronタスク）の処理
