@@ -86,7 +86,7 @@ const picKanryou_dev = async (req, res) => {
 //
 
         res.status(200).send('Webhook received successfully');
-        if(apiToken !== apiKey) {
+        if(scKey !== apiKey) {
             console.error('PICのAPIトークンが一致しません。終了します');
             return;
         }
