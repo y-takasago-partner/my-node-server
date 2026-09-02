@@ -93,7 +93,7 @@ const webSoudanUketsuke_dev = async (req, res) => {
             return ;
         } else {
             // 401/403 以外
-            console.log('エラーが発生しました。終了します（ERROR: " + error.status + "）");
+            console.log("エラーが発生しました。終了します（ERROR: " + error.status + "）");
             return ;
         }
     }
