@@ -44,6 +44,8 @@ const webSoudanUketsuke_dev = async (req, res) => {
     const origin2 = req.get('Origin');
     console.log("リクエスト元のドメイン:", origin);
     console.log("リクエスト元のドメイン2:", origin2);
+    const source = req.headers.origin || req.headers.referer;
+    console.log("リクエスト元:", source); 
 
     const honbun = 
         "(このメールは送信専用メールからお送りさせていただいております。ご返信いただいてもお答えできませんのでご注意ください。)\n\n" + 
