@@ -39,6 +39,12 @@ const webSoudanUketsuke_dev = async (req, res) => {
     console.log(webhookData.レコード番号);
     console.log(webhookData.氏名);
     console.log(webhookData.メールアドレス);
+
+    const origin = req.headers.origin;
+    const origin2 = req.get('Origin');
+    console.log("リクエスト元のドメイン:", origin);
+    console.log("リクエスト元のドメイン2:", origin2);
+
     const honbun = 
         "(このメールは送信専用メールからお送りさせていただいております。ご返信いただいてもお答えできませんのでご注意ください。)\n\n" + 
         "日本貸金業協会貸金業相談・紛争解決センターです。ご相談を受付けました。\n" + 
