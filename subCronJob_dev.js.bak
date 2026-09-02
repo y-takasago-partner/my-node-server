@@ -37,11 +37,43 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '2 1 * * *') => {
+const subCronJob_dev = (scheduleTime = '21 15 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
     try {
+        const query = 
+            'email != "" and ' + 
+            '  ( ' + 
+            '    (EmailDeliv_Delivery in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_DateSent = "") or ' + 
+            '    (EmailDeliv_Resend in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_Resend_CompletedDate = "") ' + 
+            '  ) ' + 
+            ' limit 100';
+        //  console.log(query);
+        const response = await kintoneClient.record.getRecords({
+            app: JishukuSendAppID,
+            query: query
+        });
+        const records = response.records;
+        console.log(`未送信のレコードが ${records.length} 件見つかりました。`);
+        if (records.length === 0) return;
+        // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
+        for (const record of records) {
+            oneMsgSend(record);
+        }
+        console.log('定期タスクが完了しました。');
+    } catch (error) {
+        console.error('定期タスク中にエラーが発生しました:', error);
+    }
+  }, {
+      scheduled: true,
+      timezone: "Asia/Tokyo"
+  });
+};
+
+
+async function oneMsgSend (record) {
+
         // 本日日付と現在日時
         const d = new Date();
         //const dateFormatted = [
@@ -67,27 +99,11 @@ const subCronJob_dev = (scheduleTime = '2 1 * * *') => {
         // 1. kintoneから送信対象レコードを取得する（① or ②）
         // クエリ条件: ①送信日 EmailDeliv_DateSen が本日日付、かつ送信結果 EmailDeliv_Result が空白
         // クエリ条件: ②再送チェックボックス EmailDeliv_Resend がチェック、かつ再送完了日 EmailDeliv_Resend_CompletedDate が空白
-        const query = 
-            'email != "" and ' + 
-            '  ( ' + 
-            '    (EmailDeliv_Delivery in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_DateSent = "") or ' + 
-            '    (EmailDeliv_Resend in ("する") and ProcStatus in ("受理","不受理（不備あり）","不受理") and EmailDeliv_Resend_CompletedDate = "") ' + 
-            '  ) ' + 
-            ' limit 100';
-        //  console.log(query);
-        const response = await kintoneClient.record.getRecords({
-            app: JishukuSendAppID,
-            query: query
-        });
-        const records = response.records;
-        console.log(`未送信のレコードが ${records.length} 件見つかりました。`);
-        if (records.length === 0) return;
-        // 2. 1件ずつメールを送信し、kintoneのステータスを更新する
-        for (const record of records) {
+
             const recordId = record.$id.value;
             const status = record['ProcStatus'].value;
             const result = ( status === '受理') ? "受理" : (status === '不受理' || status === '不受理（不備あり）') ? "不受理" : "";
-            if(!result) { continue; }   // 受理と不受理以外来ないはずだけど
+            if(!result) { return; }   // 受理と不受理以外来ないはずだけど
             const mailAddress = record['email'].value;
             const shimei = record['Shimei_Sei'].value + '　' + record['Shimei_Mei'].value;
             const irai_no = record['IRAI_NO'].value + record['IRAI_NO_SUB'].value;
@@ -209,21 +225,13 @@ const subCronJob_dev = (scheduleTime = '2 1 * * *') => {
                     app: JishukuSendAppID,
                     id: recordId,
                     record: {
-                        EmailDeliv_Resend_CompletedDate: { value: dateFormattedJ }
+                        EmailDeliv_Resend_CompletedDate: { value: dateTimeFormattedJ }
                     }
                 });
                 console.log(`再送日付更新！`);
             }
-        }
-        console.log('定期タスクが完了しました。');
-    } catch (error) {
-        console.error('定期タスク中にエラーが発生しました:', error);
-    }
-  }, {
-      scheduled: true,
-      timezone: "Asia/Tokyo"
-  });
-};
+
+}
 
 // ==========================================
 // 貸付自粛Web申告画面保存成功時の処理⇒送信ボタン押下時に変更
@@ -234,7 +242,7 @@ const jishukuSend2_dev = async (req, res) => {
     if (!recordId) {
         return res.status(400).json({ error: 'record_id is required' });
     }
-    console.log(`kintoneからレコード保存通知を受信しました。レコード番号: ${recordId}`);
+    console.log(`kintoneから通知を受信しました。レコード番号: ${recordId}`);
     res.status(200).send('Webhook received successfully');
     try {
         const result = await kintoneClient.record.getRecord({

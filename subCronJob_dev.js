@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '21 15 * * *') => {
+const subCronJob_dev = (scheduleTime = '7 16 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -242,17 +242,25 @@ const jishukuSend2_dev = async (req, res) => {
     if (!recordId) {
         return res.status(400).json({ error: 'record_id is required' });
     }
-    console.log(`kintoneからレコード保存通知を受信しました。レコード番号: ${recordId}`);
+    console.log(`kintoneから通知を受信しました。レコード番号: ${recordId}`);
     res.status(200).send('Webhook received successfully');
+
+    const status = record['ProcStatus'].value;
+    const result = ( status === '受理') ? "受理" : (status === '不受理' || status === '不受理（不備あり）') ? "不受理" : "";
+    if(!result) {
+        console.log('「受理」「不受理」ではありません。終了します');
+        return; 
+    }
+
+
     try {
         const result = await kintoneClient.record.getRecord({
             app: JishukuSendAppID,
             id: recordId
         });
         const record = result.record;
-//        console.log('取得したレコードデータ:', record);
-//        sendEMail(msg);
-//        sendEMail(msg2);
+        //console.log('取得したレコードデータ:', record);
+        oneMsgSend(record);
     } catch (error) {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
