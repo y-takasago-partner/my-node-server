@@ -92,8 +92,9 @@ const webSoudanUketsuke_dev = async (req, res) => {
             console.error(error.status + ": apiTokenが間違っている、または権限がありません！ 終了します．");
             return ;
         } else {
-            // 401/403 以外（例: アプリが見つからない等のエラー）なら、認証自体は成功しています
-            console.log(error.status + ": APIトークンは有効です（認証成功、ただし指定アプリは無し）");
+            // 401/403 以外
+            console.log('エラーが発生しました。終了します（ERROR: " + error.status + "）");
+            return ;
         }
     }
 
