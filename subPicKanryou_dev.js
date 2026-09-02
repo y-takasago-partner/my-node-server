@@ -49,19 +49,15 @@ const picKanryou_dev = async (req, res) => {
         } else {
         }
       //console.log(webhookData);
-        console.log('apiKey is ' + apiKey);                 /* アクセスキー */
-        console.log('result is: ' + (webhookData.result));
-        console.log('operation is: ' + (webhookData.operation));
-        console.log('authType is: ' + (webhookData.authType));
-        console.log('identityId is ' + identityId);
-        console.log('cidNo is ' + cidNo);
-        console.log('authType is ' + authType);
-        console.log('operation is ' + operation);
         console.log('更新キー: ' + keyEncrypted);
         console.log('申告種別: ' + shubetsuEncrypted);
         console.log('対象暗号(姓): ' + seiEncrypted);
         console.log('対象暗号(名): ' + meiEncrypted);
         console.log('メールアドレス: ' + mailAddress);
+        console.log('apiKey is ' + apiKey);                 /* アクセスキー */
+        console.log('result is: ' + (webhookData.result));
+        console.log('operation is: ' + (webhookData.operation));
+        console.log('authType is: ' + (webhookData.authType));
 
         // 3. 【最重要修正】マニュアル準拠のキー切り出し方式に戻します
         // 環境変数 SHOWCASE_KEY の先頭32文字を正確にBuffer化します
