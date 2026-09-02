@@ -85,6 +85,8 @@ const webSoudanUketsuke_dev = async (req, res) => {
                 apiToken: apiToken
             }
         });
+console.log(client);
+
         //******** kintone NO 取得 start ********
         const response2 = await client.record.getRecords({
             app: appId,
