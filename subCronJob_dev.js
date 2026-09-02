@@ -266,4 +266,4 @@ async function oneMsgSend (record) {
 //    }
 //};
 //
-//module.exports = { subCronJob_dev, jishukuSend2_dev };
+module.exports = { subCronJob_dev };
