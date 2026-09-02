@@ -85,17 +85,11 @@ const webSoudanUketsuke_dev = async (req, res) => {
     });
     try {
         // 存在しないアプリID（例: 0）を指定して、認証だけを通るか試す
-        await client.app.getApp({ id: 0 });
-        console.log("APIトークンは有効です（認証成功）");
+        await client.app.getApp({ id: appId });
+        console.log("認証成功");
     } catch (error) {
-        if (error.status === 401 || error.status === 403) {
-            console.error(error.status + ": apiTokenが間違っている、または権限がありません！ 終了します．");
-            return ;
-        } else {
-            // 401/403 以外
-            console.log("エラーが発生しました。終了します（ERROR: " + error.status + "）");
-            return ;
-        }
+        console.log("エラーが発生しました。終了します（ERROR: " + error.status + "）");
+        return ;
     }
 
     // ******** kintoneデータにアクセス ********
