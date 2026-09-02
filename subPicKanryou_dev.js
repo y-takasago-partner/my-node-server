@@ -39,7 +39,7 @@ const picKanryou_dev = async (req, res) => {
         let seiEncrypted = '';
         let meiEncrypted = '';
         let mailAddress = '';
-
+        const apiKey = webhookData.apiKey;
         if (webhookData.bindKeys && webhookData.bindKeys[0]) {
             keyEncrypted = webhookData.bindKeys[0].value;
             shubetsuEncrypted = webhookData.bindKeys[1].value;
@@ -48,8 +48,15 @@ const picKanryou_dev = async (req, res) => {
             mailAddress = webhookData.bindKeys[4].value;
         } else {
         }
-
-        console.log(webhookData);
+      //console.log(webhookData);
+        console.log('apiKey is ' + apiKey);                 /* アクセスキー */
+        console.log('result is: ' + (webhookData.result));
+        console.log('operation is: ' + (webhookData.operation));
+        console.log('authType is: ' + (webhookData.authType));
+        console.log('identityId is ' + identityId);
+        console.log('cidNo is ' + cidNo);
+        console.log('authType is ' + authType);
+        console.log('operation is ' + operation);
         console.log('更新キー: ' + keyEncrypted);
         console.log('申告種別: ' + shubetsuEncrypted);
         console.log('対象暗号(姓): ' + seiEncrypted);
@@ -81,13 +88,12 @@ const picKanryou_dev = async (req, res) => {
 //        //console.log('★復号成功（生年月日）:', decryptedBirth);
 //        // ----------------------------------------
 //
-        // その他データのログ出力
-        console.log('result is: ' + (webhookData.result));
-        console.log('operation is: ' + (webhookData.operation));
-        console.log('authType is: ' + (webhookData.authType));
-        console.log(webhookData);
 
         res.status(200).send('Webhook received successfully');
+        if(apiToken !== apiKey) {
+            console.error('PICのAPIトークンが一致しません。終了します');
+            return;
+        }
 
         // ******** kintoneデータにアクセス ********
 
