@@ -18,6 +18,7 @@ const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 
 const appId = 28;                                           // ★kintone Web相談 アプリID（開発）
 const apiToken = process.env.KINTONE_API_KEY_SODAN_DEV;     // ★kintone Web相談 APIトークン（開発）
+const zapApiToken = process.env.ZAP_API_KEY;                // ★Zap APIトークン（共通／運用は未実装－テストするとメールが送信されるので）
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
@@ -41,6 +42,12 @@ const webSoudanUketsuke_dev = async (req, res) => {
     console.log(webhookData.氏名);
     console.log(webhookData.メールアドレス);
     console.log(webhookData.APIKey);
+
+    if(webhookData.APIKey !== zapApiToken) {
+        console.error('APIトークンが一致しません。終了します。');
+        return;
+    }
+    console.log('APIトークンが一致しました。');
 
     const origin = req.headers.origin;
     const origin2 = req.get('Origin');
