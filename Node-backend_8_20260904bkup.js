@@ -14,8 +14,8 @@ const { webSoudanUketsuke_dev }            = require('./subWebSoudanUketsuke_dev
 const { picKanryou }                       = require('./subPicKanryou.js');
 const { picKanryou_dev }                   = require('./subPicKanryou_dev.js');
 
-const { subCronJob }                       = require('./subCronJob.js');
-const { subCronJob_dev }                   = require('./subCronJob_dev.js');
+const { subCronJob, jishukuSend2 }         = require('./subCronJob.js');
+const { subCronJob_dev, jishukuSend2_dev } = require('./subCronJob_dev.js');
 
 const express = require('express');
 const app = express();

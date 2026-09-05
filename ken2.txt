@@ -1,0 +1,32 @@
+const https = require('https');
+
+// インプットデータから値を取得
+const payload = JSON.stringify({
+    "APIKey": inputData.APIKey ,
+    "レコード番号": inputData.recordNum ,
+    "メールアドレス": inputData.email ,
+    "氏名": inputData.shimei 
+});
+
+const options = {
+    hostname: 'my-node-server-yetm.onrender.com',
+ //   port: 443,
+    path: '/kintone-webhook',
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+    }
+};
+
+// 1. データの送信を開始
+const req = https.request(options);
+req.on('error', (e) => console.error('Network Error:', e));
+req.write(payload);
+req.end(); 
+
+// 2. 通信がインターネットに出ていくためのわずかな猶予（0.05秒）
+await new Promise(resolve => setTimeout(resolve, 50));
+
+// 3. 即座に成功を返してこのステップを終了する
+output = { success: "バックグラウンドでRenderへ送信しました" };

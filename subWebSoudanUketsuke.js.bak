@@ -18,7 +18,6 @@ const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 
 const appId = 38;                                           // ★kintone Web相談 アプリID（運用／検証２）
 const apiToken = process.env.KINTONE_API_KEY_SODAN;         // ★kintone Web相談 APIトークン（運用／検証２）
-const zapApiToken = process.env.ZAP_API_KEY;                // ★Zap APIトークン（共通／運用は未実装－テストするとメールが送信されるので）
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
@@ -28,7 +27,7 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
 // ★宛先職員メールアドレス ***
 const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 検証/運用
-
+//const addrToSoudanStaff = 'y-takasago@go-partner.jp';   // TEST時
 
 var client;
 
@@ -41,13 +40,6 @@ const webSoudanUketsuke = async (req, res) => {
     console.log(webhookData.レコード番号);
     console.log(webhookData.氏名);
     console.log(webhookData.メールアドレス);
-    console.log(webhookData.APIKey);
-
-    if(webhookData.APIKey !== zapApiToken) {
-        console.error('APIトークンが一致しません。終了します。');
-        return;
-    }
-
     const honbun = 
         "(このメールは送信専用メールからお送りさせていただいております。ご返信いただいてもお答えできませんのでご注意ください。)\n\n" + 
         "日本貸金業協会貸金業相談・紛争解決センターです。ご相談を受付けました。\n" + 
@@ -84,25 +76,16 @@ const webSoudanUketsuke = async (req, res) => {
         text: honbun2 + '\n',                    // 本文
         html: honbun2.replaceAll("\n", "<br>")   // HTML本文
     };
-    res.status(200).send('Webhook received successfully');
-
-    client = new KintoneRestAPIClient({
-        baseUrl: subDomain,
-        auth: {
-            apiToken: apiToken
-        }
-    });
     try {
+        res.status(200).send('Webhook received successfully');
+
         // ******** kintoneデータにアクセス ********
-        await client.app.getApp({ id: appId });
-        console.log("認証成功");
-    } catch (error) {
-        console.log("エラーが発生しました。終了します（ERROR: " + error.status + "）");
-        return ;
-    }
-
-    // ******** kintoneデータにアクセス ********
-    try {
+        client = new KintoneRestAPIClient({
+            baseUrl: subDomain,
+            auth: {
+                apiToken: apiToken
+            }
+        });
         //******** kintone NO 取得 start ********
         const response2 = await client.record.getRecords({
             app: appId,
@@ -134,8 +117,8 @@ const webSoudanUketsuke = async (req, res) => {
         console.log('更新しました');
         //******** kintoneデータ更新 End ********
 
-//        sendEMail(msg);  4test★
-//        sendEMail(msg2); 4test★
+        sendEMail(msg);
+        sendEMail(msg2);
     } catch (error) {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');

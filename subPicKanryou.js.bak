@@ -3,13 +3,14 @@
 const { sendEMail } = require('./subUtils.js');
 
 //const sbjPreFix = '';                                       // ★送信メールの件名に付けるプレフィックス（運用）
-const sbjPreFix = '【テスト】';                             // ★送信メールの件名に付けるプレフィックス（検証、テスト）
+const sbjPreFix = '【テスト】';                             // ★送信メールの件名に付けるプレフィックス（開発、テスト）
 
 const scKey = process.env.SHOWCASE_KEY;                         // ★ProTeck ID Checker キー（運用・開発共通）
 const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';  // ★kintone URL
 
-const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // ★宛先職員メールアドレス
+const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // ★宛先職員メールアドレス（運用）
+//const addrToJishukuStaff = 'y-takasago@go-partner.jp';      // ★宛先職員メールアドレス（開発、テスト）
 
 const appId = 37;                                           // ★kintone 貸付自粛Web申告 アプリID
 const apiToken = process.env.KINTONE_API_KEY;               // ★kintone 貸付自粛Web申告 APIトークン
@@ -38,7 +39,7 @@ const picKanryou = async (req, res) => {
         let seiEncrypted = '';
         let meiEncrypted = '';
         let mailAddress = '';
-        const apiKey = webhookData.apiKey;
+
         if (webhookData.bindKeys && webhookData.bindKeys[0]) {
             keyEncrypted = webhookData.bindKeys[0].value;
             shubetsuEncrypted = webhookData.bindKeys[1].value;
@@ -47,16 +48,13 @@ const picKanryou = async (req, res) => {
             mailAddress = webhookData.bindKeys[4].value;
         } else {
         }
-      //console.log(webhookData);
+
+        console.log(webhookData);
         console.log('更新キー: ' + keyEncrypted);
         console.log('申告種別: ' + shubetsuEncrypted);
         console.log('対象暗号(姓): ' + seiEncrypted);
         console.log('対象暗号(名): ' + meiEncrypted);
         console.log('メールアドレス: ' + mailAddress);
-        console.log('apiKey is ' + apiKey);                 /* アクセスキー */
-        console.log('result is: ' + (webhookData.result));
-        console.log('operation is: ' + (webhookData.operation));
-        console.log('authType is: ' + (webhookData.authType));
 
         // 3. 【最重要修正】マニュアル準拠のキー切り出し方式に戻します
         // 環境変数 SHOWCASE_KEY の先頭32文字を正確にBuffer化します
@@ -83,12 +81,13 @@ const picKanryou = async (req, res) => {
 //        //console.log('★復号成功（生年月日）:', decryptedBirth);
 //        // ----------------------------------------
 //
+        // その他データのログ出力
+        console.log('result is: ' + (webhookData.result));
+        console.log('operation is: ' + (webhookData.operation));
+        console.log('authType is: ' + (webhookData.authType));
+        console.log(webhookData);
 
         res.status(200).send('Webhook received successfully');
-        if(scKey !== apiKey) {
-            console.error('PICのAPIトークンが一致しません。終了します');
-            return;
-        }
 
         // ******** kintoneデータにアクセス ********
 

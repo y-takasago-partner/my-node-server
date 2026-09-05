@@ -37,7 +37,6 @@ var client;
 const webSoudanUketsuke_dev = async (req, res) => {
     console.log('--- Webhook(dev)を受信しました ---');
     const webhookData = req.body;
-    console.log(webhookData);
     console.log(webhookData.レコード番号);
     console.log(webhookData.氏名);
     console.log(webhookData.メールアドレス);
@@ -93,7 +92,7 @@ const webSoudanUketsuke_dev = async (req, res) => {
         }
     });
     try {
-        // 存在しないアプリID（例: 0）を指定して、認証だけを通るか試す
+        // ******** kintoneデータにアクセス ********
         await client.app.getApp({ id: appId });
         console.log("認証成功");
     } catch (error) {

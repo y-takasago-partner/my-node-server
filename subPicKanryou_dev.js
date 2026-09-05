@@ -9,7 +9,6 @@ const scKey = process.env.SHOWCASE_KEY;                         // ★ProTeck ID
 const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';  // ★kintone URL
 
-//const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // ★宛先職員メールアドレス（運用）
 const addrToJishukuStaff = 'y-takasago@go-partner.jp';      // ★宛先職員メールアドレス（開発、テスト）
 
 const appId = 26;                                           // ★kintone 貸付自粛Web申告 アプリID
