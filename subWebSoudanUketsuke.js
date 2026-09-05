@@ -100,7 +100,7 @@ const webSoudanUketsuke = async (req, res) => {
         console.log("エラーが発生しました。終了します（ERROR: " + error.status + "）");
         return ;
     }
-
+return;
     // ******** kintoneデータにアクセス ********
     try {
         //******** kintone NO 取得 start ********
