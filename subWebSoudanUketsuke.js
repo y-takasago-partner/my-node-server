@@ -122,7 +122,6 @@ const webSoudanUketsuke = async (req, res) => {
         }
         //******** kintoneNO取得 end ********
         //******** kintoneデータ更新 ********
-/*
         const updtResult = await client.record.updateRecord({
             app: appId,                        // アプリID
             id: webhookData.レコード番号,      // ここにレコード番号（$id）を指定
@@ -132,12 +131,10 @@ const webSoudanUketsuke = async (req, res) => {
                 }
             }
         });
-*/
         console.log('更新しました');
         //******** kintoneデータ更新 End ********
-
-//        sendEMail(msg);  4test★
-//        sendEMail(msg2); 4test★
+        sendEMail(msg);
+        sendEMail(msg2);
     } catch (error) {
         console.error('Webhook処理エラー:', error);
         res.status(500).send('Internal Server Error');
