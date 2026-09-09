@@ -37,7 +37,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob = (scheduleTime = '0 19 * * *') => {
-const subCronJob = (scheduleTime = '50 12 * * *') => {
+const subCronJob = (scheduleTime = '0 21 * * *') => {       // ★暫定として、SLEEPしているだろう時間、有償版移行時に再確認のうえ戻すこと
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
