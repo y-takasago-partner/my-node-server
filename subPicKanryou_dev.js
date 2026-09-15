@@ -48,6 +48,19 @@ const picKanryou_dev = async (req, res) => {
         } else {
         }
       //console.log(webhookData);
+        let result = webhookData.result;
+        if(result === 'approved'){
+            result = '承認済';
+        } else if (result === 'denied') {
+            result = '否認済';
+        } else if (result === 'incomplete') {
+            result = '不備';
+        } else if (result === 'onhold') {
+            result = '保留';
+        } else if (result === 'yet') {
+            result = '未確認';
+        } else {
+        }
         console.log('更新キー: ' + keyEncrypted);
         console.log('申告種別: ' + shubetsuEncrypted);
         console.log('対象暗号(姓): ' + seiEncrypted);
@@ -151,7 +164,7 @@ const picKanryou_dev = async (req, res) => {
                     value: webhookData.cidNo
                 },
                 '認証結果': {           // 認証結果
-                    value: webhookData.result
+                    value: result
                 },
                 'ShinkokuID': {     // 申告ID
                     value: `${nextStr}`
