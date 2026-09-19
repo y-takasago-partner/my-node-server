@@ -67,7 +67,7 @@ const picKanryou_dev = async (req, res) => {
         console.log('対象暗号(名): ' + meiEncrypted);
         console.log('メールアドレス: ' + mailAddress);
         console.log('apiKey is ' + apiKey);                 /* アクセスキー */
-        console.log('result is: ' + (webhookData.result));
+        console.log('result is: ' + result);
         console.log('operation is: ' + (webhookData.operation));
         console.log('authType is: ' + (webhookData.authType));
 
