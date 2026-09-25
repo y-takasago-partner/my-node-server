@@ -13,11 +13,11 @@ const sbjPreFix = '【テスト】';                             // テスト時
 const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
 
-const subDomain = 'https://jueaogoxsa02.cybozu.com';        // ★kintone サブドメイン
-const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
+const subDomain = 'https://ixfxwyw51tb5.cybozu.com';        // ★kintone サブドメイン
+const KINTONE_BASE_URL = 'https://ixfxwyw51tb5.cybozu.com/k/';
 
-const appId = 38;                                           // ★kintone Web相談 アプリID（運用／検証２）
-const apiToken = process.env.KINTONE_API_KEY_SODAN;         // ★kintone Web相談 APIトークン（運用／検証２）
+const appId = 8;                                           // ★kintone Web相談 アプリID（運用／検証２）
+const apiToken = process.env.KINTONE_API_KEY_SODAN_K3;         // ★kintone Web相談 APIトークン（運用／検証２）
 const zapApiToken = process.env.ZAP_API_KEY;                // ★Zap APIトークン（共通／運用は未実装－テストするとメールが送信されるので）
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
@@ -27,7 +27,8 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 // *********************************************************
 
 // ★宛先職員メールアドレス ***
-const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 検証/運用
+//const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 検証/運用
+const addrToSoudanStaff = 'y-takasago@go-partner.jp';   // ★開発時
 
 
 var client;

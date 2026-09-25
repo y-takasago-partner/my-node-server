@@ -6,13 +6,14 @@ const { sendEMail } = require('./subUtils.js');
 const sbjPreFix = '【テスト】';                             // ★送信メールの件名に付けるプレフィックス（検証、テスト）
 
 const scKey = process.env.SHOWCASE_KEY;                         // ★ProTeck ID Checker キー（運用・開発共通）
-const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone サブドメイン
-const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';  // ★kintone URL
+const subDomain = 'https://ixfxwyw51tb5.cybozu.com';            // ★kintone サブドメイン
+const KINTONE_BASE_URL = 'https://ixfxwyw51tb5.cybozu.com/k/';  // ★kintone URL
 
-const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // ★宛先職員メールアドレス
+//const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // ★宛先職員メールアドレス
+const addrToJishukuStaff = 'y-takasago@go-partner.jp';      // ★宛先職員メールアドレス（開発、テスト）
 
-const appId = 37;                                           // ★kintone 貸付自粛Web申告 アプリID
-const apiToken = process.env.KINTONE_API_KEY;               // ★kintone 貸付自粛Web申告 APIトークン
+const appId = 6;                                           // ★kintone 貸付自粛Web申告 アプリID
+const apiToken = process.env.KINTONE_API_KEY_K3;               // ★kintone 貸付自粛Web申告 APIトークン
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 //const cors = require('cors');
@@ -48,13 +49,26 @@ const picKanryou = async (req, res) => {
         } else {
         }
       //console.log(webhookData);
+        let result = webhookData.result;
+        if(result === 'approved'){
+            result = '承認済';
+        } else if (result === 'denied') {
+            result = '否認済';
+        } else if (result === 'incomplete') {
+            result = '不備';
+        } else if (result === 'onhold') {
+            result = '保留';
+        } else if (result === 'yet') {
+            result = '未確認';
+        } else {
+        }
         console.log('更新キー: ' + keyEncrypted);
         console.log('申告種別: ' + shubetsuEncrypted);
         console.log('対象暗号(姓): ' + seiEncrypted);
         console.log('対象暗号(名): ' + meiEncrypted);
         console.log('メールアドレス: ' + mailAddress);
         console.log('apiKey is ' + apiKey);                 /* アクセスキー */
-        console.log('result is: ' + (webhookData.result));
+        console.log('result is: ' + result);
         console.log('operation is: ' + (webhookData.operation));
         console.log('authType is: ' + (webhookData.authType));
 
@@ -151,7 +165,7 @@ const picKanryou = async (req, res) => {
                     value: webhookData.cidNo
                 },
                 '認証結果': {           // 認証結果
-                    value: webhookData.result
+                    value: result
                 },
                 'ShinkokuID': {     // 申告ID
                     value: `${nextStr}`

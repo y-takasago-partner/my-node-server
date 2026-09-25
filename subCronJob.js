@@ -1,3 +1,9 @@
+/*
+ * 日次定時実行処理
+ *   受理／不受理メールを送信します
+ *   変更時はkintone初期表示処理の function kobetsuReSend() も同様に変更のこと（同じメールをボタンで送信）
+ */
+
 'use strict';
 
 const { sendEMail } = require('./subUtils.js');             // 他ファイル読込
@@ -5,15 +11,15 @@ const { sendEMail } = require('./subUtils.js');             // 他ファイル�
 // ★送信メールの件名に付けるプレフィックス
 //const sbjPreFix = '';                                       // 運用
 const sbjPreFix = '【テスト】';                             // テスト時
-const subDomain = 'https://jueaogoxsa02.cybozu.com';        // kintone サブドメイン
-const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
+const subDomain = 'https://ixfxwyw51tb5.cybozu.com';        // kintone サブドメイン
+const KINTONE_BASE_URL = 'https://ixfxwyw51tb5.cybozu.com/k/';
 
 // *********************************************************
 // ☆ Render 定期実行用
 // *********************************************************
 
 const cron = require('node-cron');
-const apiToken_send = process.env.KINTONE_API_KEY;          // ★kintone 貸付自粛Web申告 APIトークン
+const apiToken_send = process.env.KINTONE_API_KEY_K3;          // ★kintone 貸付自粛Web申告 APIトークン
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const kintoneClient = new KintoneRestAPIClient({
@@ -21,7 +27,7 @@ const kintoneClient = new KintoneRestAPIClient({
     auth: { apiToken: apiToken_send }                       // 送信用kintoneアプリのAPIトークン
 });
 //console.log('APIキー：' + apiToken_send);
-const JishukuSendAppID = 37;                                // ★アプリID
+const JishukuSendAppID = 6;                                // ★アプリID
 
 
 const express = require('express');
@@ -144,7 +150,7 @@ async function oneMsgSend (record) {
             "申告をいただきました貸付自粛（" + irai_cd + "申告）の処理が完了しましたので、\n" +
             "お知らせいたします。\n\n" +
             "１．受理日　　：" + dateFormattedJ + "\n" +
-            "２．申告番号　：\n" + 
+            "２．申告番号　：" + irai_no + "\n" + 
             "※訂正申告の際に必要となります。\n\n";
         const honbun_fujuri = 
             shimei + "様\n\n" + 
@@ -159,35 +165,29 @@ async function oneMsgSend (record) {
             "≪注意事項－登録申告の場合≫\n" +
             "・登録情報の反映には、本メールの受信日の翌日から3営業日程度を要します。  \n" +
             "・貸付自粛情報は受理日から３か月が経過するまで撤回申告を行うことができません。\n" +
-            "・登録情報(氏名・住所・連絡先)の訂正申告をする場合は、上記「申告番号」が必ず必要です。\n" +
-            "　※申告番号が不明な場合は訂正申告の手続きはを行うことができません。\n" +
+            "・登録情報(氏名・住所・連絡先)の訂正申告をする場合は、上記「申告番号」が必要です。\n" +
             "・貸付自粛情報は、個人信用情報機関への登録から5年間です。\n" +
             "・貸付自粛情報の登録後は、クレジット契約（ショッピングを含む）の利用に制限が生じる場合があります。\n" +
             "≪注意事項－撤回申告の場合≫\n" +
             "・登録情報の反映には、本メールの到着日の翌日から3営業日程度を要します。  \n" +
-            " ≪注意事項－訂正申告の場合≫\n" +
+            "≪注意事項－訂正申告の場合≫\n" +
             "・訂正情報の反映には、本メールの到着日の翌日から3営業日程度を要します。\n" +
-            "・再度、登録情報(氏名・住所・連絡先)の訂正申告を行う場合は、上記「申告番号」が必ず必要です。\n" +
-            "　 ※申告番号が不明な場合は訂正申告の手続きを行うことがはできません。\n\n";
+            "・再度、登録情報(氏名・住所・連絡先)の訂正申告を行う場合は、上記「申告番号」が必要です。\n\n";
         const honbun_info = 
             "【借金問題の相談先】\n" + 
-            "○日本貸金業協会　℡0570-051-051　　https://www.j-fsa.or.jp\n" + 
-            "※貸金業法に基づいて設立された自主規制機関。\n" + 
-            "※貸金業に関連する借入・返済相談に対して、公正中立な立場から生活再建支援カウンセリングや家計管理の支援を\n" + 
-            "　行います。（相談は無料です。）\n\n" + 
-            "○法テラス（日本司法支援センター）℡0570-078-374    https://www.houterasu.or.jp/\n" + 
-            "　　　　　　　　　　　　　　　　※国が設立した法的トラブル解決の総合案内所です。\n\n" + 
-            "○日本弁護士連合会   ℡03-3580-9841   https://www.nichibenren.or.jp/legal_advice/search/center.html\n\n" + 
+            "○日本貸金業協会\n&nbsp;&nbsp;&nbsp;&nbsp;https://www.j-fsa.or.jp\n" + 
+            "○法テラス（日本司法支援センター）\n&nbsp;&nbsp;&nbsp;&nbsp;https://www.houterasu.or.jp/\n" + 
+            "○日本弁護士連合会\n&nbsp;&nbsp;&nbsp;&nbsp;https://www.nichibenren.or.jp/legal_advice/search/center.html\n\n" + 
             "【保健・医療関係機関】\n" + 
-            "　全国精神保健福祉センター       https://www.zmhwc.jp/centerlist.html\n\n" + 
+            "　全国精神保健福祉センター\n&nbsp;&nbsp;&nbsp;&nbsp;https://www.zmhwc.jp/centerlist.html\n\n" + 
             "【ギャンブル等依存症相談機関】\n" + 
             "○パチンコ・パチスロ\n" + 
             "　認定特定非営利活動法人・パチンコ依存問題相談機関\n" + 
-            "　リカバリーサポート・ネットワーク  ℡050-3541-6420    http://rsn-sakura.jp/\n\n" + 
+            "　リカバリーサポート・ネットワーク\n&nbsp;&nbsp;&nbsp;&nbsp;http://rsn-sakura.jp/\n\n" + 
             "○公営競技　競馬・競輪・競艇・オートレース\n" + 
-            "　公営競技ギャンブル依存症カウンセリングセンター    ℡0120-321-153     https://www.koeikyogi.jp/addiction/gcc.html\n\n" + 
+            "　公営競技ギャンブル依存症カウンセリングセンター\n&nbsp;&nbsp;&nbsp;&nbsp;https://www.koeikyogi.jp/addiction/gcc.html\n\n" + 
             "○競艇\n" + 
-            "　一般財団法人　ギャンブル依存症予防回復支援センター     ℡0120-683-705    http://www.gaprsc.or.jp/\n\n" ;
+            "　一般財団法人　ギャンブル依存症予防回復支援センター\n&nbsp;&nbsp;&nbsp;&nbsp;http://www.gaprsc.or.jp/\n\n" ;
         const honbun_contact = 
             "【問合せ先】\n" + 
             "日本貸金業協会\n" + 
