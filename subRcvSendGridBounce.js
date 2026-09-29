@@ -44,7 +44,7 @@ const rcvSendGridBounce = async (req, res) => {
         console.error('Webhook processing error:', error);
         res.status(500).send('Internal Server Error');
     }
-});
+};
 
 module.exports = { rcvSendGridBounce };
 
