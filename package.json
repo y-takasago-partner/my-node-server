@@ -13,6 +13,7 @@
   "type": "commonjs",
   "dependencies": {
     "@kintone/rest-api-client": "^6.2.1",
+    "@sendgrid/eventwebhook": "^8.0.0",
     "@sendgrid/mail": "^8.1.6",
     "cors": "^2.8.6",
     "express": "^5.2.1",

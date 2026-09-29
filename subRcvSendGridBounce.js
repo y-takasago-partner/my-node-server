@@ -1,8 +1,8 @@
 'use strict';
 
 const express = require('express');
-//const { EventWebhook, EventWebhookHeader } = require('@sendgrid/eventwebhook');
-const { EventWebhook, EventWebhookHeader } = require('@sendgrid/mail');
+const { EventWebhook, EventWebhookHeader } = require('@sendgrid/eventwebhook');
+//const { EventWebhook, EventWebhookHeader } = require('@sendgrid/mail');
 
 const app = express();
 // 署名検証には生のBody（文字列）が必要なため、raw-bodyとして取得できるようにします
