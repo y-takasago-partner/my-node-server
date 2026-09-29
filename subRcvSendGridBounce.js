@@ -24,6 +24,7 @@ const rcvSendGridBounce = async (req, res) => {
         const key = eh.convertPublicKeyToECDSA(PUBLIC_KEY);
         const isValid = eh.verifySignature(key, payload, signature, timestamp);
 console.log("eh is \n" + eh);
+console.log("payload is \n" + payload);
 //console.log("PUBLIC_KEY is \n" + PUBLIC_KEY);
         if (!isValid) {
 console.log('invalid!');
