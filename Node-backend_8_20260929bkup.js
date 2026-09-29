@@ -14,8 +14,6 @@ const { webSoudanUketsuke_dev }            = require('./subWebSoudanUketsuke_dev
 const { picKanryou }                       = require('./subPicKanryou.js');
 const { picKanryou_dev }                   = require('./subPicKanryou_dev.js');
 
-const { rcvSendGridBounce }                = require('./subRcvSendGridBounce.js');
-
 const { subCronJob }                       = require('./subCronJob.js');
 const { subCronJob_dev }                   = require('./subCronJob_dev.js');
 
@@ -25,7 +23,6 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));            // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
 app.use(express.json());
 app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
-app.use(express.text({ type: 'application/json' }));        // SendGrid用
 
 // =========================================================
 // PIC Webhook 用（認証完了時）
@@ -44,11 +41,6 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 // =========================================================
 //app.post('/jishukuSend2', jishukuSend2);                     // 運用
 //app.post('/jishukuSend2-dev', jishukuSend2_dev);             // 開発
-
-// =========================================================
-// SendGrid Webhook 受信エンドポイント
-// =========================================================
-app.post('/sendgrid-webhook', rcvSendGridBounce);
 
 // ==========================================
 // 定期実行（Cronタスク）の処理
