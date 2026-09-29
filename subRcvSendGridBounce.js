@@ -23,7 +23,8 @@ const rcvSendGridBounce = async (req, res) => {
         const eh = new EventWebhook();
         const key = eh.convertPublicKeyToECDSA(PUBLIC_KEY);
         const isValid = eh.verifySignature(key, payload, signature, timestamp);
-
+console.log("key is \n" + key);
+console.log("PUBLIC_KEY is \n" + PUBLIC_KEY);
         if (!isValid) {
             return res.status(403).send('Invalid signature');
         }
