@@ -14,10 +14,10 @@ const PUBLIC_KEY = process.env.SENDGRID_PUBLIC_KEY;
 const rcvSendGridBounce = async (req, res) => {
     console.log('--- SendGrid Webhookを受信しました ---');
 
-//    const signature = req.get(EventWebhookHeader.SIGNATURE());
-//    const timestamp = req.get(EventWebhookHeader.TIMESTAMP());
-      const signature = req.headers['x-twilio-email-event-webhook-signature'];
-      const timestamp = req.headers['x-twilio-email-event-webhook-timestamp'];
+    const signature = req.get(EventWebhookHeader.SIGNATURE);
+    const timestamp = req.get(EventWebhookHeader.TIMESTAMP);
+//      const signature = req.headers['x-twilio-email-event-webhook-signature'];
+//      const timestamp = req.headers['x-twilio-email-event-webhook-timestamp'];
       const payload = req.body; // 生の文字列データ
 
     try {
