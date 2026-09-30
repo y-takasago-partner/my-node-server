@@ -31,7 +31,7 @@ console.log("payload is \n" + payload);
         if (!isValid) {
 console.log('invalid!');
             //return res.status(403).send('Invalid signature');
-            return res.status(200).send('Invalid signature');    //何度も繰り返しアクセスしないよう、正常を返す
+//            return res.status(200).send('Invalid signature');    //何度も繰り返しアクセスしないよう、正常受信を返す
         }
 console.log('valid!');
 
