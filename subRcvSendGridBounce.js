@@ -2,11 +2,10 @@
 
 const express = require('express');
 const { EventWebhook, EventWebhookHeader } = require('@sendgrid/eventwebhook');
-//const { EventWebhook, EventWebhookHeader } = require('@sendgrid/mail');
 
 const app = express();
 // 署名検証には生のBody（文字列）が必要なため、raw-bodyとして取得できるようにします
-app.use(express.text({ type: 'application/json' }));
+//app.use(express.text({ type: 'application/json' }));
 
 // SendGrid管理画面から取得した公開鍵
 const PUBLIC_KEY = process.env.SENDGRID_PUBLIC_KEY; 
@@ -14,11 +13,12 @@ const PUBLIC_KEY = process.env.SENDGRID_PUBLIC_KEY;
 const rcvSendGridBounce = async (req, res) => {
     console.log('--- SendGrid Webhookを受信しました ---');
 
+      const payload = req.body; // 生の文字列データ
 //    const signature = req.get(EventWebhookHeader.SIGNATURE);
 //    const timestamp = req.get(EventWebhookHeader.TIMESTAMP);
       const signature = req.headers['x-twilio-email-event-webhook-signature'];
       const timestamp = req.headers['x-twilio-email-event-webhook-timestamp'];
-      const payload = req.body; // 生の文字列データ
+console.log("payload is \n" + payload);
 
     try {
         // 1. 署名の検証
@@ -26,12 +26,11 @@ const rcvSendGridBounce = async (req, res) => {
         const key = eh.convertPublicKeyToECDSA(PUBLIC_KEY);
         const isValid = eh.verifySignature(key, payload, signature, timestamp);
 console.log("eh is \n" + eh);
-console.log("payload is \n" + payload);
 //console.log("PUBLIC_KEY is \n" + PUBLIC_KEY);
         if (!isValid) {
 console.log('invalid!');
             //return res.status(403).send('Invalid signature');
-//            return res.status(200).send('Invalid signature');    //何度も繰り返しアクセスしないよう、正常受信を返す
+            return res.status(200).send('Invalid signature');    //何度も繰り返しアクセスしないよう、正常受信を返す
         }
 console.log('valid!');
 

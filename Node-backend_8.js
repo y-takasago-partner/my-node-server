@@ -48,7 +48,7 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 // =========================================================
 // SendGrid Webhook 受信エンドポイント
 // =========================================================
-app.post('/sendgrid-webhook', rcvSendGridBounce);
+app.post('/sendgrid-webhook', express.text({ type: 'application/json' }), rcvSendGridBounce);
 
 // ==========================================
 // 定期実行（Cronタスク）の処理
