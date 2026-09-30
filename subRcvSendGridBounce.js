@@ -30,7 +30,8 @@ console.log("payload is \n" + payload);
 //console.log("PUBLIC_KEY is \n" + PUBLIC_KEY);
         if (!isValid) {
 console.log('invalid!');
-            return res.status(403).send('Invalid signature');
+            //return res.status(403).send('Invalid signature');
+            return res.status(200).send('Invalid signature');    //何度も繰り返しアクセスしないよう、正常を返す
         }
 console.log('valid!');
 
