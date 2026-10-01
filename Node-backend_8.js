@@ -22,6 +22,8 @@ const { subCronJob_dev }                   = require('./subCronJob_dev.js');
 const express = require('express');
 const app = express();
 
+app.post('/sendgrid-webhook', express.text({ type: 'application/json' }), rcvSendGridBounce);
+
 app.use(express.urlencoded({ extended: true }));            // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応
 app.use(express.json());
 app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
@@ -48,7 +50,7 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 // =========================================================
 // SendGrid Webhook 受信エンドポイント
 // =========================================================
-app.post('/sendgrid-webhook', express.text({ type: 'application/json' }), rcvSendGridBounce);
+//app.post('/sendgrid-webhook', express.text({ type: 'application/json' }), rcvSendGridBounce);
 
 // ==========================================
 // 定期実行（Cronタスク）の処理
