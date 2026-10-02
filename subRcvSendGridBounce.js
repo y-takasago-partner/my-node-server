@@ -19,6 +19,7 @@ const rcvSendGridBounce = async (req, res) => {
       const signature = req.headers['x-twilio-email-event-webhook-signature'];
       const timestamp = req.headers['x-twilio-email-event-webhook-timestamp'];
 console.log("payload is \n" + payload);
+console.log("recordNo is \n" + payload.recordNo);
 
     try {
         // 1. 署名の検証
