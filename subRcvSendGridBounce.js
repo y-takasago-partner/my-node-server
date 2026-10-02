@@ -25,8 +25,7 @@ console.log("payload is \n" + payload);
         const eh = new EventWebhook();
         const key = eh.convertPublicKeyToECDSA(PUBLIC_KEY);
         const isValid = eh.verifySignature(key, payload, signature, timestamp);
-console.log("eh is \n" + eh);
-//console.log("PUBLIC_KEY is \n" + PUBLIC_KEY);
+//console.log("eh is \n" + eh);
         if (!isValid) {
 console.log('invalid!');
             //return res.status(403).send('Invalid signature');

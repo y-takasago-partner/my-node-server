@@ -70,7 +70,10 @@ const webSoudanUketsuke_dev = async (req, res) => {
         },
         subject: sbjPreFix + 'ご相談受付けの件', // 件名
         text: honbun,                            // 本文
-        html: honbun.replaceAll("\n", "<br>")    // HTML本文
+        html: honbun.replaceAll("\n", "<br>"),   // HTML本文
+        custom_args: {
+          recordNo: webhookData.レコード番号     // 自社のユーザーIDなど
+        }
     };
     const honbun2 = 
         "WEB相談受付がありました。\n" + 

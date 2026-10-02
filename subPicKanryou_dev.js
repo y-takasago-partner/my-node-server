@@ -22,7 +22,7 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 var client;
 
 const picKanryou_dev = async (req, res) => {
-    console.log('--- Webhookを受信しました ---');
+    console.log('--- pic-webhook-devを受信しました ---');
     const webhookData = req.body;
     try {
 
