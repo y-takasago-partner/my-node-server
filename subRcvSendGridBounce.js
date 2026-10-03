@@ -16,16 +16,18 @@ const rcvSendGridBounce = async (req, res) => {
     const payload = req.body; // 生の文字列データ
     console.log('payload.length is ' + payload.length);
 
-    if (payload && payload.length > 0) {
-      console.log(payload[0].userId); 
-    }
+//    if (payload && payload.length > 0) {
+//      console.log(payload[0].recordNo); 
+//    }
 
 //    const signature = req.get(EventWebhookHeader.SIGNATURE);
 //    const timestamp = req.get(EventWebhookHeader.TIMESTAMP);
       const signature = req.headers['x-twilio-email-event-webhook-signature'];
       const timestamp = req.headers['x-twilio-email-event-webhook-timestamp'];
-console.log("payload[0] is \n" + payload[0]);
-console.log("recordNo is \n" + payload[0].recordNo);
+console.log("payload is " + payload);
+console.log("payload.recordNo is " + payload.recordNo);
+console.log("payload[0] is " + payload[0]);
+console.log("payload[0].recordNo is " + payload[0].recordNo);
 
     try {
         // 1. 署名の検証
