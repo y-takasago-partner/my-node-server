@@ -68,12 +68,21 @@
 </head>
 <body>
 
-    <div class="thankyou-container">
+    <div class="thankyou-container" id="target">
         <h1>メール相談を受け付けました</h1>
         <p>日本貸金業協会です。<span class="highlight">メール相談</span>を受付ました。<br>
         受付メールがお手元に届いているかご確認ください。</p>
         <p>※設定によっては迷惑メールに入っている場合がございます。</p>
     </div>
+
+<SCRIPT type="text/javascript" language="JavaScript">
+const target = document.getElementById('target');
+if(document.referrer.slice(0, 34) !== 'https://form.omotenashi-suite.com/') {
+    target.style.display = 'none';
+} else {
+    //画面を表示する
+}
+</script>
 
 </body>
 </html>
