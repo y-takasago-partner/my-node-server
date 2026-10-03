@@ -13,19 +13,21 @@ const PUBLIC_KEY = process.env.SENDGRID_PUBLIC_KEY;
 const rcvSendGridBounce = async (req, res) => {
     console.log('--- SendGrid Webhookを受信しました ---');
 
-    const payload = req.body; // 生の文字列データ
-    console.log('payload.length is ' + payload.length);
+    let payload = req.body;
+    if (typeof payload === 'string') {
+      try {
+        payload = JSON.parse(payload);
+      } catch (e) {
+        console.error("JSONのパースに失敗しました:", e);
+      }
+    }
 
-//    if (payload && payload.length > 0) {
-//      console.log(payload[0].recordNo); 
-//    }
+    console.log('payload.length is ' + payload.length);
 
 //    const signature = req.get(EventWebhookHeader.SIGNATURE);
 //    const timestamp = req.get(EventWebhookHeader.TIMESTAMP);
       const signature = req.headers['x-twilio-email-event-webhook-signature'];
       const timestamp = req.headers['x-twilio-email-event-webhook-timestamp'];
-console.log("payload is " + payload);
-console.log("payload.recordNo is " + payload.recordNo);
 console.log("payload[0] is " + payload[0]);
 console.log("payload[0].recordNo is " + payload[0].recordNo);
 
