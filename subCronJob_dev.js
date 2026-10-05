@@ -200,7 +200,7 @@ async function oneMsgSend (record) {
             to  :  mailAddress,                         // 宛先メールアドレス
             from: {
               name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
-              email: 'jisyuku_web@j-fsa.jp',            //From（SendGridで認証済みドメインのメールアドレス）
+              email: 'jisyuku_web2@j-fsa.jp',           //From（SendGridで認証済みドメインのメールアドレス）
             },
             subject: sbjPreFix + sbjPreFixResend + '「日本貸金業協会」貸付自粛申告　' + result + 'のお知らせ', // 件名
             text: honbun,                               // 本文

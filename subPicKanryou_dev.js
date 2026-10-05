@@ -198,7 +198,7 @@ const picKanryou_dev = async (req, res) => {
             to  :  mailAddress,                   // 宛先メールアドレス
             from: {
               name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
-              email: 'jisyuku_web@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
+              email: 'jisyuku_web2@j-fsa.jp',     //From（SendGridで認証済みドメインのメールアドレス）
             },
             subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
             text: honbun,                         // 本文
@@ -214,7 +214,7 @@ const picKanryou_dev = async (req, res) => {
         //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
-            from:  'jisyuku_web@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
+            from:  'jisyuku_web2@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
             subject: sbjPreFix + '' + shubetsuEncrypted + '申告がありました',     // 件名
             text: honbun2,                         // 本文
             html: honbun2.replaceAll("\n", "<br>") // HTML本文

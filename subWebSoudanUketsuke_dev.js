@@ -66,7 +66,7 @@ const webSoudanUketsuke_dev = async (req, res) => {
         to  :  webhookData.メールアドレス,       // 宛先メールアドレス
         from: {
           name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
-          email: 'noreplywebjfsa@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
+          email: 'noreplywebjfsa2@j-fsa.jp',     //From（SendGridで認証済みドメインのメールアドレス）
         },
         subject: sbjPreFix + 'ご相談受付けの件', // 件名
         text: honbun,                            // 本文
@@ -81,7 +81,7 @@ const webSoudanUketsuke_dev = async (req, res) => {
         KINTONE_BASE_URL + appId + '/show#record=' + webhookData.レコード番号 + '\n';
     const msg2 = {
         to  :  addrToSoudanStaff,                // 宛先メールアドレス
-        from:  'soudan@j-fsa.jp',                //From（SendGridで認証済みドメインのメールアドレス）
+        from:  'soudan2@j-fsa.jp',               //From（SendGridで認証済みドメインのメールアドレス）
         subject: sbjPreFix + '相談受付の件',     // 件名
         text: honbun2 + '\n',                    // 本文
         html: honbun2.replaceAll("\n", "<br>")   // HTML本文
