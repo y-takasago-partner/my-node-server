@@ -152,6 +152,17 @@ const picKanryou_dev = async (req, res) => {
         }
         //******** kintone申告ID取得 end ********
 
+        const response3 = await client.record.getRecords({
+            app: appId,                             // アプリID
+            query: '更新キー' = keyEncrypted,       // 重複しない項目を指定するクエリ式
+            limit: 1                                // 1件のみに制限
+        });
+        console.log( '取得レコード：' + response3.records[0]);
+
+        const Jusho_Kana     = response3.records[0]['Jusho_Kana'].value;  //住所カナ
+        const Jusho_Banchi   = response3.records[0]['Jusho_Banchi'].value;  //番地以下
+        const Jusho_Kana_new = Jusho_Kana + Jusho_Banchi;
+
         //******** kintoneデータ更新 ********
         const updtResult = await client.record.updateRecord({
             app: appId,                 // アプリID
@@ -166,8 +177,11 @@ const picKanryou_dev = async (req, res) => {
                 '認証結果': {           // 認証結果
                     value: result
                 },
-                'ShinkokuID': {     // 申告ID
+                'ShinkokuID': {         // 申告ID
                     value: `${nextStr}`
+                },
+                'Jusho_Kana': {         // 住所カナに番地以下を加える
+                    value: `${Jusho_Kana_new}`
                 }
             }
         });
