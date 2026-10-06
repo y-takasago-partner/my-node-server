@@ -153,9 +153,9 @@ const picKanryou_dev = async (req, res) => {
         //******** kintone申告ID取得 end ********
 
         const response3 = await client.record.getRecords({
-            app: appId,                             // アプリID
-            query: '更新キー' = keyEncrypted,       // 重複しない項目を指定するクエリ式
-            limit: 1                                // 1件のみに制限
+            app: appId,                                     // アプリID
+            query: '更新キー = "' + keyEncrypted + '"',     // 重複しない項目を指定するクエリ式
+            limit: 1                                        // 1件のみに制限
         });
         console.log( '取得レコード：' + response3.records[0]);
 
