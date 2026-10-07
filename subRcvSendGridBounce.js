@@ -3,6 +3,9 @@
 const { EventWebhook, EventWebhookHeader } = require('@sendgrid/eventwebhook');
 const PUBLIC_KEY = process.env.SENDGRID_PUBLIC_KEY; 
 
+const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone サブドメイン
+const apiToken = process.env.KINTONE_API_KEY_DEV;           // ★kintone 貸付自粛Web申告 APIトークン
+
 const appId = 6;                                            // ★kintone 貸付自粛Web申告 アプリID
 const appId_dev = 26;                                       // ★kintone 貸付自粛Web申告 アプリID（開発）
 
@@ -31,6 +34,14 @@ const rcvSendGridBounce = async (req, res) => {
                     console.log(`kintoneアプリ番号: ${event.appliId}`);
                     console.log(`kintoneレコード番号: ${event.recordNo}`);
                     if (event.appliId == appId || event.appliId == appId_dev) {
+
+                        // kintone クライアントの作成
+                        client = new KintoneRestAPIClient({
+                            baseUrl: subDomain,
+                            auth: {
+                                apiToken: apiToken
+                            }
+                        });
 
                         //******** kintoneデータ更新 ********
                         const updtResult = await client.record.updateRecord({
