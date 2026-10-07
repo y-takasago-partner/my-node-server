@@ -219,7 +219,7 @@ const picKanryou_dev = async (req, res) => {
             html: honbun.replaceAll("\n", "<br>"),          // HTML本文
             custom_args: {
               appli: appId,                                 // アプリID
-              recordNo: webhookData.レコード番号            // レコード番号
+              recordNo: recordId                            // レコード番号
             }
         };
         const honbun2 = 
