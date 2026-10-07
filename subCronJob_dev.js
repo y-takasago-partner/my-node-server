@@ -205,6 +205,10 @@ async function oneMsgSend (record) {
             subject: sbjPreFix + sbjPreFixResend + '「日本貸金業協会」貸付自粛申告　' + result + 'のお知らせ', // 件名
             text: honbun,                               // 本文
             html: honbun.replaceAll("\n", "<br>"),      // 本文
+            custom_args: {
+              appliId: JishukuSendAppID,                    // アプリID
+              recordNo: recordId                            // レコード番号
+            }
         };
         sendEMail(msg);
         // 3. 送信が成功したら、kintoneの該当レコードを「配信済」に更新する
