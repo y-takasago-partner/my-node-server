@@ -209,14 +209,18 @@ const picKanryou_dev = async (req, res) => {
             "〒108-0074東京都港区高輪3丁目19番15号 \n" + 
             "TEL 03-5739-3861/050-3494-7988\n" ;
         const msg = {
-            to  :  mailAddress,                   // 宛先メールアドレス
+            to  :  mailAddress,                             // 宛先メールアドレス
             from: {
               name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
-              email: 'jisyuku_web2@j-fsa.jp',     //From（SendGridで認証済みドメインのメールアドレス）
+              email: 'jisyuku_web2@j-fsa.jp',               //From（SendGridで認証済みドメインのメールアドレス）
             },
             subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
-            text: honbun,                         // 本文
-            html: honbun.replaceAll("\n", "<br>") // HTML本文
+            text: honbun,                                   // 本文
+            html: honbun.replaceAll("\n", "<br>"),          // HTML本文
+            custom_args: {
+              appli: appId,                                 // アプリID
+              recordNo: webhookData.レコード番号            // レコード番号
+            }
         };
         const honbun2 = 
             shubetsuEncrypted + '申告がありました。\n' + 
