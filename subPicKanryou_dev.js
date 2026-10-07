@@ -123,9 +123,10 @@ const picKanryou_dev = async (req, res) => {
           fields: ['$id'] 
         });
 
+        let recordId = '';
         // レコードが見つかった場合の処理
         if (response.records.length > 0) {
-          const recordId = response.records[0].$id.value;
+          recordId = response.records[0].$id.value;
           console.log(`レコード番号を取得しました: ${recordId}`);
         } else {
           console.log('一致するレコードが見つかりませんでした。');
