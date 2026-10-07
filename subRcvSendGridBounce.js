@@ -5,6 +5,7 @@ const PUBLIC_KEY = process.env.SENDGRID_PUBLIC_KEY;
 
 const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone サブドメイン
 const apiToken = process.env.KINTONE_API_KEY_DEV;           // ★kintone 貸付自粛Web申告 APIトークン
+const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
 const appId = 6;                                            // ★kintone 貸付自粛Web申告 アプリID
 const appId_dev = 26;                                       // ★kintone 貸付自粛Web申告 アプリID（開発）
