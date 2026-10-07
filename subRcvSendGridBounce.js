@@ -37,7 +37,7 @@ const rcvSendGridBounce = async (req, res) => {
                     if (event.appliId == appId || event.appliId == appId_dev) {
 
                         // kintone クライアントの作成
-                        client = new KintoneRestAPIClient({
+                        const client = new KintoneRestAPIClient({
                             baseUrl: subDomain,
                             auth: {
                                 apiToken: apiToken
