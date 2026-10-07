@@ -27,8 +27,8 @@ const rcvSendGridBounce = async (req, res) => {
                 // 未達イベント（bounce または dropped）をフィルタリング
                 if (event.event === 'bounce' || event.event === 'dropped') {
                     console.log(`未達検知: [${event.event}] ${event.email} - 理由: ${event.reason}`);
+                    console.log(`kintoneアプリ番号: ${event.appliId}`);
                     console.log(`kintoneレコード番号: ${event.recordNo}`);
-                    
                     // TODO: ここでkintoneのアップデート等の処理を行う
                 }
             }
