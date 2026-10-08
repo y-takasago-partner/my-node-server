@@ -35,7 +35,9 @@ const rcvSendGridBounce = async (req, res) => {
                     console.log(`kintoneアプリ番号: ${event.appliId}`);
                     console.log(`kintoneレコード番号: ${event.recordNo}`);
                     if (event.appliId == appId || event.appliId == appId_dev) {
-
+                        //未達の時刻を取得
+                        const date = new Date(event.timestamp * 1000); 
+                        const jstString = date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
                         // kintone クライアントの作成
                         const client = new KintoneRestAPIClient({
                             baseUrl: subDomain,
@@ -43,14 +45,13 @@ const rcvSendGridBounce = async (req, res) => {
                                 apiToken: apiToken
                             }
                         });
-
                         //******** kintoneデータ更新 ********
                         const updtResult = await client.record.updateRecord({
                             app: event.appliId,             // アプリID
                             id: event.recordNo,             // ここにレコード番号（$id）を指定
                             record: {
                                 'EmailDeliv_Error': {       // エラー情報項目
-                                    value: '未達:' + event.event + ', 理由:' + event.reason
+                                    value: jstString + ' 未達（' + event.reason + '）';
                                 }
                             }
                         });
