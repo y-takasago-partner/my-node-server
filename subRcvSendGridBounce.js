@@ -51,7 +51,7 @@ const rcvSendGridBounce = async (req, res) => {
                             id: event.recordNo,             // ここにレコード番号（$id）を指定
                             record: {
                                 'EmailDeliv_Error': {       // エラー情報項目
-                                    value: jstString + ' 未達（' + event.reason + '）';
+                                    value: jstString + ' 未達（' + event.reason + '）'
                                 }
                             }
                         });
