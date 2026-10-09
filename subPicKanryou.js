@@ -9,7 +9,7 @@ const scKey = process.env.SHOWCASE_KEY;                         // ★ProTeck ID
 const subDomain = 'https://ixfxwyw51tb5.cybozu.com';            // ★kintone サブドメイン
 const KINTONE_BASE_URL = 'https://ixfxwyw51tb5.cybozu.com/k/';  // ★kintone URL
 
-const addrToJishukuStaff = 'jisyuku_web@j-fsa.jp';          // ★宛先職員メールアドレス
+const addrToJishukuStaff = 'jisyuku_web2@j-fsa.jp';          // ★宛先職員メールアドレス
 
 const appId = 6;                                           // ★kintone 貸付自粛Web申告 アプリID
 const apiToken = process.env.KINTONE_API_KEY_K3;               // ★kintone 貸付自粛Web申告 APIトークン
@@ -22,7 +22,7 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 var client;
 
 const picKanryou = async (req, res) => {
-    console.log('--- Webhookを受信しました ---');
+    console.log('--- pic-Webhookを受信しました ---');
     const webhookData = req.body;
     try {
 
@@ -97,9 +97,10 @@ const picKanryou = async (req, res) => {
           fields: ['$id'] 
         });
 
+        let recordId = '';
         // レコードが見つかった場合の処理
         if (response.records.length > 0) {
-          const recordId = response.records[0].$id.value;
+          recordId = response.records[0].$id.value;
           console.log(`レコード番号を取得しました: ${recordId}`);
         } else {
           console.log('一致するレコードが見つかりませんでした。');
@@ -126,6 +127,17 @@ const picKanryou = async (req, res) => {
         }
         //******** kintone申告ID取得 end ********
 
+        const response3 = await client.record.getRecords({
+            app: appId,                                     // アプリID
+            query: '更新キー = "' + keyEncrypted + '"',     // 重複しない項目を指定するクエリ式
+            limit: 1                                        // 1件のみに制限
+        });
+        console.log( '取得レコード：' + response3.records[0]);
+
+        const Jusho_Kana     = response3.records[0]['Jusho_Kana'].value;  //住所カナ
+        const Jusho_Banchi   = response3.records[0]['Jusho_Banchi'].value;  //番地以下
+        const Jusho_Kana_new = Jusho_Kana + Jusho_Banchi;
+
         //******** kintoneデータ更新 ********
         const updtResult = await client.record.updateRecord({
             app: appId,                 // アプリID
@@ -140,8 +152,11 @@ const picKanryou = async (req, res) => {
                 '認証結果': {           // 認証結果
                     value: result
                 },
-                'ShinkokuID': {     // 申告ID
+                'ShinkokuID': {         // 申告ID
                     value: `${nextStr}`
+                },
+                'Jusho_Kana': {         // 住所カナに番地以下を加える
+                    value: `${Jusho_Kana_new}`
                 }
             }
         });
@@ -169,14 +184,18 @@ const picKanryou = async (req, res) => {
             "〒108-0074東京都港区高輪3丁目19番15号 \n" + 
             "TEL 03-5739-3861/050-3494-7988\n" ;
         const msg = {
-            to  :  mailAddress,                   // 宛先メールアドレス
+            to  :  mailAddress,                             // 宛先メールアドレス
             from: {
               name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
-              email: 'jisyuku_web@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
+              email: 'jisyuku_web2@j-fsa.jp',               //From（SendGridで認証済みドメインのメールアドレス）
             },
             subject: sbjPreFix + '「日本貸金業協会」貸付自粛申告　受付のお知らせ', // 件名
-            text: honbun,                         // 本文
-            html: honbun.replaceAll("\n", "<br>") // HTML本文
+            text: honbun,                                   // 本文
+            html: honbun.replaceAll("\n", "<br>"),          // HTML本文
+            custom_args: {
+              appliId: appId,                               // アプリID
+              recordNo: recordId                            // レコード番号
+            }
         };
         const honbun2 = 
             shubetsuEncrypted + '申告がありました。\n' + 
@@ -188,7 +207,7 @@ const picKanryou = async (req, res) => {
         //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
-            from:  'jisyuku_web@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
+            from:  'jisyuku_web2@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
             subject: sbjPreFix + '' + shubetsuEncrypted + '申告がありました',     // 件名
             text: honbun2,                         // 本文
             html: honbun2.replaceAll("\n", "<br>") // HTML本文

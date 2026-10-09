@@ -9,6 +9,7 @@ const { sendEMail } = require('./subUtils.js');
 // ★送信メールの件名に付けるプレフィックス
 //const sbjPreFix = '';                                       // 運用
 const sbjPreFix = '【テスト】';                             // テスト時
+const START_NO = '3001';                                    // ★運用開始時に『最終SpiralNo + 1』を設定
 
 const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
@@ -27,7 +28,7 @@ const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 // *********************************************************
 
 // ★宛先職員メールアドレス ***
-const addrToSoudanStaff = 'soudan@j-fsa.jp';                // 検証/運用
+const addrToSoudanStaff = 'soudan2@j-fsa.jp';                // 検証/運用
 
 
 var client;
@@ -67,11 +68,14 @@ const webSoudanUketsuke = async (req, res) => {
         to  :  webhookData.メールアドレス,       // 宛先メールアドレス
         from: {
           name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
-          email: 'noreplywebjfsa@j-fsa.jp',      //From（SendGridで認証済みドメインのメールアドレス）
+          email: 'noreplywebjfsa2@j-fsa.jp',     //From（SendGridで認証済みドメインのメールアドレス）
         },
         subject: sbjPreFix + 'ご相談受付けの件', // 件名
         text: honbun,                            // 本文
-        html: honbun.replaceAll("\n", "<br>")    // HTML本文
+        html: honbun.replaceAll("\n", "<br>"),   // HTML本文
+        custom_args: {
+          recordNo: webhookData.レコード番号     // 自社のユーザーIDなど
+        }
     };
     const honbun2 = 
         "WEB相談受付がありました。\n" + 
@@ -79,7 +83,7 @@ const webSoudanUketsuke = async (req, res) => {
         KINTONE_BASE_URL + appId + '/show#record=' + webhookData.レコード番号 + '\n';
     const msg2 = {
         to  :  addrToSoudanStaff,                // 宛先メールアドレス
-        from:  'soudan@j-fsa.jp',                //From（SendGridで認証済みドメインのメールアドレス）
+        from:  'soudan2@j-fsa.jp',               //From（SendGridで認証済みドメインのメールアドレス）
         subject: sbjPreFix + '相談受付の件',     // 件名
         text: honbun2 + '\n',                    // 本文
         html: honbun2.replaceAll("\n", "<br>")   // HTML本文
@@ -112,7 +116,7 @@ const webSoudanUketsuke = async (req, res) => {
         });
         var nextStr = "";
         if (response2.records.length === 0) {
-            nextStr = '3001';
+            nextStr = START_NO;
             console.log('レコードがありません。最初の番号:', nextStr);
         } else {
             const maxStr = response2.records[0]['NO'].value;
@@ -133,6 +137,7 @@ const webSoudanUketsuke = async (req, res) => {
         });
         console.log('更新しました');
         //******** kintoneデータ更新 End ********
+
         sendEMail(msg);
         sendEMail(msg2);
     } catch (error) {
