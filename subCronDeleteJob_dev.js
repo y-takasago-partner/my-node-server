@@ -18,27 +18,25 @@ const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
 // *********************************************************
 
 const cron = require('node-cron');
-const apiTokenJishuku = process.env.KINTONE_API_KEY_DEV;          // ★kintone 貸付自粛Web申告 APIトークン
-//const apiTokenSoudan = process.env.KINTONE_API_KEY_SODAN_DEV;     // ★kintone Web相談 APIトークン
-
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
-const client = new KintoneRestAPIClient({
-    baseUrl: subDomain,
-    auth: { apiToken: apiTokenJishuku }                       // Web申告用kintoneアプリのAPIトークン
-});
+
+const apiTokenJishuku = process.env.KINTONE_API_KEY_DEV;          // ★kintone 貸付自粛Web申告 APIトークン
+const apiTokenSoudan = process.env.KINTONE_API_KEY_SODAN_DEV;     // ★kintone Web相談 APIトークン
 const JishukuAppID = 26;                                // ★アプリID
-//const SoudanAppID = 28;                                 // ★アプリID
+const SoudanAppID = 28;                                 // ★アプリID
 
 const express = require('express');
 const app = express();
 
-//app.use(express.json());
-//app.use(express.static('public'));                          // PDFファイルへの外部リンクアクセス用
-
 // kintoneクライアントの初期化
 const clientJ = new KintoneRestAPIClient({
-  baseUrl: `https://${process.env.KINTONE_DOMAIN}`,
-  auth: { apiToken: process.env.KINTONE_API_TOKEN },
+    baseUrl: subDomain,
+    auth: { apiToken: apiTokenJishuku }                       // Web申告用kintoneアプリのAPIトークン
+});
+
+const clientS = new KintoneRestAPIClient({
+    baseUrl: subDomain,
+    auth: { apiToken: apiTokenSoudan },
 });
 
 // 配列を100件ずつに分割するヘルパー関数
@@ -99,9 +97,9 @@ async function deleteOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '30 0 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '35 17 * * *') => {
   cron.schedule(scheduleTime, async () => {
-    console.log('定期実行タスクを開始します...');
+    console.log('定期削除実行タスクを開始します...');
     // 実際の非同期処理をここに記述
     deleteOldRecords();
   }, {
