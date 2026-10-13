@@ -19,6 +19,9 @@ const { rcvSendGridBounce }                = require('./subRcvSendGridBounce.js'
 const { subCronJob }                       = require('./subCronJob.js');
 const { subCronJob_dev }                   = require('./subCronJob_dev.js');
 
+//const { subCronDeleteJob }                 = require('./subCronDeleteJob.js');
+const { subCronDeleteJob_dev }             = require('./subCronDeleteJob_dev.js');
+
 const express = require('express');
 const app = express();
 
@@ -55,8 +58,11 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
-subCronJob();
-subCronJob_dev();
+subCronJob();                           // 受理・不受理メール送信（運用）
+subCronJob_dev();                       // 受理・不受理メール送信（開発）
+
+//subCronDeleteJob();                     // 古いデータや不要データを削除（運用）
+subCronDeleteJob_dev();                 // 古いデータや不要データを削除（開発）
 
 
 // =========================================================
