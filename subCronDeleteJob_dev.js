@@ -71,7 +71,7 @@ async function deleteOldRecords() {
       return;
     }
 
-    const allIds = records.map((record) => record.\$id.value);
+    const allIds = records.map((record) => record.$id.value);
 
     // 2. API上限の100件ずつに分割してループ処理
     const idChunks = chunk(allIds, 100);
