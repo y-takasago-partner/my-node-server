@@ -58,7 +58,7 @@ async function deleteOldRecords() {
     // 1. 条件に合うレコードを取得（最大500件まで一括取得対応）
     const getResp = await clientJ.record.getRecords({
       app: JishukuAppID,
-      query: '作成日時 < FROM_TODAY(-10, DAYS) order by 作成日時 asc limit 500',
+      query: 'Created < FROM_TODAY(-10, DAYS) order by 作成日時 asc limit 500',
       fields: ['\$id'],
     });
 
@@ -97,7 +97,7 @@ async function deleteOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '35 17 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '38 17 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期削除実行タスクを開始します...');
     // 実際の非同期処理をここに記述
