@@ -1,0 +1,100 @@
+const { KintoneRestAPIClient } = require('@kintone/rest-api-client');
+const cron = require('node-cron');
+const express = require('express'); // RenderのWeb Service用に必要
+
+const app = express();
+const PORT = process.env.PORT || 10000; // Renderはデフォルトで10000ポートを使用します
+
+// kintoneクライアントの初期化
+const clientJ = new KintoneRestAPIClient({
+  baseUrl: `https://${process.env.KINTONE_DOMAIN}`,
+  auth: { apiToken: process.env.KINTONE_API_TOKEN },
+});
+
+// 配列を100件ずつに分割するヘルパー関数
+const chunk = (array, size) => {
+  return Array.from({ length: Math.ceil(array.length / size) }, (v, i) =>
+    array.slice(i * size, i * size + size)
+  );
+};
+
+// 実際の削除処理を行う関数
+async function deleteOldRecords() {
+  const appId = process.env.KINTONE_APP_ID;
+  if (!appId) {
+    console.error('【kintone】エラー: KINTONE_APP_ID が設定されていません。');
+    return;
+  }
+
+  try {
+    console.log('【kintone】11日以上経過したレコードの取得を開始します...');
+
+    // 1. 条件に合うレコードを取得（最大500件まで一括取得対応）
+    const getResp = await clientJ.record.getRecords({
+      app: appId,
+      query: '作成日時 < FROM_TODAY(-10, DAYS) order by 作成日時 asc limit 500',
+      fields: ['\$id'],
+    });
+
+    const records = getResp.records;
+    console.log(`【kintone】該当レコード数: ${records.length} 件`);
+
+    if (records.length === 0) {
+      console.log('【kintone】削除対象のレコードはありません。');
+      return;
+    }
+
+    const allIds = records.map((record) => record.\$id.value);
+
+    // 2. API上限の100件ずつに分割してループ処理
+    const idChunks = chunk(allIds, 100);
+    console.log(`【kintone】削除処理を ${idChunks.length} 回に分けて実行します。`);
+
+    for (let i = 0; i < idChunks.length; i++) {
+      const currentChunk = idChunks[i];
+      console.log(`【kintone】[${i + 1}/${idChunks.length}] ${currentChunk.length}件を削除中...`);
+      
+      await clientJ.record.deleteRecords({
+        app: appId,
+        ids: currentChunk,
+      });
+
+      // 複数回APIを叩く場合は負荷軽減のために1秒待機
+      if (idChunks.length > 1 && i < idChunks.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+
+    console.log('【kintone】古いデータの自動削除が正常に完了しました。');
+
+  } catch (err) {
+    console.error('【kintone】レコード削除処理でエラーが発生しました:', err);
+  }
+}
+
+// ==========================================
+// Render用の生存確認（Health Check）エンドポイント
+// ==========================================
+app.get('/', (req, res) => {
+  res.send('kintone Auto-Delete Service is running.');
+});
+
+// Webサーバーの起動（これによりRenderのデプロイエラーを防ぎます）
+app.listen(PORT, () => {
+  console.log(`【システム】Web サーバーがポート ${PORT} で起動しました。`);
+});
+
+// ==========================================
+// 定期実行（cron）の設定
+// ==========================================
+// 毎日深夜の AM 2:00 (日本時間 JST) に実行する場合
+// ⚠️ Renderのサーバータイムゾーン（UTC）に合わせるため、JST AM 2:00 ＝ UTC 前日 PM 17:00 となります
+cron.schedule('0 17 * * *', () => {
+  console.log('【定期実行】スケジュール時刻になりました。削除処理を開始します。');
+  deleteOldRecords();
+}, {
+  scheduled: true,
+  timezone: "Etc/UTC"
+});
+
+console.log('【システム】kintone自動削除用のcronタスクを登録しました。');
