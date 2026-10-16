@@ -3,12 +3,11 @@
 const { EventWebhook, EventWebhookHeader } = require('@sendgrid/eventwebhook');
 const PUBLIC_KEY = process.env.SENDGRID_PUBLIC_KEY; 
 
-const subDomain = 'https://jueaogoxsa02.cybozu.com';            // ★kintone サブドメイン
-const apiToken = process.env.KINTONE_API_KEY_DEV;           // ★kintone 貸付自粛Web申告 APIトークン
+const subDomain = 'ixfxwyw51tb5.cybozu.com';                // ★kintone サブドメイン
+const apiToken = process.env.KINTONE_API_KEY;               // ★kintone 貸付自粛Web申告 APIトークン
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
 const appId = 6;                                            // ★kintone 貸付自粛Web申告 アプリID
-const appId_dev = 26;                                       // ★kintone 貸付自粛Web申告 アプリID（開発）
 
 const rcvSendGridBounce = async (req, res) => {
     const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
@@ -34,7 +33,7 @@ const rcvSendGridBounce = async (req, res) => {
                     console.log(`未達検知: [${event.event}] ${event.email} - 理由: ${event.reason}`);
                     console.log(`kintoneアプリ番号: ${event.appliId}`);
                     console.log(`kintoneレコード番号: ${event.recordNo}`);
-                    if (event.appliId == appId || event.appliId == appId_dev) {
+                    if (event.appliId == appId) {
                         //未達の時刻を取得
                         const date = new Date(event.timestamp * 1000); 
                         const jstString = date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });

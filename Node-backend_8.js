@@ -15,6 +15,7 @@ const { picKanryou }                       = require('./subPicKanryou.js');
 const { picKanryou_dev }                   = require('./subPicKanryou_dev.js');
 
 const { rcvSendGridBounce }                = require('./subRcvSendGridBounce.js');
+const { rcvSendGridBounce_dev }            = require('./subRcvSendGridBounce_dev.js');
 
 const { subCronJob }                       = require('./subCronJob.js');
 const { subCronJob_dev }                   = require('./subCronJob_dev.js');
