@@ -115,12 +115,13 @@ const picKanryou_dev = async (req, res) => {
 
         //******** kintoneレコード番号取得 ********
         const keyFieldCode = '更新キー';
+        const cidFieldCode = 'cidNo'; 
         const response = await client.record.getRecords({
           app: appId,
           // 該当のキーに一致するレコードを検索するクエリ
           query: `${keyFieldCode} = "${keyEncrypted}"`,
           // 必要なフィールド（レコード番号、cidNo）だけを指定して高速化
-          fields: ['$id', '$cidNo'] 
+          fields: ['$id', cidFieldCode] 
         });
 
         let recordId = '';
@@ -129,7 +130,7 @@ const picKanryou_dev = async (req, res) => {
         if (response.records.length > 0) {
           recordId = response.records[0].$id.value;
           console.log(`レコード番号を取得しました: ${recordId}`);
-          cId = response.records[0].$cidNo.value;
+          cId = response.records[0][cidFieldCode]?.value || '';
           console.log(`cid番号を取得しました: ${cId}`);
         } else {
           console.log('一致するレコードが見つかりませんでした。');
