@@ -5,8 +5,8 @@ const PUBLIC_KEY = process.env.SENDGRID_PUBLIC_KEY;
 
 const subDomain     = 'https://ixfxwyw51tb5.cybozu.com';    // ★kintone サブドメイン
 const subDomain_dev = 'https://jueaogoxsa02.cybozu.com';    // ★kintone サブドメイン
-const apiToken     = process.env.KINTONE_API_KEY;           // ★kintone 貸付自粛Web申告 APIトークン
-const apiToken_dev = process.env.KINTONE_API_KEY_DEV;       // ★kintone 貸付自粛Web申告 APIトークン
+const apiToken     = process.env.KINTONE_API_KEY_K3;        // ★kintone 貸付自粛Web申告 APIトークン（検証３→本番）
+const apiToken_dev = process.env.KINTONE_API_KEY_DEV;       // ★kintone 貸付自粛Web申告 APIトークン（開発）
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
@@ -56,7 +56,7 @@ const rcvSendGridBounce = async (req, res) => {
                         });
                         //******** kintoneデータ更新 ********
                         try {
-console.log('try');
+                            console.log('try');
                             //開発環境のkintoneに書き込む
                             const updtResult = await client_dev.record.updateRecord({
                                 app: event.appliId,
@@ -69,7 +69,7 @@ console.log('try');
                             });
                             console.log('更新しました（開発環境のkintone）');
                         } catch (innerError) {
-console.log('catch');
+                            console.log('catch');
                             //開発環境への書き込みに失敗した場合、運用環境のkintoneに書き込む
                             const updtResult = await client.record.updateRecord({
                                 app: event.appliId,
