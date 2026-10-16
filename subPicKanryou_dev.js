@@ -119,8 +119,9 @@ const picKanryou_dev = async (req, res) => {
           app: appId,
           // 該当のキーに一致するレコードを検索するクエリ
           query: `${keyFieldCode} = "${keyEncrypted}"`,
-          // 必要なフィールド（レコード番号）だけを指定して高速化
-          fields: ['$id'] 
+          // 必要なフィールド（レコード番号、cidNo）だけを指定して高速化
+          fields: ['$id'], 
+          fields: ['$cidNo'] 
         });
 
         let recordId = '';
