@@ -72,4 +72,4 @@ const rcvSendGridBounce = async (req, res) => {
     }
 };
 
-module.exports = { rcvSendGridBounce_Dev };
+module.exports = { rcvSendGridBounce_dev };
