@@ -56,6 +56,7 @@ const rcvSendGridBounce = async (req, res) => {
                         });
                         //******** kintoneデータ更新 ********
                         try {
+console.log('try');
                             //開発環境のkintoneに書き込む
                             const updtResult = await client_dev.record.updateRecord({
                                 app: event.appliId,
@@ -68,6 +69,7 @@ const rcvSendGridBounce = async (req, res) => {
                             });
                             console.log('更新しました（開発環境のkintone）');
                         } catch (innerError) {
+console.log('catch');
                             //開発環境への書き込みに失敗した場合、運用環境のkintoneに書き込む
                             const updtResult = await client.record.updateRecord({
                                 app: event.appliId,
