@@ -232,7 +232,8 @@ const picKanryou_dev = async (req, res) => {
             "申告ID：" + `${nextStr}` + "\n" + 
             "申告タイプ：本人\n" + 
             "申告種別：" + shubetsuEncrypted + "\n\n" +
-            KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value + '\n';
+            KINTONE_BASE_URL + appId + '/\n';
+//          KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value + '\n';
         //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
@@ -241,8 +242,11 @@ const picKanryou_dev = async (req, res) => {
             text: honbun2,                         // 本文
             html: honbun2.replaceAll("\n", "<br>") // HTML本文
         };
-        sendEMail(msg);
-        sendEMail(msg2);
+        if(cId === '') {
+            sendEMail(msg);
+            sendEMail(msg2);
+            console.log('送信しました');
+        }
 
     } catch (error) {
         console.error('Webhook処理エラー:', error);
