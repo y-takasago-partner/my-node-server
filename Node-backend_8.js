@@ -15,7 +15,6 @@ const { picKanryou }                       = require('./subPicKanryou.js');
 const { picKanryou_dev }                   = require('./subPicKanryou_dev.js');
 
 const { rcvSendGridBounce }                = require('./subRcvSendGridBounce.js');
-const { rcvSendGridBounce_dev }            = require('./subRcvSendGridBounce_dev.js');
 
 const { subCronJob }                       = require('./subCronJob.js');
 const { subCronJob_dev }                   = require('./subCronJob_dev.js');
@@ -26,6 +25,9 @@ const { subCronDeleteJob_dev }             = require('./subCronDeleteJob_dev.js'
 const express = require('express');
 const app = express();
 
+// =========================================================
+// SendGrid 不達エラー検知
+// =========================================================
 app.post('/sendgrid-webhook', express.text({ type: 'application/json' }), rcvSendGridBounce);
 
 app.use(express.urlencoded({ extended: true }));            // PIC組織設定のコンテンツタイプ「application/x-www-form-urlencoded」に対応

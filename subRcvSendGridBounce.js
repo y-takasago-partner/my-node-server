@@ -3,11 +3,15 @@
 const { EventWebhook, EventWebhookHeader } = require('@sendgrid/eventwebhook');
 const PUBLIC_KEY = process.env.SENDGRID_PUBLIC_KEY; 
 
-const subDomain = 'ixfxwyw51tb5.cybozu.com';                // ★kintone サブドメイン
-const apiToken = process.env.KINTONE_API_KEY;               // ★kintone 貸付自粛Web申告 APIトークン
+const subDomain     = 'https://ixfxwyw51tb5.cybozu.com';    // ★kintone サブドメイン
+const subDomain_dev = 'https://jueaogoxsa02.cybozu.com';    // ★kintone サブドメイン
+const apiToken     = process.env.KINTONE_API_KEY;           // ★kintone 貸付自粛Web申告 APIトークン
+const apiToken_dev = process.env.KINTONE_API_KEY_DEV;       // ★kintone 貸付自粛Web申告 APIトークン
+
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
 const appId = 6;                                            // ★kintone 貸付自粛Web申告 アプリID
+const appId_dev = 26;                                       // ★kintone 貸付自粛Web申告 アプリID（開発）
 
 const rcvSendGridBounce = async (req, res) => {
     const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
@@ -33,7 +37,7 @@ const rcvSendGridBounce = async (req, res) => {
                     console.log(`未達検知: [${event.event}] ${event.email} - 理由: ${event.reason}`);
                     console.log(`kintoneアプリ番号: ${event.appliId}`);
                     console.log(`kintoneレコード番号: ${event.recordNo}`);
-                    if (event.appliId == appId) {
+                    if (event.appliId == appId || event.appliId == appId_dev) {
                         //未達の時刻を取得
                         const date = new Date(event.timestamp * 1000); 
                         const jstString = date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
@@ -44,17 +48,39 @@ const rcvSendGridBounce = async (req, res) => {
                                 apiToken: apiToken
                             }
                         });
-                        //******** kintoneデータ更新 ********
-                        const updtResult = await client.record.updateRecord({
-                            app: event.appliId,             // アプリID
-                            id: event.recordNo,             // ここにレコード番号（$id）を指定
-                            record: {
-                                'EmailDeliv_Error': {       // エラー情報項目
-                                    value: jstString + ' 未達（' + event.reason + '）'
-                                }
+                        const client_dev = new KintoneRestAPIClient({
+                            baseUrl: subDomain_dev,
+                            auth: {
+                                apiToken: apiToken_dev
                             }
                         });
-                        console.log('更新しました');
+                        //******** kintoneデータ更新 ********
+                        try {
+                            //開発環境のkintoneに書き込む
+                            const updtResult = await client_dev.record.updateRecord({
+                                app: event.appliId,
+                                id: event.recordNo,
+                                record: {
+                                    'EmailDeliv_Error': {       // エラー情報項目
+                                        value: jstString + ' 未達（' + event.reason + '）'
+                                    }
+                                }
+                            });
+                            console.log('更新しました（開発環境のkintone）');
+                        } catch (innerError) {
+                            //開発環境への書き込みに失敗した場合、運用環境のkintoneに書き込む
+                            const updtResult = await client.record.updateRecord({
+                                app: event.appliId,
+                                id: event.recordNo,
+                                record: {
+                                    'EmailDeliv_Error': {       // エラー情報項目
+                                        value: jstString + ' 未達（' + event.reason + '）'
+                                    }
+                                }
+                            });
+                            console.log('更新しました（運用環境のkintone）');
+                        }
+
                         //******** kintoneデータ更新 End ********
 
                     } else {
