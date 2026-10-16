@@ -42,8 +42,8 @@ const webSoudanUketsuke_dev = async (req, res) => {
     console.log(webhookData.氏名);
     console.log(webhookData.メールアドレス);
     console.log(webhookData.APIKey);
-    console.log(webhookData.webForm);
-    console.log(webhookData.webForm.slice(0,1));
+    console.log(webhookDataWebフォーム.);
+    console.log(webhookData.Webフォーム.slice(0,1));
 
     if(webhookData.APIKey !== zapApiToken) {
         console.error('APIトークンが一致しません。終了します。');
@@ -51,7 +51,7 @@ const webSoudanUketsuke_dev = async (req, res) => {
     }
 
     let renrakuSaki = '';
-    if(webhookData.webForm.slice(0,1) !== '障') {
+    if(webhookData.Webフォーム.slice(0,1) !== '障') {
         renrakuSaki = '(050-3494-7988から発信)';
     }
     const honbun = 
