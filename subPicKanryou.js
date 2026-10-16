@@ -89,19 +89,23 @@ const picKanryou = async (req, res) => {
 
         //******** kintoneレコード番号取得 ********
         const keyFieldCode = '更新キー';
+        const cidFieldCode = 'cidNo'; 
         const response = await client.record.getRecords({
           app: appId,
           // 該当のキーに一致するレコードを検索するクエリ
           query: `${keyFieldCode} = "${keyEncrypted}"`,
           // 必要なフィールド（レコード番号）だけを指定して高速化
-          fields: ['$id'] 
+          fields: ['$id', cidFieldCode] 
         });
 
         let recordId = '';
+        let cId = '';
         // レコードが見つかった場合の処理
         if (response.records.length > 0) {
           recordId = response.records[0].$id.value;
           console.log(`レコード番号を取得しました: ${recordId}`);
+          cId = response.records[0][cidFieldCode]?.value || '';
+          console.log(`cid番号を取得しました: ${cId}`);
         } else {
           console.log('一致するレコードが見つかりませんでした。');
           console.log('終了します。');
@@ -203,7 +207,8 @@ const picKanryou = async (req, res) => {
             "申告ID：" + `${nextStr}` + "\n" + 
             "申告タイプ：本人\n" + 
             "申告種別：" + shubetsuEncrypted + "\n\n" +
-            KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value + '\n';
+            KINTONE_BASE_URL + appId + '/\n';
+//          KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value + '\n';
         //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
@@ -212,8 +217,11 @@ const picKanryou = async (req, res) => {
             text: honbun2,                         // 本文
             html: honbun2.replaceAll("\n", "<br>") // HTML本文
         };
-        sendEMail(msg);
-        sendEMail(msg2);
+        if(cId === '') {
+            sendEMail(msg);
+            sendEMail(msg2);
+            console.log('送信しました');
+        }
 
     } catch (error) {
         console.error('Webhook処理エラー:', error);

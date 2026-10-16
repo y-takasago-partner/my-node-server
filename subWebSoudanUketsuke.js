@@ -43,16 +43,22 @@ const webSoudanUketsuke = async (req, res) => {
     console.log(webhookData.氏名);
     console.log(webhookData.メールアドレス);
     console.log(webhookData.APIKey);
+    console.log(webhookData.Webフォーム);
+    console.log(webhookData.Webフォーム.slice(0,1));
 
     if(webhookData.APIKey !== zapApiToken) {
         console.error('APIトークンが一致しません。終了します。');
         return;
     }
 
+    let renrakuSaki = '';
+    if(webhookData.Webフォーム.slice(0,1) !== '障') {
+        renrakuSaki = '(050-3494-7988から発信)';
+    }
     const honbun = 
         "(このメールは送信専用メールからお送りさせていただいております。ご返信いただいてもお答えできませんのでご注意ください。)\n\n" + 
         "日本貸金業協会貸金業相談・紛争解決センターです。ご相談を受付けました。\n" + 
-        "受付日から３営業日以内に担当者からご連絡(050-3494-7988から発信)を差し上げますのでお待ちください。\n" + 
+        "受付日から３営業日以内に担当者からご連絡" + renrakuSaki + "を差し上げますのでお待ちください。\n" + 
         "なお、このメールにお心当たりがない場合は、お手数ですが貸金業相談・紛争解決センターまでご連絡ください。\n\n\n" + 
         "※上記受付日とは、協会の通信機器がメールを受信した日とします。\n" + 
         "※営業日とは、土曜日、日曜日、祝休日、年末年始休業日を除いた日をいいます。\n\n\n\n" + 
