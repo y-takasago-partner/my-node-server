@@ -42,7 +42,7 @@ const webSoudanUketsuke_dev = async (req, res) => {
     console.log(webhookData.氏名);
     console.log(webhookData.メールアドレス);
     console.log(webhookData.APIKey);
-    console.log(webhookDataWebフォーム.);
+    console.log(webhookData.Webフォーム);
     console.log(webhookData.Webフォーム.slice(0,1));
 
     if(webhookData.APIKey !== zapApiToken) {
