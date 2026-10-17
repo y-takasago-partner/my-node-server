@@ -166,7 +166,12 @@ const picKanryou_dev = async (req, res) => {
 
         const Jusho_Kana     = response3.records[0]['Jusho_Kana'].value;  //住所カナ
         const Jusho_Banchi   = response3.records[0]['Jusho_Banchi'].value;  //番地以下
-        const Jusho_Kana_new = Jusho_Kana + Jusho_Banchi;
+        let Jusho_Kana_new = '';
+        if(cId === '') {
+            Jusho_Kana_new = Jusho_Kana + Jusho_Banchi;
+        } else {
+            Jusho_Kana_new = Jusho_Kana;
+        }
 
         //******** kintoneデータ更新 ********
         const updtResult = await client.record.updateRecord({
