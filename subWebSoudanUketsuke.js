@@ -76,7 +76,7 @@ const webSoudanUketsuke = async (req, res) => {
           name : '日本貸金業協会　貸金業相談・紛争解決センター', // Fromの日本語表記
           email: 'noreplywebjfsa2@j-fsa.jp',     //From（SendGridで認証済みドメインのメールアドレス）
         },
-        subject: sbjPreFix + 'ご相談受付けの件', // 件名
+        subject: sbjPreFix + 'ご相談受付の件', // 件名
         text: honbun,                            // 本文
         html: honbun.replaceAll("\n", "<br>"),   // HTML本文
         custom_args: {
