@@ -145,35 +145,62 @@ async function oneMsgSend (record) {
             ((!fubi5 || fubi5.slice(0, 2) === "--") ? "" : "・" + fubi5 + '\n') + 
             (!bun ? "" : "・" + bun + '\n') + '\n';
         const sbjPreFixResend = !record['EmailDeliv_DateSent'].value ? "" : "【再送】";
-        const honbun_juri = 
+        const juribi          = !record['EmailDeliv_DateSent'].value ? dateFormattedJ : 
+            record['EmailDeliv_DateSent'].value.slice(0,4) + '年' + record['EmailDeliv_DateSent'].value.slice(5,7) + '月' + record['EmailDeliv_DateSent'].value.slice(8,10) + '日';
+        const uketsukebi      =  record['UketsukeDate'].value.slice(0,11);
+        let honbun_juri = '';
+        honbun_juri = 
             shimei + "様\n\n" + 
             "申告をいただきました貸付自粛（" + irai_cd + "申告）の処理が完了しましたので、\n" +
             "お知らせいたします。\n\n" +
-            "１．受理日　　：" + dateFormattedJ + "\n" +
-            "２．申告番号　：" + irai_no + "\n" + 
-            "※訂正申告の際に必要となります。\n\n";
+            "１．受理日　　：" + juribi + "\n" +
+            "２．申告番号　：" + irai_no + "\n" ;
+        if (irai_cd === '登録') {
+            honbun_juri =  honbun_juri + "※訂正申告の際に必要となります。\n\n";
+        } else {
+            honbun_juri =  honbun_juri + "\n";
+        }
         const honbun_fujuri = 
             shimei + "様\n\n" + 
             "貸付自粛制度にご申告をいただきました" + irai_cd + "申告でございますが、受理することが\n" +
             "できませんでした。\n" +
             "恐れ入りますが、【不受理理由】を確認の上、改めてご申告いただきますよう、\n" +
             "お願い申し上げます。\n\n" +
-            "受付処理日　　　:　" + dateFormattedJ + "\n\n" + 
+            "受付処理日　　　:　" + uketsukebi + "\n\n" + 
             "【不受理理由】\n" +
             fubi ;
-        // 10/16 注意文削除
-        //const honbun_chui = 
-        //    "≪注意事項－登録申告の場合≫\n" +
-        //    "・登録情報の反映には、本メールの受信日の翌日から3営業日程度を要します。  \n" +
-        //    "・貸付自粛情報は受理日から３か月が経過するまで撤回申告を行うことができません。\n" +
-        //    "・登録情報(氏名・住所・連絡先)の訂正申告をする場合は、上記「申告番号」が必要です。\n" +
-        //    "・貸付自粛情報は、個人信用情報機関への登録から5年間です。\n" +
-        //    "・貸付自粛情報の登録後は、クレジット契約（ショッピングを含む）の利用に制限が生じる場合があります。\n" +
-        //    "≪注意事項－撤回申告の場合≫\n" +
-        //    "・登録情報の反映には、本メールの到着日の翌日から3営業日程度を要します。  \n" +
-        //    "≪注意事項－訂正申告の場合≫\n" +
-        //    "・訂正情報の反映には、本メールの到着日の翌日から3営業日程度を要します。\n" +
-        //    "・再度、登録情報(氏名・住所・連絡先)の訂正申告を行う場合は、上記「申告番号」が必要です。\n\n";
+        // 10/20 注意文は分けて記載
+        // const honbun_chui = 
+        //     "≪注意事項－登録申告の場合≫\n" +
+        //     "・登録情報の反映には、本メールの受信日の翌日から3営業日程度を要します。  \n" +
+        //     "・貸付自粛情報は受理日から３か月が経過するまで撤回申告を行うことができません。\n" +
+        //     "・登録情報(氏名・住所・連絡先)の訂正申告をする場合は、上記「申告番号」が必要です。\n" +
+        //     "・貸付自粛情報は、個人信用情報機関への登録から5年間です。\n" +
+        //     "・貸付自粛情報の登録後は、クレジット契約（ショッピングを含む）の利用に制限が生じる場合があります。\n" +
+        //     "≪注意事項－撤回申告の場合≫\n" +
+        //     "・登録情報の反映には、本メールの到着日の翌日から3営業日程度を要します。  \n" +
+        //     "≪注意事項－訂正申告の場合≫\n" +
+        //     "・訂正情報の反映には、本メールの到着日の翌日から3営業日程度を要します。\n" +
+        //     "・再度、登録情報(氏名・住所・連絡先)の訂正申告を行う場合は、上記「申告番号」が必要です。\n\n";
+        let honbun_chui = '';
+        if (irai_cd === '登録') {
+            honbun_chui = 
+               "≪注意事項－登録申告の場合≫\n" +
+               "・登録情報の反映には、本メールの受信日の翌日から3営業日程度を要します。  \n" +
+               "・貸付自粛情報は受理日から３か月が経過するまで撤回申告を行うことができません。\n" +
+               "・登録情報(氏名・住所・連絡先)の訂正申告をする場合は、上記「申告番号」が必要です。\n" +
+               "・貸付自粛情報は、個人信用情報機関への登録から5年間です。\n" +
+               "・貸付自粛情報の登録後は、クレジット契約（ショッピングを含む）の利用に制限が生じる場合があります。\n\n";
+        } else if(irai_cd === '撤回') {
+            honbun_chui = 
+               "≪注意事項－撤回申告の場合≫\n" +
+               "・登録情報の反映には、本メールの到着日の翌日から3営業日程度を要します。  \n\n";
+        } else if(irai_cd === '訂正') {
+            honbun_chui = 
+               "≪注意事項－訂正申告の場合≫\n" +
+               "・訂正情報の反映には、本メールの到着日の翌日から3営業日程度を要します。\n" +
+               "・再度、登録情報(氏名・住所・連絡先)の訂正申告を行う場合は、上記「申告番号」が必要です。\n\n";
+        } else {}
         const honbun_info = 
             "【借金問題の相談先】\n" + 
             "○日本貸金業協会\n&nbsp;&nbsp;&nbsp;&nbsp;https://www.j-fsa.or.jp\n" + 
@@ -195,9 +222,8 @@ async function oneMsgSend (record) {
             "貸金業相談・紛争解決センター\n" + 
             "〒108-0074東京都港区高輪3丁目19番15号 \n" + 
             "TEL 03-5739-3861/050-3494-7988\n" ;
-        // 10/16 注意文削除
-        //const honbun = ((result==='受理') ? honbun_juri : honbun_fujuri) + honbun_chui + honbun_info + honbun_contact ;
-        const honbun = ((result==='受理') ? honbun_juri : honbun_fujuri) + honbun_info + honbun_contact ;
+        // 10/20 
+        const honbun = ((result==='受理') ? honbun_juri + honbun_chui + honbun_info : honbun_fujuri) + honbun_contact ;
         //console.log('本文\n'  + honbun);
         const msg = {
             to  :  mailAddress,                         // 宛先メールアドレス
