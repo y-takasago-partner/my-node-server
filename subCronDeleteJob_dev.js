@@ -61,7 +61,8 @@ async function deleteOldRecords() {
     const oneHourAgoTime = `${hours}:${minutes}`;
 
     // クエリ文字列の組み立て
-    const queryStr = `cidNo = "" and 作成日時 < FROM_TODAY(0, DAYS, "${oneHourAgoTime}") order by 作成日時 asc limit 100`;
+    // 作成日時のフィールドコード「Created」を指定するように修正しました
+    const queryStr = `cidNo = "" and Created < FROM_TODAY(0, DAYS, "${oneHourAgoTime}") order by Created asc limit 100`;
 
     // 1. 条件に合うレコードを取得（最大100件に制限）
     const getResp = await jClient.record.getRecords({
@@ -81,12 +82,12 @@ async function deleteOldRecords() {
     // レコードIDの配列を作成
     const ids = records.map((record) => record.$id.value);
 
-    // 2. ログアプリへの一括登録用データを作成（日本語フィールドコード・アプリ名を追加）
+    // 2. ログアプリへの一括登録用データを作成
     const logRecords = ids.map((id) => ({
       app_id: { value: JishukuAppID },
-      削除レコード番号: { value: id.toString() }, // deleted_id から変更
-      詳細: { value: '途中離脱データ' },         // detail から変更
-      アプリ名: { value: '貸付自粛Web申告' }      // 新設項目
+      削除レコード番号: { value: id.toString() },
+      詳細: { value: '途中離脱データ' },
+      アプリ名: { value: '貸付自粛Web申告' }
     }));
 
     // 3. ログアプリへ書き込み
@@ -113,7 +114,7 @@ async function deleteOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '26 15 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '38 15 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻になりました。処理を開始します。');
     deleteOldRecords();
