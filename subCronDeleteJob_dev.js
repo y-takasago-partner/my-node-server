@@ -43,7 +43,7 @@ const sClient = new KintoneRestAPIClient({
 
 const logClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
-    auth: { apiToken: apiTokenSoudan },
+    auth: { apiToken: apiTokenLog },
 });
 
 // 削除およびログ記録を行う関数（最大100件限定）
@@ -115,7 +115,7 @@ async function deleteOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '3 16 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '15 16 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻になりました。処理を開始します。');
     deleteOldRecords();
