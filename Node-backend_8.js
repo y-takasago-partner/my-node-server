@@ -64,7 +64,7 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 subCronJob();                           // 受理・不受理メール送信（運用）
 subCronJob_dev();                       // 受理・不受理メール送信（開発）
 
-//subCronDeleteJob();                     // 古いデータや不要データを削除（運用）
+subCronDeleteJob();                     // 古いデータや不要データを削除（運用）
 subCronDeleteJob_dev();                 // 古いデータや不要データを削除（開発）
 
 
