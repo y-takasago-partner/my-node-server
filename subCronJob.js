@@ -42,8 +42,8 @@ app.use(express.static('public'));                          // PDFファイル�
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
-const subCronJob = (scheduleTime = '0 19 * * *') => {
-//const subCronJob = (scheduleTime = '0 12 * * *') => {
+//const subCronJob = (scheduleTime = '0 19 * * *') => {
+const subCronJob = (scheduleTime = '0 17 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -199,7 +199,7 @@ async function oneMsgSend (record) {
             honbun_chui = 
                "≪注意事項－訂正申告の場合≫\n" +
                "・訂正情報の反映には、本メールの到着日の翌日から3営業日程度を要します。\n" +
-               "・再度、登録情報(氏名・住所・連絡先)の訂正申告を行う場合は、上記「申告番号」が必要です。\n\n";
+               "・再度、登録情報(氏名・住所・連絡先)の訂正申告を行う場合は、登録時の「申告番号」が必要です。\n\n";
         } else {}
         const honbun_info = 
             "【借金問題の相談先】\n" + 
