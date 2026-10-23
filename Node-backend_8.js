@@ -19,7 +19,7 @@ const { rcvSendGridBounce }                = require('./subRcvSendGridBounce.js'
 const { subCronJob }                       = require('./subCronJob.js');
 const { subCronJob_dev }                   = require('./subCronJob_dev.js');
 
-//const { subCronDeleteJob }                 = require('./subCronDeleteJob.js');
+const { subCronDeleteJob }                 = require('./subCronDeleteJob.js');
 const { subCronDeleteJob_dev }             = require('./subCronDeleteJob_dev.js');
 
 const express = require('express');
