@@ -61,9 +61,9 @@ async function deleteOldRecords() {
     const oneHourAgoTime = `${hours}:${minutes}`;
 
     // クエリ文字列の組み立て
-    // 作成日時のフィールドコード「Created」を指定するように修正しました
-    const queryStr = `cidNo = "" and Created < FROM_TODAY(0, DAYS, "${oneHourAgoTime}") order by Created asc limit 100`;
-
+    // ⚠️ FROM_TODAY の第一引数を 0 から -0 に修正しました
+    const queryStr = `cidNo = "" and Created < FROM_TODAY(-0, DAYS, "${oneHourAgoTime}") order by Created asc limit 100`;
+console.log(queryStr);
     // 1. 条件に合うレコードを取得（最大100件に制限）
     const getResp = await jClient.record.getRecords({
       app: JishukuAppID,
@@ -110,11 +110,12 @@ async function deleteOldRecords() {
 }
 
 
+
 // ==========================================
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '51 15 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '56 15 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻になりました。処理を開始します。');
     deleteOldRecords();
