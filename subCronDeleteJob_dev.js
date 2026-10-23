@@ -47,23 +47,23 @@ const logClient = new KintoneRestAPIClient({
 });
 
 // 削除およびログ記録を行う関数（最大100件限定）
+// 削除およびログ記録を行う関数（最大100件限定）
 async function deleteOldRecords() {
   try {
     console.log('【kintone】cidNoが空白かつ作成後1時間以上経過したレコードの取得を開始します...');
 
-    // 現在時刻の1時間前の時刻をJST(日本時間)基準の「HH:MM」形式で計算
+    // 現在時刻から「1時間前」を計算（ISO形式に変換してクエリに適用）
     const now = new Date();
     now.setHours(now.getHours() - 1); // 1時間前をセット
-    
-    // 時と分を2桁の文字列に変換
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const oneHourAgoTime = `${hours}:${minutes}`;
 
-    // クエリ文字列の組み立て
-    // ⚠️ FROM_TODAY の第一引数を 0 から -0 に修正しました
-    const queryStr = `cidNo = "" and Created < FROM_TODAY(-0, DAYS, "${oneHourAgoTime}") order by Created asc limit 100`;
-console.log(queryStr);
+    // kintoneのAPIが認識できるISO8601形式（YYYY-MM-DDTHH:mm:ssZ）の文字列に変換
+    // これにより、RenderサーバーのUTC時間基準で正確に1時間前がkintoneに伝わります
+    const isoOneHourAgo = now.toISOString();
+
+    // クエリ文字列の組み立て（不具合のあったFROM_TODAY関数を廃止し、確定した日時を指定）
+    const queryStr = `cidNo = "" and Created < "${isoOneHourAgo}" order by Created asc limit 100`;
+    console.log(`【デバッグ】実行クエリ: ${queryStr}`);
+
     // 1. 条件に合うレコードを取得（最大100件に制限）
     const getResp = await jClient.record.getRecords({
       app: JishukuAppID,
@@ -115,7 +115,7 @@ console.log(queryStr);
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '56 15 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '3 16 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻になりました。処理を開始します。');
     deleteOldRecords();
