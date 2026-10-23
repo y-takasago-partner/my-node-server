@@ -48,8 +48,8 @@ const logClient = new KintoneRestAPIClient({
 
 // 削除およびログ記録を行う関数（最大100件限定）
 async function deleteOldRecords() {
-  const appId = process.env.KINTONE_APP_ID;
-  const logAppId = process.env.LOG_APP_ID;
+  const appId = JishukuAppID;
+  const logAppId = LogAppID;
 
   if (!appId || !logAppId) {
     console.error('【kintone】エラー: KINTONE_APP_ID または LOG_APP_ID が設定されていません。');
@@ -120,7 +120,7 @@ async function deleteOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '7 15 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '13 15 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻になりました。処理を開始します。');
     deleteOldRecords();
