@@ -47,7 +47,6 @@ const logClient = new KintoneRestAPIClient({
 });
 
 // 削除およびログ記録を行う関数（最大100件限定）
-// 削除およびログ記録を行う関数（最大100件限定）
 async function deleteOldRecords() {
   const appId = process.env.KINTONE_APP_ID;
   const logAppId = process.env.LOG_APP_ID;
@@ -70,8 +69,6 @@ async function deleteOldRecords() {
     const oneHourAgoTime = `${hours}:${minutes}`;
 
     // クエリ文字列の組み立て
-    // FROM_TODAY(0, DAYS) は今日を示します。それに時間の条件を足して「今日の1時間前より前に作成されたもの」を指定します。
-    // ※ 念のため過去日に作成されたデータも漏れなく拾うよう、全体を囲んでいます。
     const queryStr = `cidNo = "" and 作成日時 < FROM_TODAY(0, DAYS, "${oneHourAgoTime}") order by 作成日時 asc limit 100`;
 
     // 1. 条件に合うレコードを取得（最大100件に制限）
@@ -92,10 +89,11 @@ async function deleteOldRecords() {
     // レコードIDの配列を作成
     const ids = records.map((record) => record.$id.value);
 
-    // 2. ログアプリへの一括登録用データを作成
+    // 2. ログアプリへの一括登録用データを作成（「詳細」項目を追加）
     const logRecords = ids.map((id) => ({
       app_id: { value: appId },
-      deleted_id: { value: id.toString() }
+      deleted_id: { value: id.toString() },
+      detail: { value: '途中離脱データ' } // 「詳細」項目への書き込み指示
     }));
 
     // 3. ログアプリへ書き込み
