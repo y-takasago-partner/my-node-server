@@ -98,10 +98,10 @@ async function deleteOldRecords() {
     console.log(`【kintone】${logRecords.length}件のログ書き込みが成功しました。`);
 
     // 4. 本番アプリから一括削除
-//    await jClient.record.deleteRecords({
-//      app: JishukuAppID,
-//      ids: ids,
-//    });
+    await jClient.record.deleteRecords({
+      app: JishukuAppID,
+      ids: ids,
+    });
     console.log(`【kintone】${ids.length}件のレコード削除が成功しました。`);
 
   } catch (err) {
@@ -115,7 +115,7 @@ async function deleteOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '15 16 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '40 16 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻になりました。処理を開始します。');
     deleteOldRecords();
