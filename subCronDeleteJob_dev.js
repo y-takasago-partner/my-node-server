@@ -48,14 +48,6 @@ const logClient = new KintoneRestAPIClient({
 
 // 削除およびログ記録を行う関数（最大100件限定）
 async function deleteOldRecords() {
-  const appId = JishukuAppID;
-  const logAppId = LogAppID;
-
-  if (!appId || !logAppId) {
-    console.error('【kintone】エラー: KINTONE_APP_ID または LOG_APP_ID が設定されていません。');
-    return;
-  }
-
   try {
     console.log('【kintone】cidNoが空白かつ作成後1時間以上経過したレコードの取得を開始します...');
 
@@ -73,7 +65,7 @@ async function deleteOldRecords() {
 
     // 1. 条件に合うレコードを取得（最大100件に制限）
     const getResp = await jClient.record.getRecords({
-      app: appId,
+      app: JishukuAppID,
       query: queryStr,
       fields: ['$id'],
     });
@@ -89,23 +81,24 @@ async function deleteOldRecords() {
     // レコードIDの配列を作成
     const ids = records.map((record) => record.$id.value);
 
-    // 2. ログアプリへの一括登録用データを作成（「詳細」項目を追加）
+    // 2. ログアプリへの一括登録用データを作成（日本語フィールドコード・アプリ名を追加）
     const logRecords = ids.map((id) => ({
-      app_id: { value: appId },
-      deleted_id: { value: id.toString() },
-      detail: { value: '途中離脱データ' } // 「詳細」項目への書き込み指示
+      app_id: { value: JishukuAppID },
+      削除レコード番号: { value: id.toString() }, // deleted_id から変更
+      詳細: { value: '途中離脱データ' },         // detail から変更
+      アプリ名: { value: '貸付自粛Web申告' }      // 新設項目
     }));
 
     // 3. ログアプリへ書き込み
     await logClient.record.addRecords({
-      app: logAppId,
+      app: LogAppID,
       records: logRecords,
     });
     console.log(`【kintone】${logRecords.length}件のログ書き込みが成功しました。`);
 
     // 4. 本番アプリから一括削除
 //    await jClient.record.deleteRecords({
-//      app: appId,
+//      app: JishukuAppID,
 //      ids: ids,
 //    });
     console.log(`【kintone】${ids.length}件のレコード削除が成功しました。`);
@@ -120,7 +113,7 @@ async function deleteOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '13 15 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '26 15 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻になりました。処理を開始します。');
     deleteOldRecords();
