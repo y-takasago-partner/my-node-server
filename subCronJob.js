@@ -9,8 +9,7 @@
 const { sendEMail } = require('./subUtils.js');             // 他ファイル読込
 
 // ★送信メールの件名に付けるプレフィックス
-//const sbjPreFix = '';                                       // 運用
-const sbjPreFix = '【テスト】';                             // テスト時
+const sbjPreFix = '';                                       // 運用
 const subDomain = 'https://ixfxwyw51tb5.cybozu.com';        // kintone サブドメイン
 const KINTONE_BASE_URL = 'https://ixfxwyw51tb5.cybozu.com/k/';
 

@@ -7,9 +7,8 @@ const { sendEMail } = require('./subUtils.js');
 // *********************************************************
 
 // ★送信メールの件名に付けるプレフィックス
-//const sbjPreFix = '';                                       // 運用
-const sbjPreFix = '【テスト】';                             // テスト時
-const START_NO = '3001';                                    // ★運用開始時に『最終SpiralNo + 1』を設定
+const sbjPreFix = '';                                       // 運用
+const START_NO = '2423';                                    // ★運用開始時に『最終SpiralNo + 1』を設定
 
 const sgMail = require('@sendgrid/mail');                   // SendGrid 公式ライブラリ
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);             // SendGridのAPIキー（環境変数から取得）
