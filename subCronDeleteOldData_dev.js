@@ -51,9 +51,7 @@ async function deleteSoudanOldRecords() {
   try {
     console.log('【kintone: Web相談】作成後' + HOKAN_DAYS + '日が経過したレコードの取得を開始します...');
 
-    //const queryStr = `$createdTime < FROM_TODAY(-14, DAYS) order by $createdTime asc limit 100`;
-    const queryStr = `作成日時 < FROM_TODAY(-14, DAYS) order by 作成日時 asc limit 100`;
-console.log(queryStr);
+    const queryStr = `作成日時 < FROM_TODAY(-${HOKAN_DAYS}, DAYS) order by 作成日時 asc limit 100`;
     const getResp = await sClient.record.getRecords({
       app: SoudanAppID, 
       query: queryStr,
@@ -62,14 +60,12 @@ console.log(queryStr);
 
     const records = getResp.records;
     console.log(`【kintone: 相談】該当レコード数: ${records.length} 件`);
-
     if (records.length === 0) {
       console.log('【kintone: Web相談】削除対象のレコードはありません。');
       return;
     }
 
     const ids = records.map((record) => Number(record.$id.value));
-
     const logRecords = ids.map((id) => ({
       app_id: { value: SoudanAppID },
       削除レコード番号: { value: id.toString() },
@@ -100,25 +96,21 @@ console.log(queryStr);
 async function deleteJishukuOldRecords() {
   try {
     console.log('【kintone: 貸付自粛Web申告】作成後' + HOKAN_DAYS + '日が経過したレコードの取得を開始します...');
-
-    const queryStr = `$createdTime < FROM_TODAY(-14, DAYS) order by $createdTime asc limit 100`;
-
+    const queryStr = `作成日時 < FROM_TODAY(-${HOKAN_DAYS}, DAYS) order by 作成日時 asc limit 100`;
     const getResp = await jClient.record.getRecords({
-      app: JishukuAppID, // 別アプリにする場合は適切なID定数に変更してください
+      app: JishukuAppID,
       query: queryStr,
       fields: ['$id'],
     });
 
     const records = getResp.records;
     console.log(`【kintone: 貸付自粛Web申告】該当レコード数: ${records.length} 件`);
-
     if (records.length === 0) {
       console.log('【kintone: 貸付自粛Web申告】削除対象のレコードはありません。');
       return;
     }
 
     const ids = records.map((record) => Number(record.$id.value));
-
     const logRecords = ids.map((id) => ({
       app_id: { value: JishukuAppID },
       削除レコード番号: { value: id.toString() },
@@ -148,14 +140,14 @@ async function deleteJishukuOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteOldData_dev = (scheduleTime = '00 1 * * *') => {
-const subCronDeleteOldData_dev = (scheduleTime = '42 13 * * *') => {
+const subCronDeleteOldData_dev = (scheduleTime = '57 13 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻（AM 1:00）になりました。連続処理を開始します。');
     console.log('--- 1. 相談レコード削除開始 ---');
     await deleteSoudanOldRecords();
-//    console.log('--- 2. 自粛レコード削除開始 ---');
-//    await deleteJishukuOldRecords();
-//    console.log('【定期実行】すべての連続処理が終了しました。');
+    console.log('--- 2. 自粛レコード削除開始 ---');
+    await deleteJishukuOldRecords();
+    console.log('【定期実行】すべての連続処理が終了しました。');
   }, {
       scheduled: true,
       timezone: "Asia/Tokyo"
