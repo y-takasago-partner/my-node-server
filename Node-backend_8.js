@@ -19,8 +19,13 @@ const { rcvSendGridBounce }                = require('./subRcvSendGridBounce.js'
 const { subCronJob }                       = require('./subCronJob.js');
 const { subCronJob_dev }                   = require('./subCronJob_dev.js');
 
+//途中離脱データ削除
 const { subCronDeleteJob }                 = require('./subCronDeleteJob.js');
 const { subCronDeleteJob_dev }             = require('./subCronDeleteJob_dev.js');
+
+//古いデータ削除
+//const { subCronDeleteJob }               = require('./subCronDeleteJob.js');
+const { subCronDeleteOldData_dev }         = require('./subCronDeleteOldData_dev.js');
 
 const express = require('express');
 const app = express();
@@ -61,12 +66,18 @@ app.post('/kintone-webhook-dev', webSoudanUketsuke_dev);    // 開発
 // ==========================================
 // 定期実行（Cronタスク）の処理
 // ==========================================
-subCronJob();                           // 受理・不受理メール送信（運用）
-subCronJob_dev();                       // 受理・不受理メール送信（開発）
 
-subCronDeleteJob();                     // 古いデータや不要データを削除（運用）
-subCronDeleteJob_dev();                 // 古いデータや不要データを削除（開発）
+//受理・不受理メール送信
+subCronJob();                           // 運用
+subCronJob_dev();                       // 開発
 
+//途中離脱データ削除
+subCronDeleteJob();                     // 運用
+subCronDeleteJob_dev();                 // 開発
+
+//古いデータ削除
+//subCronDeleteOldData();                 // 運用
+subCronDeleteOldData_dev();             // 開発
 
 // =========================================================
 // listen

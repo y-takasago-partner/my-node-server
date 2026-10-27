@@ -45,7 +45,7 @@ const logClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
     auth: { apiToken: apiTokenLog },
 });
-
+
 // 削除およびログ記録を行う関数（最大100件限定）
 // 削除およびログ記録を行う関数（最大100件限定）
 async function deleteOldRecords() {

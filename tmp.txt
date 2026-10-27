@@ -1,100 +1,106 @@
 const { KintoneRestAPIClient } = require('@kintone/rest-api-client');
 const cron = require('node-cron');
-const express = require('express'); // Renderã®Web Serviceç”¨ã«å¿…è¦
+const express = require('express');
 
 const app = express();
-const PORT = process.env.PORT || 10000; // Renderã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§10000ãƒãƒ¼ãƒˆã‚’ä½¿ç”¨ã—ã¾ã™
+const PORT = process.env.PORT || 10000;
 
-// kintoneã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã®åˆæœŸåŒ–
-const clientJ = new KintoneRestAPIClient({
+// ==========================================
+// ƒAƒvƒŠID‚Ì’è”éŒ¾
+// ==========================================
+const JishukuAppID = 26;
+const LogAppID = 42;
+
+// ‘€ì‘ÎÛiíœŒ³jƒAƒvƒŠ‚ÌƒNƒ‰ƒCƒAƒ“ƒg
+const jClient = new KintoneRestAPIClient({
   baseUrl: `https://${process.env.KINTONE_DOMAIN}`,
   auth: { apiToken: process.env.KINTONE_API_TOKEN },
 });
 
-// é…åˆ—ã‚’100ä»¶ãšã¤ã«åˆ†å‰²ã™ã‚‹ãƒ˜ãƒ«ãƒ‘ãƒ¼é–¢æ•°
-const chunk = (array, size) => {
-  return Array.from({ length: Math.ceil(array.length / size) }, (v, i) =>
-    array.slice(i * size, i * size + size)
-  );
-};
+// ƒƒO•Û‘¶æƒAƒvƒŠ‚ÌƒNƒ‰ƒCƒAƒ“ƒg
+const logClient = new KintoneRestAPIClient({
+  baseUrl: `https://${process.env.KINTONE_DOMAIN}`,
+  auth: { apiToken: process.env.LOG_API_TOKEN },
+});
 
-// å®Ÿéš›ã®å‰Šé™¤å‡¦ç†ã‚’è¡Œã†é–¢æ•°
+// íœ‚¨‚æ‚ÑƒƒO‹L˜^‚ğs‚¤ŠÖ”iÅ‘å100ŒŒÀ’èj
 async function deleteOldRecords() {
-  const appId = process.env.KINTONE_APP_ID;
-  if (!appId) {
-    console.error('ã€kintoneã€‘ã‚¨ãƒ©ãƒ¼: KINTONE_APP_ID ãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚');
-    return;
-  }
-
   try {
-    console.log('ã€kintoneã€‘11æ—¥ä»¥ä¸ŠçµŒéã—ãŸãƒ¬ã‚³ãƒ¼ãƒ‰ã®å–å¾—ã‚’é–‹å§‹ã—ã¾ã™...');
+    console.log('ykintonezcidNo‚ª‹ó”’‚©‚Âì¬Œã1ŠÔˆÈãŒo‰ß‚µ‚½ƒŒƒR[ƒh‚Ìæ“¾‚ğŠJn‚µ‚Ü‚·...');
 
-    // 1. æ¡ä»¶ã«åˆã†ãƒ¬ã‚³ãƒ¼ãƒ‰ã‚’å–å¾—ï¼ˆæœ€å¤§500ä»¶ã¾ã§ä¸€æ‹¬å–å¾—å¯¾å¿œï¼‰
-    const getResp = await clientJ.record.getRecords({
-      app: appId,
-      query: 'ä½œæˆæ—¥æ™‚ < FROM_TODAY(-10, DAYS) order by ä½œæˆæ—¥æ™‚ asc limit 500',
-      fields: ['\$id'],
+    // Œ»İ‚©‚çu1ŠÔ‘Ov‚ğŒvZiISOŒ`®‚É•ÏŠ·‚µ‚ÄƒNƒGƒŠ‚É“K—pj
+    const now = new Date();
+    now.setHours(now.getHours() - 1); // 1ŠÔ‘O‚ğƒZƒbƒg
+
+    // kintone‚ÌAPI‚ª”F¯‚Å‚«‚éISO8601Œ`®iYYYY-MM-DDTHH:mm:ssZj‚Ì•¶š—ñ‚É•ÏŠ·
+    // ‚±‚ê‚É‚æ‚èARenderƒT[ƒo[‚ÌUTCŠÔŠî€‚Å³Šm‚É1ŠÔ‘O‚ªkintone‚É“`‚í‚è‚Ü‚·
+    const isoOneHourAgo = now.toISOString();
+
+    // ƒNƒGƒŠ•¶š—ñ‚Ì‘g‚İ—§‚Äi•s‹ï‡‚Ì‚ ‚Á‚½FROM_TODAYŠÖ”‚ğ”p~‚µAŠm’è‚µ‚½“ú‚ğw’èj
+    const queryStr = `cidNo = "" and Created < "${isoOneHourAgo}" order by Created asc limit 100`;
+    console.log(`yƒfƒoƒbƒOzÀsƒNƒGƒŠ: ${queryStr}`);
+
+    // 1. ğŒ‚É‡‚¤ƒŒƒR[ƒh‚ğæ“¾iÅ‘å100Œ‚É§ŒÀj
+    const getResp = await jClient.record.getRecords({
+      app: JishukuAppID,
+      query: queryStr,
+      fields: ['$id'],
     });
 
     const records = getResp.records;
-    console.log(`ã€kintoneã€‘è©²å½“ãƒ¬ã‚³ãƒ¼ãƒ‰æ•°: ${records.length} ä»¶`);
+    console.log(`ykintonezŠY“–ƒŒƒR[ƒh”: ${records.length} Œ`);
 
     if (records.length === 0) {
-      console.log('ã€kintoneã€‘å‰Šé™¤å¯¾è±¡ã®ãƒ¬ã‚³ãƒ¼ãƒ‰ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚');
+      console.log('ykintonezíœ‘ÎÛ‚ÌƒŒƒR[ƒh‚Í‚ ‚è‚Ü‚¹‚ñB');
       return;
     }
 
-    const allIds = records.map((record) => record.\$id.value);
+    // ƒŒƒR[ƒhID‚Ì”z—ñ‚ğì¬
+    const ids = records.map((record) => record.$id.value);
 
-    // 2. APIä¸Šé™ã®100ä»¶ãšã¤ã«åˆ†å‰²ã—ã¦ãƒ«ãƒ¼ãƒ—å‡¦ç†
-    const idChunks = chunk(allIds, 100);
-    console.log(`ã€kintoneã€‘å‰Šé™¤å‡¦ç†ã‚’ ${idChunks.length} å›ã«åˆ†ã‘ã¦å®Ÿè¡Œã—ã¾ã™ã€‚`);
+    // 2. ƒƒOƒAƒvƒŠ‚Ö‚ÌˆêŠ‡“o˜^—pƒf[ƒ^‚ğì¬
+    const logRecords = ids.map((id) => ({
+      app_id: { value: JishukuAppID },
+      íœƒŒƒR[ƒh”Ô†: { value: id.toString() },
+      Ú×: { value: '“r’†—£’Eƒf[ƒ^' },
+      ƒAƒvƒŠ–¼: { value: '‘İ•t©lWeb\' }
+    }));
 
-    for (let i = 0; i < idChunks.length; i++) {
-      const currentChunk = idChunks[i];
-      console.log(`ã€kintoneã€‘[${i + 1}/${idChunks.length}] ${currentChunk.length}ä»¶ã‚’å‰Šé™¤ä¸­...`);
-      
-      await clientJ.record.deleteRecords({
-        app: appId,
-        ids: currentChunk,
-      });
+    // 3. ƒƒOƒAƒvƒŠ‚Ö‘‚«‚İ
+    await logClient.record.addRecords({
+      app: LogAppID,
+      records: logRecords,
+    });
+    console.log(`ykintonez${logRecords.length}Œ‚ÌƒƒO‘‚«‚İ‚ª¬Œ÷‚µ‚Ü‚µ‚½B`);
 
-      // è¤‡æ•°å›APIã‚’å©ãå ´åˆã¯è² è·è»½æ¸›ã®ãŸã‚ã«1ç§’å¾…æ©Ÿ
-      if (idChunks.length > 1 && i < idChunks.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-    }
-
-    console.log('ã€kintoneã€‘å¤ã„ãƒ‡ãƒ¼ã‚¿ã®è‡ªå‹•å‰Šé™¤ãŒæ­£å¸¸ã«å®Œäº†ã—ã¾ã—ãŸã€‚');
+    // 4. –{”ÔƒAƒvƒŠ‚©‚çˆêŠ‡íœ
+    await jClient.record.deleteRecords({
+      app: JishukuAppID,
+      ids: ids,
+    });
+    console.log(`ykintonez${ids.length}Œ‚ÌƒŒƒR[ƒhíœ‚ª¬Œ÷‚µ‚Ü‚µ‚½B`);
 
   } catch (err) {
-    console.error('ã€kintoneã€‘ãƒ¬ã‚³ãƒ¼ãƒ‰å‰Šé™¤å‡¦ç†ã§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ:', err);
+    console.error('ykintonezƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½:', err);
   }
 }
 
-// ==========================================
-// Renderç”¨ã®ç”Ÿå­˜ç¢ºèªï¼ˆHealth Checkï¼‰ã‚¨ãƒ³ãƒ‰ãƒã‚¤ãƒ³ãƒˆ
-// ==========================================
+// Render—p‚Ì¶‘¶Šm”FiHealth CheckjƒGƒ“ƒhƒ|ƒCƒ“ƒg
 app.get('/', (req, res) => {
-  res.send('kintone Auto-Delete Service is running.');
+  res.send('kintone Simple Auto-Delete Service is running.');
 });
 
-// Webã‚µãƒ¼ãƒãƒ¼ã®èµ·å‹•ï¼ˆã“ã‚Œã«ã‚ˆã‚ŠRenderã®ãƒ‡ãƒ—ãƒ­ã‚¤ã‚¨ãƒ©ãƒ¼ã‚’é˜²ãã¾ã™ï¼‰
 app.listen(PORT, () => {
-  console.log(`ã€ã‚·ã‚¹ãƒ†ãƒ ã€‘Web ã‚µãƒ¼ãƒãƒ¼ãŒãƒãƒ¼ãƒˆ ${PORT} ã§èµ·å‹•ã—ã¾ã—ãŸã€‚`);
+  console.log(`yƒVƒXƒeƒ€zWeb ƒT[ƒo[‚ªƒ|[ƒg ${PORT} ‚Å‹N“®‚µ‚Ü‚µ‚½B`);
 });
 
-// ==========================================
-// å®šæœŸå®Ÿè¡Œï¼ˆcronï¼‰ã®è¨­å®š
-// ==========================================
-// æ¯æ—¥æ·±å¤œã® AM 2:00 (æ—¥æœ¬æ™‚é–“ JST) ã«å®Ÿè¡Œã™ã‚‹å ´åˆ
-// âš ï¸ Renderã®ã‚µãƒ¼ãƒãƒ¼ã‚¿ã‚¤ãƒ ã‚¾ãƒ¼ãƒ³ï¼ˆUTCï¼‰ã«åˆã‚ã›ã‚‹ãŸã‚ã€JST AM 2:00 ï¼ UTC å‰æ—¥ PM 17:00 ã¨ãªã‚Šã¾ã™
+// –ˆ“ú[–é‚Ì AM 2:00 (“ú–{ŠÔ JST  UTC ‘O“ú PM 17:00) ‚É’èŠúÀs
 cron.schedule('0 17 * * *', () => {
-  console.log('ã€å®šæœŸå®Ÿè¡Œã€‘ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«æ™‚åˆ»ã«ãªã‚Šã¾ã—ãŸã€‚å‰Šé™¤å‡¦ç†ã‚’é–‹å§‹ã—ã¾ã™ã€‚');
+  console.log('y’èŠúÀszƒXƒPƒWƒ…[ƒ‹‚É‚È‚è‚Ü‚µ‚½Bˆ—‚ğŠJn‚µ‚Ü‚·B');
   deleteOldRecords();
 }, {
   scheduled: true,
   timezone: "Etc/UTC"
 });
 
-console.log('ã€ã‚·ã‚¹ãƒ†ãƒ ã€‘kintoneè‡ªå‹•å‰Šé™¤ç”¨ã®cronã‚¿ã‚¹ã‚¯ã‚’ç™»éŒ²ã—ã¾ã—ãŸã€‚');
+console.log('yƒVƒXƒeƒ€zkintone©“®íœEƒƒO•Û‘¶—p‚Ìcronƒ^ƒXƒN‚ğ“o˜^‚µ‚Ü‚µ‚½B');
