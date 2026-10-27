@@ -51,7 +51,7 @@ async function deleteSoudanOldRecords() {
   try {
     console.log('【kintone: Web相談】作成後' + HOKAN_DAYS + '日が経過したレコードの取得を開始します...');
 
-    const queryStr = `Created < FROM_TODAY(-${HOKAN_DAYS}, DAYS) order by Created asc limit 100`;
+    const queryStr = `$createdTime < FROM_TODAY(-${HOKAN_DAYS}, DAYS) order by Created asc limit 100`;
 console.log(queryStr);
     const getResp = await sClient.record.getRecords({
       app: SoudanAppID, 
@@ -100,7 +100,7 @@ async function deleteJishukuOldRecords() {
   try {
     console.log('【kintone: 貸付自粛Web申告】作成後' + HOKAN_DAYS + '日が経過したレコードの取得を開始します...');
 
-    const queryStr = `Created < FROM_TODAY(-${HOKAN_DAYS}, DAYS) order by Created asc limit 100`;
+    const queryStr = `$createdTime < FROM_TODAY(-${HOKAN_DAYS}, DAYS) order by Created asc limit 100`;
 
     const getResp = await jClient.record.getRecords({
       app: JishukuAppID, // 別アプリにする場合は適切なID定数に変更してください
@@ -147,7 +147,7 @@ async function deleteJishukuOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteOldData_dev = (scheduleTime = '00 1 * * *') => {
-const subCronDeleteOldData_dev = (scheduleTime = '24 13 * * *') => {
+const subCronDeleteOldData_dev = (scheduleTime = '30 13 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻（AM 1:00）になりました。連続処理を開始します。');
     console.log('--- 1. 相談レコード削除開始 ---');
