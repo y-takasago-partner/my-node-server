@@ -115,7 +115,7 @@ async function deleteOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '52 18 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '52 19 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻になりました。処理を開始します。');
     deleteOldRecords();
