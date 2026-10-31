@@ -94,7 +94,7 @@ const webSoudanUketsuke_dev = async (req, res) => {
         html: honbun2.replaceAll("\n", "<br>")   // HTML本文
     };
     res.status(200).send('Webhook received successfully');
-
+
     client = new KintoneRestAPIClient({
         baseUrl: subDomain,
         auth: {

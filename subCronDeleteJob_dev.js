@@ -84,7 +84,7 @@ async function deleteOldRecords() {
 
     // 2. ログアプリへの一括登録用データを作成
     const logRecords = ids.map((id) => ({
-      app_id: { value: JishukuAppID },
+      アプリ番号: { value: JishukuAppID },
       削除レコード番号: { value: id.toString() },
       詳細: { value: '途中離脱データ' },
       アプリ名: { value: '貸付自粛Web申告' }
@@ -115,7 +115,7 @@ async function deleteOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronDeleteJob_dev = (scheduleTime = '58 16 * * *') => {
+const subCronDeleteJob_dev = (scheduleTime = '52 18 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻になりました。処理を開始します。');
     deleteOldRecords();
