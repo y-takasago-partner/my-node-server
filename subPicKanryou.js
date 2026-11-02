@@ -8,9 +8,9 @@ const scKey = process.env.SHOWCASE_KEY;                         // ★ProTeck ID
 const subDomain = 'https://ixfxwyw51tb5.cybozu.com';            // ★kintone サブドメイン
 const KINTONE_BASE_URL = 'https://ixfxwyw51tb5.cybozu.com/k/';  // ★kintone URL
 
-const addrToJishukuStaff = 'jisyuku_web2@j-fsa.jp';          // ★宛先職員メールアドレス
+const addrToJishukuStaff = 'jisyuku_web2@j-fsa.jp';            // ★宛先職員メールアドレス
 
-const appId = 6;                                           // ★kintone 貸付自粛Web申告 アプリID
+const appId = 6;                                               // ★kintone 貸付自粛Web申告 アプリID
 const apiToken = process.env.KINTONE_API_KEY_K3;               // ★kintone 貸付自粛Web申告 APIトークン
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
