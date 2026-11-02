@@ -174,27 +174,44 @@ const picKanryou_dev = async (req, res) => {
         }
 
         //******** kintoneデータ更新 ********
-        const updtResult = await client.record.updateRecord({
-            app: appId,                 // アプリID
-            updateKey: {
-               field: '更新キー',       // Field code with "Prohibit duplicate values" checked
-               value: keyEncrypted      // The unique value to search for
-            },
-            record: {
-                'cidNo': {              // kintone側のフィールドコード
-                    value: webhookData.cidNo
+        if(cId === '') {
+            // 初めてのeKYC Webhook
+            const updtResult = await client.record.updateRecord({
+                app: appId,                 // アプリID
+                updateKey: {
+                   field: '更新キー',       // Field code with "Prohibit duplicate values" checked
+                   value: keyEncrypted      // The unique value to search for
                 },
-                '認証結果': {           // 認証結果
-                    value: result
-                },
-                'ShinkokuID': {         // 申告ID
-                    value: `${nextStr}`
-                },
-                'Jusho_Kana': {         // 住所カナに番地以下を加える
-                    value: `${Jusho_Kana_new}`
+                record: {
+                    'cidNo': {              // kintone側のフィールドコード
+                        value: webhookData.cidNo
+                    },
+                    '認証結果': {           // 認証結果
+                        value: result
+                    },
+                    'ShinkokuID': {         // 申告ID
+                        value: `${nextStr}`
+                    },
+                    'Jusho_Kana': {         // 住所カナに番地以下を加える
+                        value: `${Jusho_Kana_new}`
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            // すでに申告IDが採番済みの場合
+            const updtResult = await client.record.updateRecord({
+                app: appId,                 // アプリID
+                updateKey: {
+                   field: '更新キー',       // Field code with "Prohibit duplicate values" checked
+                   value: keyEncrypted      // The unique value to search for
+                },
+                record: {
+                    '認証結果': {           // 認証結果
+                        value: result
+                    }
+                }
+            });
+        }
         console.log('更新しました');
 
         //******** メール送信 ********
