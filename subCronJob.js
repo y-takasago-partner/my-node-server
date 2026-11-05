@@ -18,7 +18,7 @@ const KINTONE_BASE_URL = 'https://ixfxwyw51tb5.cybozu.com/k/';
 // *********************************************************
 
 const cron = require('node-cron');
-const apiToken_send = process.env.KINTONE_API_KEY_K3;          // ★kintone 貸付自粛Web申告 APIトークン
+const apiToken_send = process.env.KINTONE_API_KEY_K3;       // ★kintone 貸付自粛Web申告 APIトークン
 
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 const kintoneClient = new KintoneRestAPIClient({
@@ -80,23 +80,33 @@ const subCronJob = (scheduleTime = '0 19 * * *') => {
 async function oneMsgSend (record) {
 
         // 本日日付と現在日時
-        const d = new Date();
-        //const dateFormatted = [
-        //    d.getFullYear(),
-        //    String(d.getMonth() + 1).padStart(2, '0'),
+
+        const formatter = new Intl.DateTimeFormat('ja-JP', {
+          timeZone: 'Asia/Tokyo',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false // 24時間表記に固定
+        });
+        
         //    String(d.getDate()).padStart(2, '0')
+        const parts = formatter.formatToParts(new Date());
+        const p = Object.fromEntries(parts.map(part => [part.type, part.value]));
+        
         //].join('/');
         const dateFormattedJ = [
-            d.getFullYear(), '年',
-            String(d.getMonth() + 1).padStart(2, '0'), '月',
-            String(d.getDate()).padStart(2, '0'), '日' 
+          p.year, '年',
+          p.month, '月',
+          p.day, '日'
         ].join('');
         const dateTimeFormattedJ = [
-            d.getFullYear(), '年',
-            String(d.getMonth() + 1).padStart(2, '0'), '月',
-            String(d.getDate()).padStart(2, '0'), '日', 
-            String(d.getHours()).padStart(2, '0'), '時',
-            String(d.getMinutes()).padStart(2, '0'), '分',
+          p.year, '年',
+          p.month, '月',
+          p.day, '日',
+          p.hour, '時',
+          p.minute, '分'
         ].join('');
         //  console.log('dateFormatted is ' + dateFormatted);
         //  console.log('dateFormattedJ is ' + dateFormattedJ);

@@ -9,7 +9,6 @@
 const { sendEMail } = require('./subUtils.js');             // 他ファイル読込
 
 // ★送信メールの件名に付けるプレフィックス
-//const sbjPreFix = '';                                       // 運用
 const sbjPreFix = '【開発】';                             // テスト時
 const subDomain = 'https://jueaogoxsa02.cybozu.com';        // kintone サブドメイン
 const KINTONE_BASE_URL = 'https://jueaogoxsa02.cybozu.com/k/';
@@ -43,7 +42,7 @@ app.use(express.static('public'));                          // PDFファイル�
 // 定期実行（Cronタスク）の処理
 // ==========================================
 //const subCronJob_dev = (scheduleTime = '0 19 * * *') => {
-const subCronJob_dev = (scheduleTime = '49 7 * * *') => {
+const subCronJob_dev = (scheduleTime = '5 8 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('定期実行タスクを開始します...');
     // 実際の非同期処理をここに記述
@@ -109,20 +108,6 @@ async function oneMsgSend (record) {
           p.hour, '時',
           p.minute, '分'
         ].join('');
-
-        //const d = new Date();
-        //const dateFormattedJ = [
-        //    d.getFullYear(), '年',
-        //    String(d.getMonth() + 1).padStart(2, '0'), '月',
-        //    String(d.getDate()).padStart(2, '0'), '日' 
-        //].join('');
-        //const dateTimeFormattedJ = [
-        //    d.getFullYear(), '年',
-        //    String(d.getMonth() + 1).padStart(2, '0'), '月',
-        //    String(d.getDate()).padStart(2, '0'), '日', 
-        //    String(d.getHours()).padStart(2, '0'), '時',
-        //    String(d.getMinutes()).padStart(2, '0'), '分',
-        //].join('');
         //  console.log('dateFormatted is ' + dateFormatted);
         //  console.log('dateFormattedJ is ' + dateFormattedJ);
         //  console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
