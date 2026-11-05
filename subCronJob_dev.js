@@ -81,24 +81,48 @@ const subCronJob_dev = (scheduleTime = '44 14 * * *') => {
 async function oneMsgSend (record) {
 
         // 本日日付と現在日時
-        const d = new Date();
-        //const dateFormatted = [
-        //    d.getFullYear(),
-        //    String(d.getMonth() + 1).padStart(2, '0'),
-        //    String(d.getDate()).padStart(2, '0')
-        //].join('/');
+
+        const formatter = new Intl.DateTimeFormat('ja-JP', {
+          timeZone: 'Asia/Tokyo',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false // 24時間表記に固定
+        });
+        
+        // 各パーツに分解してマッピング
+        const parts = formatter.formatToParts(new Date());
+        const p = Object.fromEntries(parts.map(part => [part.type, part.value]));
+        
+        // 既存のコードと同様に組み立て
         const dateFormattedJ = [
-            d.getFullYear(), '年',
-            String(d.getMonth() + 1).padStart(2, '0'), '月',
-            String(d.getDate()).padStart(2, '0'), '日' 
+          p.year, '年',
+          p.month, '月',
+          p.day, '日'
         ].join('');
         const dateTimeFormattedJ = [
-            d.getFullYear(), '年',
-            String(d.getMonth() + 1).padStart(2, '0'), '月',
-            String(d.getDate()).padStart(2, '0'), '日', 
-            String(d.getHours()).padStart(2, '0'), '時',
-            String(d.getMinutes()).padStart(2, '0'), '分',
+          p.year, '年',
+          p.month, '月',
+          p.day, '日',
+          p.hour, '時',
+          p.minute, '分'
         ].join('');
+
+        //const d = new Date();
+        //const dateFormattedJ = [
+        //    d.getFullYear(), '年',
+        //    String(d.getMonth() + 1).padStart(2, '0'), '月',
+        //    String(d.getDate()).padStart(2, '0'), '日' 
+        //].join('');
+        //const dateTimeFormattedJ = [
+        //    d.getFullYear(), '年',
+        //    String(d.getMonth() + 1).padStart(2, '0'), '月',
+        //    String(d.getDate()).padStart(2, '0'), '日', 
+        //    String(d.getHours()).padStart(2, '0'), '時',
+        //    String(d.getMinutes()).padStart(2, '0'), '分',
+        //].join('');
         //  console.log('dateFormatted is ' + dateFormatted);
         //  console.log('dateFormattedJ is ' + dateFormattedJ);
         //  console.log('dateTimeFormattedJ is ' + dateTimeFormattedJ);
