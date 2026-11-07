@@ -256,13 +256,22 @@ const picKanryou_dev = async (req, res) => {
             "申告種別：" + shubetsuEncrypted + "\n\n" +
             KINTONE_BASE_URL + appId + '/\n';
 //          KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value + '\n';
-        //const url2 = 'URLをクリックしてください\n' + KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value;
+        const url = KINTONE_BASE_URL + appId + '/';
+        const honbun2_html = 
+            shubetsuEncrypted + '申告がありました。<br>' + 
+            "下記URLからログインし、内容の確認をお願いします。<br><br>" + 
+            "申告ID：" + `${nextStr}` + "<br>" + 
+            "申告タイプ：本人<br>" + 
+            "申告種別：" + shubetsuEncrypted + "<br><br>" +
+            "<a href='" + url + "'>" + url + "</a><br>";
+//          KINTONE_BASE_URL + appId + '/show#record=' + response.records[0].$id.value + '\n';
         const msg2 = {
             to  :  addrToJishukuStaff,             // 宛先メールアドレス
             from:  'jisyuku_web2@j-fsa.jp',         //From（SendGridで認証済みドメインのメールアドレス）
             subject: sbjPreFix + '' + shubetsuEncrypted + '申告がありました',     // 件名
             text: honbun2,                         // 本文
-            html: honbun2.replaceAll("\n", "<br>") // HTML本文
+            html: honbun2_html                     // HTML本文
+//          html: honbun2.replaceAll("\n", "<br>") // HTML本文
         };
         if(cId === '') {
             sendEMail(msg);
