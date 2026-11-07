@@ -86,12 +86,18 @@ const webSoudanUketsuke_dev = async (req, res) => {
         "WEB相談受付がありました。\n" + 
         "下記URLからログインし、内容の確認をお願いします。\n\n" + 
         KINTONE_BASE_URL + appId + '/show#record=' + webhookData.レコード番号 + '\n';
+    const url = KINTONE_BASE_URL + appId + '/show#record=' + webhookData.レコード番号;
+    const honbun2_html = 
+        "WEB相談受付がありました。<br>" + 
+        "下記URLからログインし、内容の確認をお願いします。<br><br>" + 
+        "<a href='" + url + "'>" + url + "</a><br>";
     const msg2 = {
         to  :  addrToSoudanStaff,                // 宛先メールアドレス
         from:  'soudan2@j-fsa.jp',               //From（SendGridで認証済みドメインのメールアドレス）
         subject: sbjPreFix + '相談受付の件',     // 件名
         text: honbun2 + '\n',                    // 本文
-        html: honbun2.replaceAll("\n", "<br>")   // HTML本文
+        html: honbun2_html                       // HTML本文
+//      html: honbun2.replaceAll("\n", "<br>")   // HTML本文
     };
     res.status(200).send('Webhook received successfully');
 
