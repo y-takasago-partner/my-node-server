@@ -156,18 +156,33 @@ const webSoudanUketsuke_dev = async (req, res) => {
                 nextNum = nextNum + 1;
                 nextStr = String(nextNum);
                 console.log(`重複 -> 次の採番: ${nextStr}`);
-                const updtResult = await client.record.updateRecord({
-                    app: appId,                        // アプリID
-                    id: webhookData.レコード番号,      // ここにレコード番号（$id）を指定
-                    record: {
-                        'NO': {     // NO
-                            value: `${nextStr}`
+                try {
+                    const updtResult = await client.record.updateRecord({
+                        app: appId,                        // アプリID
+                        id: webhookData.レコード番号,      // ここにレコード番号（$id）を指定
+                        record: {
+                            'NO': {     // NO
+                                value: `${nextStr}`
+                            }
                         }
-                    }
-                });
-                console.log('NOを加算して更新しました');
+                    });
+                    console.log('NOを加算して更新しました');
+                } catch (err_2) {
+                    //重複エラーが２回続くことは現状のデータ量では想定していない
+                    const updtResult = await client.record.updateRecord({
+                        app: appId,                        // アプリID
+                        id: webhookData.レコード番号,      // ここにレコード番号（$id）を指定
+                        record: {
+                            'NO': {     // NO
+                                value: '採番エラー'
+                            }
+                        }
+                    });
+                    console.log('採番エラー');
+                    throw err_2;
+                }
             } else {
-              throw err;
+                throw err;
             }
         }
         //******** kintoneデータ更新 End ********
