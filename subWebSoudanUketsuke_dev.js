@@ -38,12 +38,12 @@ var client;
 const webSoudanUketsuke_dev = async (req, res) => {
     console.log('--- Webhook(dev)を受信しました ---');
     const webhookData = req.body;
-    console.log(webhookData.レコード番号);
-    console.log(webhookData.氏名);
-    console.log(webhookData.メールアドレス);
-    console.log(webhookData.APIKey);
-    console.log(webhookData.Webフォーム);
-    console.log(webhookData.Webフォーム.slice(0,1));
+    console.log('レコード番号：' + webhookData.レコード番号);
+    //console.log(webhookData.氏名);
+    //console.log(webhookData.メールアドレス);
+    //console.log(webhookData.APIKey);
+    //console.log(webhookData.Webフォーム);
+    //console.log(webhookData.Webフォーム.slice(0,1));
 
     if(webhookData.APIKey !== zapApiToken) {
         console.error('APIトークンが一致しません。終了します。');
@@ -125,28 +125,51 @@ const webSoudanUketsuke_dev = async (req, res) => {
             // 6桁の数字のみで構成されているレコードを想定
             query: `${'NO'} != "" order by ${'NO'} desc limit 1`
         });
+        var nextNum = 0;
         var nextStr = "";
         if (response2.records.length === 0) {
             nextStr = START_NO;
             console.log('レコードがありません。最初の番号:', nextStr);
         } else {
             const maxStr = response2.records[0]['NO'].value;
-            const nextNum = Number(maxStr) + 1;
+            nextNum = Number(maxStr) + 1;
             nextStr = String(nextNum);
             console.log(`現在の最大値: ${maxStr} -> 次の採番: ${nextStr}`);
         }
         //******** kintoneNO取得 end ********
         //******** kintoneデータ更新 ********
-        const updtResult = await client.record.updateRecord({
-            app: appId,                        // アプリID
-            id: webhookData.レコード番号,      // ここにレコード番号（$id）を指定
-            record: {
-                'NO': {     // NO
-                    value: `${nextStr}`
+        try {
+            const updtResult = await client.record.updateRecord({
+                app: appId,                        // アプリID
+                id: webhookData.レコード番号,      // ここにレコード番号（$id）を指定
+                record: {
+                    'NO': {     // NO
+                        value: `${nextStr}`
+                    }
                 }
+            });
+            console.log('更新しました');
+        } catch (err) {
+            console.log('err.code is ' + err.code);
+            if (err.code === 'CB_VA01') {
+                console.log('nextNum is ' + nextNum + ', nextStr is ' + nextStr);
+                nextNum = nextNum + 1;
+                nextStr = String(nextNum);
+                console.log(`重複 -> 次の採番: ${nextStr}`);
+                const updtResult = await client.record.updateRecord({
+                    app: appId,                        // アプリID
+                    id: webhookData.レコード番号,      // ここにレコード番号（$id）を指定
+                    record: {
+                        'NO': {     // NO
+                            value: `${nextStr}`
+                        }
+                    }
+                });
+                console.log('NOを加算して更新しました');
+            } else {
+              throw err;
             }
-        });
-        console.log('更新しました');
+        }
         //******** kintoneデータ更新 End ********
 
         sendEMail(msg);
