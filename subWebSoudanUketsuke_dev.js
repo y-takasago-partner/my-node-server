@@ -7,7 +7,6 @@ const { sendEMail } = require('./subUtils.js');
 // *********************************************************
 
 // ★送信メールの件名に付けるプレフィックス
-//const sbjPreFix = '';                                     // 運用
 const sbjPreFix = '【開発】';                               // テスト時
 const START_NO = '3001';                                    // ★運用開始時に『最終SpiralNo + 1』を設定
 
@@ -100,7 +99,7 @@ const webSoudanUketsuke_dev = async (req, res) => {
 //      html: honbun2.replaceAll("\n", "<br>")   // HTML本文
     };
     res.status(200).send('Webhook received successfully');
-
+
     client = new KintoneRestAPIClient({
         baseUrl: subDomain,
         auth: {
