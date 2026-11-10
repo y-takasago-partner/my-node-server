@@ -123,11 +123,11 @@ async function oneMsgSend (record) {
         const shimei = record['Shimei_Sei'].value + '　' + record['Shimei_Mei'].value;
         const irai_no = record['IRAI_NO'].value + record['IRAI_NO_SUB'].value;
         const irai_cd = record['IRAI_CD'].value;
-        const fubi1 = record['Fubi_1'].value.slice(2);
-        const fubi2 = record['Fubi_2'].value.slice(2);
-        const fubi3 = record['Fubi_3'].value.slice(2);
-        const fubi4 = record['Fubi_4'].value.slice(2);
-        const fubi5 = record['Fubi_5'].value.slice(2);
+        const fubi1 = record['Fubi_1'].value ? record['Fubi_1'].value.slice(2) : '';
+        const fubi2 = record['Fubi_2'].value ? record['Fubi_2'].value.slice(2) : '';
+        const fubi3 = record['Fubi_3'].value ? record['Fubi_3'].value.slice(2) : '';
+        const fubi4 = record['Fubi_4'].value ? record['Fubi_4'].value.slice(2) : '';
+        const fubi5 = record['Fubi_5'].value ? record['Fubi_5'].value.slice(2) : '';
         const bun = record['EmailDeliv_Body'].value;
         //  console.log('recordId is '    + recordId);
         //  console.log('mailAddress is ' + mailAddress);
