@@ -129,17 +129,17 @@ async function deleteJishukuOldRecords() {
       };
     });
 
-    await logClient.record.addRecords({
-      app: LogAppID,
-      records: logRecords,
-    });
+//    await logClient.record.addRecords({
+//      app: LogAppID,
+//      records: logRecords,
+//    });
     console.log(`【kintone: 自粛】${logRecords.length}件のログ書き込みが成功しました。`);
 
     const ids = records.map((record) => Number(record.$id.value));
-    await jClient.record.deleteRecords({
-      app: JishukuAppID,
-      ids: ids,
-    });
+//    await jClient.record.deleteRecords({
+//      app: JishukuAppID,
+//      ids: ids,
+//    });
     console.log(`【kintone: 自粛】${ids.length}件のレコード削除が成功しました。`);
 
   } catch (err) {
