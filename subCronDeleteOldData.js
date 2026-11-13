@@ -21,7 +21,7 @@ const HOKAN_DAYS = 14;                                  // ★15日目に削除
 const apiTokenJishuku = process.env.KINTONE_API_KEY_K3;       // ★kintone 貸付自粛Web申告 APIトークン
 const apiTokenSoudan  = process.env.KINTONE_API_KEY_SODAN;    // ★kintone Web相談 APIトークン
 const apiTokenLog     = process.env.KINTONE_API_KEY_DELLOG;   // ★kintone Web相談 APIトークン
-onst JishukuAppID = 6;                                  // ★アプリID
+const JishukuAppID = 6;                                 // ★アプリID
 const SoudanAppID = 8;                                  // ★アプリID
 const LogAppID    = 12;                                 // ★アプリID
 
