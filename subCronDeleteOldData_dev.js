@@ -57,7 +57,7 @@ async function deleteSoudanOldRecords() {
     const getResp = await sClient.record.getRecords({
       app: SoudanAppID, 
       query: queryStr,
-      fields: ['$id'],
+      fields: ['$id','NO'],
     });
 
     const records = getResp.records;
@@ -67,13 +67,25 @@ async function deleteSoudanOldRecords() {
       return;
     }
 
-    const ids = records.map((record) => Number(record.$id.value));
-    const logRecords = ids.map((id) => ({
-      アプリ番号: { value: SoudanAppID },
-      削除レコード番号: { value: id.toString() },
-      詳細: { value: '' + HOKAN_DAYS + '日間保管経過データ（相談）, NO:' + record.NO.value }, 
-      アプリ名: { value: 'Web相談' }
-    }));
+    const logRecords = records.map((record) => {
+      const id = record.$id.value;
+      // NOが空（未入力）の場合に備えて || '' をつけておくと安全です
+      const no = record.NO?.value || ''; 
+      return {
+        アプリ番号: { value: SoudanAppID },
+        削除レコード番号: { value: id.toString() },
+        詳細: { value: `${HOKAN_DAYS}日間保管経過データ（Web相談） NO:${no}` },
+        アプリ名: { value: 'Web相談' }
+      };
+    });
+
+//    const ids = records.map((record) => Number(record.$id.value));
+//    const logRecords = ids.map((id) => ({
+//      アプリ番号: { value: SoudanAppID },
+//      削除レコード番号: { value: id.toString() },
+//      詳細: { value: '' + HOKAN_DAYS + '日間保管経過データ（相談）, NO:' + record.NO.value }, 
+//      アプリ名: { value: 'Web相談' }
+//    }));
 
     await logClient.record.addRecords({
       app: LogAppID,
@@ -102,7 +114,7 @@ async function deleteJishukuOldRecords() {
     const getResp = await jClient.record.getRecords({
       app: JishukuAppID,
       query: queryStr,
-      fields: ['$id'],
+      fields: ['$id', 'ShinkokuID'],
     });
 
     const records = getResp.records;
@@ -112,13 +124,25 @@ async function deleteJishukuOldRecords() {
       return;
     }
 
-    const ids = records.map((record) => Number(record.$id.value));
-    const logRecords = ids.map((id) => ({
-      アプリ番号: { value: JishukuAppID },
-      削除レコード番号: { value: id.toString() },
-      詳細: { value: '' + HOKAN_DAYS + '日間保管経過データ（貸付自粛Web申告）' }, 
-      アプリ名: { value: '貸付自粛Web申告' }
-    }));
+    const logRecords = records.map((record) => {
+      const id = record.$id.value;
+      // ShinkokuIDが空（未入力）の場合に備えて || '' をつけておくと安全です
+      const sid = record.ShinkokuID?.value || ''; 
+      return {
+        アプリ番号: { value: JishukuAppID },
+        削除レコード番号: { value: id.toString() },
+        詳細: { value: `${HOKAN_DAYS}日間保管経過データ（貸付自粛Web申告） 申告ID:${sid}` },
+        アプリ名: { value: '貸付自粛Web申告' }
+      };
+    });
+
+//    const ids = records.map((record) => Number(record.$id.value));
+//    const logRecords = ids.map((id) => ({
+//      アプリ番号: { value: JishukuAppID },
+//      削除レコード番号: { value: id.toString() },
+//      詳細: { value: '' + HOKAN_DAYS + '日間保管経過データ（貸付自粛Web申告）, 申告ID：' + record.ShinkokuID.value }, 
+//      アプリ名: { value: '貸付自粛Web申告' }
+//    }));
 
     await logClient.record.addRecords({
       app: LogAppID,
@@ -142,7 +166,7 @@ async function deleteJishukuOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteOldData_dev = (scheduleTime = '00 1 * * *') => {
-const subCronDeleteOldData_dev = (scheduleTime = '16 11 * * *') => {
+const subCronDeleteOldData_dev = (scheduleTime = '41 11 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻（AM 1:00）になりました。連続処理を開始します。');
     console.log('--- 1. 相談レコード削除開始 ---');
