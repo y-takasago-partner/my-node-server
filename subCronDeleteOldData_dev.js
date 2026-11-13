@@ -71,7 +71,7 @@ async function deleteSoudanOldRecords() {
     const logRecords = ids.map((id) => ({
       アプリ番号: { value: SoudanAppID },
       削除レコード番号: { value: id.toString() },
-      詳細: { value: '' + HOKAN_DAYS + '日間保管経過データ（相談）' }, 
+      詳細: { value: '' + HOKAN_DAYS + '日間保管経過データ（相談）, NO:' + record.NO.value }, 
       アプリ名: { value: 'Web相談' }
     }));
 
@@ -142,7 +142,7 @@ async function deleteJishukuOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteOldData_dev = (scheduleTime = '00 1 * * *') => {
-const subCronDeleteOldData_dev = (scheduleTime = '4 11 * * *') => {
+const subCronDeleteOldData_dev = (scheduleTime = '16 11 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻（AM 1:00）になりました。連続処理を開始します。');
     console.log('--- 1. 相談レコード削除開始 ---');
