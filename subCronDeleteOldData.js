@@ -151,8 +151,8 @@ async function deleteJishukuOldRecords() {
 // ==========================================
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
-const subCronDeleteOldData = (scheduleTime = '00 1 * * *') => {
-//const subCronDeleteOldData = (scheduleTime = '44 17 * * *') => {
+//const subCronDeleteOldData = (scheduleTime = '00 1 * * *') => {
+const subCronDeleteOldData = (scheduleTime = '32 17 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻（AM 1:00）になりました。連続処理を開始します。');
     console.log('--- 1. 相談レコード削除開始 ---');
