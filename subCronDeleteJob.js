@@ -1,8 +1,6 @@
 /*
  * 日次定時削除実行処理
  *   途中離脱のWeb申告データを削除します
- *   新規登録後、所定日数経過のWeb申告データを削除します
- *   新規登録後、所定日数経過のWeb相談データを削除します
  */
 
 'use strict';
@@ -18,10 +16,10 @@ const cron = require('node-cron');
 const {KintoneRestAPIClient} = require('@kintone/rest-api-client');
 
 const apiTokenJishuku = process.env.KINTONE_API_KEY_K3;     // ★kintone 貸付自粛Web申告 APIトークン
-const apiTokenSoudan  = process.env.KINTONE_API_KEY_SODAN;  // ★kintone Web相談 APIトークン
+//const apiTokenSoudan  = process.env.KINTONE_API_KEY_SODAN;  // ★kintone Web相談 APIトークン
 const apiTokenLog     = process.env.KINTONE_API_KEY_DELLOG; // ★kintone Web相談 APIトークン
 const JishukuAppID = 6;                                     // ★アプリID
-const SoudanAppID  = 8;                                     // ★アプリID
+//const SoudanAppID  = 8;                                     // ★アプリID
 const LogAppID     = 12;                                    // ★アプリID
 
 const express = require('express');
@@ -33,10 +31,10 @@ const jClient = new KintoneRestAPIClient({
     auth: { apiToken: apiTokenJishuku }                       // Web申告用kintoneアプリのAPIトークン
 });
 
-const sClient = new KintoneRestAPIClient({
-    baseUrl: subDomain,
-    auth: { apiToken: apiTokenSoudan },
-});
+//const sClient = new KintoneRestAPIClient({
+//    baseUrl: subDomain,
+//    auth: { apiToken: apiTokenSoudan },
+//});
 
 const logClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
