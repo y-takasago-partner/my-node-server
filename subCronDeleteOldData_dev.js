@@ -37,7 +37,7 @@ const jClient = new KintoneRestAPIClient({
 // kintoneクライアントの初期化（Web相談）
 const sClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
-    auth: { apiToken: apiTokenSoudan },
+    auth: { apiToken: apiTokenSoudan }                        // Web相談用kintoneアプリのAPIトークン
 });
 
 // kintoneクライアントの初期化（削除ログ）（将来実装に備えて）
@@ -79,14 +79,6 @@ async function deleteSoudanOldRecords() {
       };
     });
 
-//    const ids = records.map((record) => Number(record.$id.value));
-//    const logRecords = ids.map((id) => ({
-//      アプリ番号: { value: SoudanAppID },
-//      削除レコード番号: { value: id.toString() },
-//      詳細: { value: '' + HOKAN_DAYS + '日間保管経過データ（相談）, NO:' + record.NO.value }, 
-//      アプリ名: { value: 'Web相談' }
-//    }));
-
     await logClient.record.addRecords({
       app: LogAppID,
       records: logRecords,
@@ -94,10 +86,10 @@ async function deleteSoudanOldRecords() {
     console.log(`【kintone: 相談】${logRecords.length}件のログ書き込みが成功しました。`);
 
     const ids = records.map((record) => Number(record.$id.value));
-//    await sClient.record.deleteRecords({
-//      app: SoudanAppID,
-//      ids: ids,
-//    });
+    await sClient.record.deleteRecords({
+      app: SoudanAppID,
+      ids: ids,
+    });
     console.log(`【kintone: 相談】${ids.length}件のレコード削除が成功しました。`);
 
   } catch (err) {
@@ -105,7 +97,7 @@ async function deleteSoudanOldRecords() {
   }
 }
 
-// ==========================================
+// ==========================================
 // 2. 自粛アプリ用の一括削除関数（同様のロジック）
 // ==========================================
 async function deleteJishukuOldRecords() {
@@ -137,14 +129,6 @@ async function deleteJishukuOldRecords() {
       };
     });
 
-//    const ids = records.map((record) => Number(record.$id.value));
-//    const logRecords = ids.map((id) => ({
-//      アプリ番号: { value: JishukuAppID },
-//      削除レコード番号: { value: id.toString() },
-//      詳細: { value: '' + HOKAN_DAYS + '日間保管経過データ（貸付自粛Web申告）, 申告ID：' + record.ShinkokuID.value }, 
-//      アプリ名: { value: '貸付自粛Web申告' }
-//    }));
-
     await logClient.record.addRecords({
       app: LogAppID,
       records: logRecords,
@@ -152,10 +136,10 @@ async function deleteJishukuOldRecords() {
     console.log(`【kintone: 自粛】${logRecords.length}件のログ書き込みが成功しました。`);
 
     const ids = records.map((record) => Number(record.$id.value));
-//    await jClient.record.deleteRecords({
-//      app: JishukuAppID,
-//      ids: ids,
-//    });
+    await jClient.record.deleteRecords({
+      app: JishukuAppID,
+      ids: ids,
+    });
     console.log(`【kintone: 自粛】${ids.length}件のレコード削除が成功しました。`);
 
   } catch (err) {
@@ -168,7 +152,7 @@ async function deleteJishukuOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteOldData_dev = (scheduleTime = '00 1 * * *') => {
-const subCronDeleteOldData_dev = (scheduleTime = '50 11 * * *') => {
+const subCronDeleteOldData_dev = (scheduleTime = '58 11 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻（AM 1:00）になりました。連続処理を開始します。');
     console.log('--- 1. 相談レコード削除開始 ---');
