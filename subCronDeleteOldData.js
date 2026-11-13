@@ -152,14 +152,14 @@ async function deleteJishukuOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteOldData = (scheduleTime = '00 1 * * *') => {
-const subCronDeleteOldData = (scheduleTime = '45 17 * * *') => {
+const subCronDeleteOldData = (scheduleTime = '47 17 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻（AM 1:00）になりました。連続処理を開始します。');
     console.log('--- 1. 相談レコード削除開始 ---');
     await deleteSoudanOldRecords();
-//    console.log('--- 2. 自粛レコード削除開始 ---');
-//    await deleteJishukuOldRecords();
-//    console.log('【定期実行】すべての連続処理が終了しました。');
+    console.log('--- 2. 自粛レコード削除開始 ---');
+    await deleteJishukuOldRecords();
+    console.log('【定期実行】すべての連続処理が終了しました。');
   }, {
       scheduled: true,
       timezone: "Asia/Tokyo"
