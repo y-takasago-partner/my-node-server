@@ -33,17 +33,19 @@ const jClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
     auth: { apiToken: apiTokenJishuku }                       // Web申告用kintoneアプリのAPIトークン
 });
+
 // kintoneクライアントの初期化（Web相談）
 const sClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
     auth: { apiToken: apiTokenSoudan },
 });
-// kintoneクライアントの初期化（削除ログ）
+
+// kintoneクライアントの初期化（削除ログ）（将来実装に備えて）
 const logClient = new KintoneRestAPIClient({
     baseUrl: subDomain,
     auth: { apiToken: apiTokenLog },
 });
-
+
 // ==========================================
 // 1. 相談アプリ用の一括削除関数
 // ==========================================
@@ -73,10 +75,10 @@ async function deleteSoudanOldRecords() {
       アプリ名: { value: 'Web相談' }
     }));
 
-//    await logClient.record.addRecords({
-//      app: LogAppID,
-//      records: logRecords,
-//    });
+    await logClient.record.addRecords({
+      app: LogAppID,
+      records: logRecords,
+    });
     console.log(`【kintone: 相談】${logRecords.length}件のログ書き込みが成功しました。`);
 
 //    await sClient.record.deleteRecords({
@@ -118,10 +120,10 @@ async function deleteJishukuOldRecords() {
       アプリ名: { value: '貸付自粛Web申告' }
     }));
 
-//    await logClient.record.addRecords({
-//      app: LogAppID,
-//      records: logRecords,
-//    });
+    await logClient.record.addRecords({
+      app: LogAppID,
+      records: logRecords,
+    });
     console.log(`【kintone: 自粛】${logRecords.length}件のログ書き込みが成功しました。`);
 
 //    await jClient.record.deleteRecords({
@@ -140,7 +142,7 @@ async function deleteJishukuOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteOldData_dev = (scheduleTime = '00 1 * * *') => {
-const subCronDeleteOldData_dev = (scheduleTime = '44 10 * * *') => {
+const subCronDeleteOldData_dev = (scheduleTime = '52 10 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻（AM 1:00）になりました。連続処理を開始します。');
     console.log('--- 1. 相談レコード削除開始 ---');
