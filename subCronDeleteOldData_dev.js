@@ -93,6 +93,7 @@ async function deleteSoudanOldRecords() {
     });
     console.log(`【kintone: 相談】${logRecords.length}件のログ書き込みが成功しました。`);
 
+    const ids = records.map((record) => Number(record.$id.value));
 //    await sClient.record.deleteRecords({
 //      app: SoudanAppID,
 //      ids: ids,
@@ -150,6 +151,7 @@ async function deleteJishukuOldRecords() {
     });
     console.log(`【kintone: 自粛】${logRecords.length}件のログ書き込みが成功しました。`);
 
+    const ids = records.map((record) => Number(record.$id.value));
 //    await jClient.record.deleteRecords({
 //      app: JishukuAppID,
 //      ids: ids,
@@ -166,7 +168,7 @@ async function deleteJishukuOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteOldData_dev = (scheduleTime = '00 1 * * *') => {
-const subCronDeleteOldData_dev = (scheduleTime = '41 11 * * *') => {
+const subCronDeleteOldData_dev = (scheduleTime = '50 11 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻（AM 1:00）になりました。連続処理を開始します。');
     console.log('--- 1. 相談レコード削除開始 ---');
