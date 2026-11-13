@@ -69,7 +69,7 @@ async function deleteSoudanOldRecords() {
 
     const ids = records.map((record) => Number(record.$id.value));
     const logRecords = ids.map((id) => ({
-      app_id: { value: SoudanAppID },
+      アプリ番号: { value: SoudanAppID },
       削除レコード番号: { value: id.toString() },
       詳細: { value: '' + HOKAN_DAYS + '日間保管経過データ（相談）' }, 
       アプリ名: { value: 'Web相談' }
@@ -114,7 +114,7 @@ async function deleteJishukuOldRecords() {
 
     const ids = records.map((record) => Number(record.$id.value));
     const logRecords = ids.map((id) => ({
-      app_id: { value: JishukuAppID },
+      アプリ番号: { value: JishukuAppID },
       削除レコード番号: { value: id.toString() },
       詳細: { value: '' + HOKAN_DAYS + '日間保管経過データ（貸付自粛Web申告）' }, 
       アプリ名: { value: '貸付自粛Web申告' }
@@ -142,7 +142,7 @@ async function deleteJishukuOldRecords() {
 // 定期削除実行（Cronタスク）の処理
 // ==========================================
 //const subCronDeleteOldData_dev = (scheduleTime = '00 1 * * *') => {
-const subCronDeleteOldData_dev = (scheduleTime = '52 10 * * *') => {
+const subCronDeleteOldData_dev = (scheduleTime = '4 11 * * *') => {
   cron.schedule(scheduleTime, async () => {
     console.log('【定期実行】スケジュール時刻（AM 1:00）になりました。連続処理を開始します。');
     console.log('--- 1. 相談レコード削除開始 ---');
