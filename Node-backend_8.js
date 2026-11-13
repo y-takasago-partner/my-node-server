@@ -24,7 +24,7 @@ const { subCronDeleteJob }                 = require('./subCronDeleteJob.js');
 const { subCronDeleteJob_dev }             = require('./subCronDeleteJob_dev.js');
 
 //古いデータ削除
-//const { subCronDeleteJob }               = require('./subCronDeleteJob.js');
+const { subCronDeleteOldData }             = require('./subCronDeleteOldData.js');
 const { subCronDeleteOldData_dev }         = require('./subCronDeleteOldData_dev.js');
 
 const express = require('express');
@@ -76,7 +76,7 @@ subCronDeleteJob();                     // 運用
 subCronDeleteJob_dev();                 // 開発
 
 //古いデータ削除
-//subCronDeleteOldData();                 // 運用
+subCronDeleteOldData();                 // 運用
 subCronDeleteOldData_dev();             // 開発
 
 // =========================================================
